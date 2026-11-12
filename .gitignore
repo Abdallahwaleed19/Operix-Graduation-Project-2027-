@@ -18,6 +18,7 @@ env/
 *.avi
 *.mov
 images/
+Diagram/
 
 # OS
 .DS_Store
