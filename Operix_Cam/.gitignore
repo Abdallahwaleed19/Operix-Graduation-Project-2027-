@@ -1,0 +1,20 @@
+# Operix — Operix_Cam gitignore
+# --------------------------------
+# Never commit secrets or large generated files
+
+# Python virtual environment
+.venv/
+venv/
+env/
+
+# Loaded environment secrets
+.env
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+
+# OS noise
+.DS_Store
+Thumbs.db
