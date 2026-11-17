@@ -1,0 +1,801 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2472" height="2222" viewBox="0 0 2472 2222" font-family="Inter, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" xmlns:c2pa="http://c2pa.org/manifest">
+<title>Operix Core MVP - Entity Relationship Diagram (PostgreSQL, multi-tenant)</title>
+<desc>Core MVP database for Operix. Every tenant-owned table carries factory_id; foreign keys between tenant tables are composite (factory_id, id). Redesigned layout: same tables, columns, keys and relationships as the original.</desc>
+<rect width="2472" height="2222" fill="#ffffff"/>
+<!-- Operix Core MVP ERD - redesigned layout. Table blocks, columns, types, keys and relationships are unchanged from the original; only positions, grouping and line routing changed. -->
+<text x="40" y="46" font-size="30" font-weight="700" fill="#1f2937">Operix - Core MVP Database (ERD)</text>
+<text x="40" y="72" font-size="14" fill="#6b7280">PostgreSQL - multi-tenant (shared schema, factory_id + composite foreign keys + Row-Level Security) - 20 tables - crow's-foot notation</text>
+<g id="grp_ops"><path d="M32,874L32.0,888.0Q32,874 46.0,874.0L910.0,874.0Q924,874 924.0,888.0L924.0,2128.0Q924,2142.0 910.0,2142.0L450.0,2142.0Q436,2142.0 436.0,2128.0L436.0,1386.0Q436,1372.0 422.0,1372.0L46.0,1372.0Q32,1372.0 32.0,1358.0Z" fill="#eff6f1" stroke="#b7d1be" stroke-width="1.5"/><text x="50" y="898" font-size="12.5" font-weight="700" letter-spacing="1.2" fill="#4c7a5a">OPERATIONAL RESOURCES &amp; CONFIGURATION</text></g>
+<g id="grp_sen"><path d="M36,1358L36.0,1372.0Q36,1358 50.0,1358.0L406.0,1358.0Q420,1358 420.0,1372.0L420.0,2002.0Q420,2016.0 406.0,2016.0L50.0,2016.0Q36,2016.0 36.0,2002.0Z" fill="#ecf6f7" stroke="#aed0d4" stroke-width="1.5"/><text x="54" y="1382" font-size="12.5" font-weight="700" letter-spacing="1.2" fill="#3b7c84">SENSORS &amp; MEASUREMENTS</text></g>
+<g id="grp_ten"><path d="M32,110L32.0,124.0Q32,110 46.0,110.0L2398.0,110.0Q2412,110 2412.0,124.0L2412.0,792.0Q2412,806.0 2398.0,806.0L46.0,806.0Q32,806.0 32.0,792.0Z" fill="#eef3f8" stroke="#b9c8d8" stroke-width="1.5"/><text x="50" y="134" font-size="12.5" font-weight="700" letter-spacing="1.2" fill="#46647f">TENANT &amp; ACCESS MANAGEMENT</text></g>
+<g id="grp_evt"><path d="M1024,874L1024.0,888.0Q1024,874 1038.0,874.0L1902.0,874.0Q1916,874 1916.0,888.0L1916.0,1424.0Q1916,1438.0 1902.0,1438.0L1436.0,1438.0Q1422,1438.0 1422.0,1452.0L1422.0,1764.0Q1422,1778.0 1408.0,1778.0L1038.0,1778.0Q1024,1778.0 1024.0,1764.0Z" fill="#fbf2e9" stroke="#e3c8aa" stroke-width="1.5"/><text x="1042" y="898" font-size="12.5" font-weight="700" letter-spacing="1.2" fill="#9c6538">EVENTS, INCIDENTS &amp; EVIDENCE</text></g>
+<g id="grp_alr"><path d="M2016,984L2016.0,998.0Q2016,984 2030.0,984.0L2398.0,984.0Q2412,984 2412.0,998.0L2412.0,1960.0Q2412,1974.0 2398.0,1974.0L2030.0,1974.0Q2016,1974.0 2016.0,1960.0Z" fill="#f4eff8" stroke="#d1c1df" stroke-width="1.5"/><text x="2034" y="1008" font-size="12.5" font-weight="700" letter-spacing="1.2" fill="#76588f">ALERTS &amp; NOTIFICATIONS</text></g>
+<g id="relationships" fill="none">
+<polyline id="rel_factories__factory_memberships_0" points="1718,382.0 1718,452" fill="none" stroke="#4b5563" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline id="rel_users__factory_memberships_1" points="2044,519 1888,519" fill="none" stroke="#4b5563" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline id="rel_roles__factory_memberships_2" points="1392,541 1548,541" fill="none" stroke="#4b5563" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline id="rel_roles__role_permissions_3" points="1052,541 896,541" fill="none" stroke="#4b5563" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline id="rel_permissions__role_permissions_4" points="726,670 726,580.0" fill="none" stroke="#4b5563" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline id="rel_users__auth_tokens_5" points="2214,474 2214,404.0" fill="none" stroke="#4b5563" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline id="rel_cameras__monitoring_zones_6" points="726,1300.0 726,1370" fill="none" stroke="#4b5563" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline id="rel_monitoring_zones__safety_rules_7" points="726,1652.0 726,1722" fill="none" stroke="#4b5563" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline id="rel_sensors__safety_rules_8" points="400,1459 455,1459 455,1921 556,1921" fill="none" stroke="#4b5563" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline id="rel_cameras__unobserved_gaps_9" points="556,1041 400,1041" fill="none" stroke="#4b5563" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline id="rel_sensors__sensor_readings_10" points="230,1762.0 230,1842" fill="none" stroke="#4b5563" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline id="rel_incidents__events_11" points="1548,1129 1392,1129" fill="none" stroke="#4b5563" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline id="rel_events__evidence_files_12" points="1222,1344.0 1222,1424" fill="none" stroke="#4b5563" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline id="rel_incidents__alerts_13" points="1888,1129 2044,1129" fill="none" stroke="#4b5563" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline id="rel_alerts__alert_deliveries_14" points="2214,1256.0 2214,1340" fill="none" stroke="#4b5563" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline id="rel_notification_targets__alert_deliveries_15" points="2214,1730 2214,1644.0" fill="none" stroke="#4b5563" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline id="rel_factory_memberships__incidents_16" points="1618,602.0 1618,1084" fill="none" stroke="#4b5563" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline id="rel_factory_memberships__incidents_17" points="1698,602.0 1698,1084" fill="none" stroke="#4b5563" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline id="rel_departments__cameras_18" points="400,1261 510,1261 510,1085 556,1085" fill="none" stroke="#4b5563" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline id="rel_departments__monitoring_zones_19" points="400,1261 510,1261 510,1481 556,1481" fill="none" stroke="#4b5563" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline id="rel_departments__safety_rules_20" points="400,1261 510,1261 510,1899 556,1899" fill="none" stroke="#4b5563" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline id="rel_departments__sensors_21" points="230,1344.0 230,1414" fill="none" stroke="#4b5563" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline id="rel_cameras__events_22" points="896,1041 1052,1041" fill="none" stroke="#4b5563" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline id="rel_monitoring_zones__events_23" points="896,1415 926,1415 926,1063 1052,1063" fill="none" stroke="#4b5563" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline id="rel_safety_rules__events_24" points="896,1767 958,1767 958,1085 1052,1085" fill="none" stroke="#4b5563" stroke-width="1.6" stroke-linejoin="round"/>
+<polyline id="rel_sensors__events_25" points="400,1459 455,1459 455,2174 994,2174 994,1107 1052,1107" fill="none" stroke="#4b5563" stroke-width="1.6" stroke-linejoin="round"/>
+</g><g id="cardinality">
+<line x1="1725.0" y1="393.0" x2="1711.0" y2="393.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><line x1="1725.0" y1="399.0" x2="1711.0" y2="399.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+<line x1="1718.0" y1="435.0" x2="1726.0" y2="452.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><line x1="1718.0" y1="435.0" x2="1718.0" y2="452.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><line x1="1718.0" y1="435.0" x2="1710.0" y2="452.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><circle cx="1718.0" cy="427.0" r="5" fill="#ffffff" stroke="#374151" stroke-width="1.6"/>
+<line x1="2033.0" y1="526.0" x2="2033.0" y2="512.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><line x1="2027.0" y1="526.0" x2="2027.0" y2="512.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+<line x1="1905.0" y1="519.0" x2="1888.0" y2="527.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><line x1="1905.0" y1="519.0" x2="1888.0" y2="519.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><line x1="1905.0" y1="519.0" x2="1888.0" y2="511.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><circle cx="1913.0" cy="519.0" r="5" fill="#ffffff" stroke="#374151" stroke-width="1.6"/>
+<line x1="1403.0" y1="534.0" x2="1403.0" y2="548.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><line x1="1409.0" y1="534.0" x2="1409.0" y2="548.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+<line x1="1531.0" y1="541.0" x2="1548.0" y2="533.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><line x1="1531.0" y1="541.0" x2="1548.0" y2="541.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><line x1="1531.0" y1="541.0" x2="1548.0" y2="549.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><circle cx="1523.0" cy="541.0" r="5" fill="#ffffff" stroke="#374151" stroke-width="1.6"/>
+<line x1="1041.0" y1="548.0" x2="1041.0" y2="534.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><line x1="1035.0" y1="548.0" x2="1035.0" y2="534.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+<line x1="913.0" y1="541.0" x2="896.0" y2="549.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><line x1="913.0" y1="541.0" x2="896.0" y2="541.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><line x1="913.0" y1="541.0" x2="896.0" y2="533.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><circle cx="921.0" cy="541.0" r="5" fill="#ffffff" stroke="#374151" stroke-width="1.6"/>
+<line x1="719.0" y1="659.0" x2="733.0" y2="659.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><line x1="719.0" y1="653.0" x2="733.0" y2="653.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+<line x1="726.0" y1="597.0" x2="718.0" y2="580.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><line x1="726.0" y1="597.0" x2="726.0" y2="580.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><line x1="726.0" y1="597.0" x2="734.0" y2="580.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><circle cx="726.0" cy="605.0" r="5" fill="#ffffff" stroke="#374151" stroke-width="1.6"/>
+<line x1="2207.0" y1="463.0" x2="2221.0" y2="463.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><line x1="2207.0" y1="457.0" x2="2221.0" y2="457.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+<line x1="2214.0" y1="421.0" x2="2206.0" y2="404.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><line x1="2214.0" y1="421.0" x2="2214.0" y2="404.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><line x1="2214.0" y1="421.0" x2="2222.0" y2="404.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><circle cx="2214.0" cy="429.0" r="5" fill="#ffffff" stroke="#374151" stroke-width="1.6"/>
+<line x1="733.0" y1="1311.0" x2="719.0" y2="1311.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><line x1="733.0" y1="1317.0" x2="719.0" y2="1317.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+<line x1="726.0" y1="1353.0" x2="734.0" y2="1370.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><line x1="726.0" y1="1353.0" x2="726.0" y2="1370.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><line x1="726.0" y1="1353.0" x2="718.0" y2="1370.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><circle cx="726.0" cy="1345.0" r="5" fill="#ffffff" stroke="#374151" stroke-width="1.6"/>
+<line x1="733.0" y1="1663.0" x2="719.0" y2="1663.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><circle cx="726.0" cy="1673.0" r="5" fill="#ffffff" stroke="#374151" stroke-width="1.6"/>
+<line x1="726.0" y1="1705.0" x2="734.0" y2="1722.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><line x1="726.0" y1="1705.0" x2="726.0" y2="1722.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><line x1="726.0" y1="1705.0" x2="718.0" y2="1722.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><circle cx="726.0" cy="1697.0" r="5" fill="#ffffff" stroke="#374151" stroke-width="1.6"/>
+<line x1="411.0" y1="1452.0" x2="411.0" y2="1466.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><circle cx="421.0" cy="1459.0" r="5" fill="#ffffff" stroke="#374151" stroke-width="1.6"/>
+<line x1="539.0" y1="1921.0" x2="556.0" y2="1913.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><line x1="539.0" y1="1921.0" x2="556.0" y2="1921.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><line x1="539.0" y1="1921.0" x2="556.0" y2="1929.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><circle cx="531.0" cy="1921.0" r="5" fill="#ffffff" stroke="#374151" stroke-width="1.6"/>
+<line x1="545.0" y1="1048.0" x2="545.0" y2="1034.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><line x1="539.0" y1="1048.0" x2="539.0" y2="1034.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+<line x1="417.0" y1="1041.0" x2="400.0" y2="1049.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><line x1="417.0" y1="1041.0" x2="400.0" y2="1041.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><line x1="417.0" y1="1041.0" x2="400.0" y2="1033.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><circle cx="425.0" cy="1041.0" r="5" fill="#ffffff" stroke="#374151" stroke-width="1.6"/>
+<line x1="237.0" y1="1773.0" x2="223.0" y2="1773.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><line x1="237.0" y1="1779.0" x2="223.0" y2="1779.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+<line x1="230.0" y1="1825.0" x2="238.0" y2="1842.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><line x1="230.0" y1="1825.0" x2="230.0" y2="1842.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><line x1="230.0" y1="1825.0" x2="222.0" y2="1842.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><circle cx="230.0" cy="1817.0" r="5" fill="#ffffff" stroke="#374151" stroke-width="1.6"/>
+<line x1="1537.0" y1="1136.0" x2="1537.0" y2="1122.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><circle cx="1527.0" cy="1129.0" r="5" fill="#ffffff" stroke="#374151" stroke-width="1.6"/>
+<line x1="1409.0" y1="1129.0" x2="1392.0" y2="1137.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><line x1="1409.0" y1="1129.0" x2="1392.0" y2="1129.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><line x1="1409.0" y1="1129.0" x2="1392.0" y2="1121.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><circle cx="1417.0" cy="1129.0" r="5" fill="#ffffff" stroke="#374151" stroke-width="1.6"/>
+<line x1="1229.0" y1="1355.0" x2="1215.0" y2="1355.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><line x1="1229.0" y1="1361.0" x2="1215.0" y2="1361.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+<line x1="1222.0" y1="1407.0" x2="1230.0" y2="1424.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><line x1="1222.0" y1="1407.0" x2="1222.0" y2="1424.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><line x1="1222.0" y1="1407.0" x2="1214.0" y2="1424.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><circle cx="1222.0" cy="1399.0" r="5" fill="#ffffff" stroke="#374151" stroke-width="1.6"/>
+<line x1="1899.0" y1="1122.0" x2="1899.0" y2="1136.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><line x1="1905.0" y1="1122.0" x2="1905.0" y2="1136.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+<line x1="2027.0" y1="1129.0" x2="2044.0" y2="1121.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><line x1="2027.0" y1="1129.0" x2="2044.0" y2="1129.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><line x1="2027.0" y1="1129.0" x2="2044.0" y2="1137.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><circle cx="2019.0" cy="1129.0" r="5" fill="#ffffff" stroke="#374151" stroke-width="1.6"/>
+<line x1="2221.0" y1="1267.0" x2="2207.0" y2="1267.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><line x1="2221.0" y1="1273.0" x2="2207.0" y2="1273.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+<line x1="2214.0" y1="1323.0" x2="2222.0" y2="1340.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><line x1="2214.0" y1="1323.0" x2="2214.0" y2="1340.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><line x1="2214.0" y1="1323.0" x2="2206.0" y2="1340.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><circle cx="2214.0" cy="1315.0" r="5" fill="#ffffff" stroke="#374151" stroke-width="1.6"/>
+<line x1="2207.0" y1="1719.0" x2="2221.0" y2="1719.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><circle cx="2214.0" cy="1709.0" r="5" fill="#ffffff" stroke="#374151" stroke-width="1.6"/>
+<line x1="2214.0" y1="1661.0" x2="2206.0" y2="1644.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><line x1="2214.0" y1="1661.0" x2="2214.0" y2="1644.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><line x1="2214.0" y1="1661.0" x2="2222.0" y2="1644.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><circle cx="2214.0" cy="1669.0" r="5" fill="#ffffff" stroke="#374151" stroke-width="1.6"/>
+<line x1="1625.0" y1="613.0" x2="1611.0" y2="613.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><circle cx="1618.0" cy="623.0" r="5" fill="#ffffff" stroke="#374151" stroke-width="1.6"/>
+<line x1="1618.0" y1="1067.0" x2="1626.0" y2="1084.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><line x1="1618.0" y1="1067.0" x2="1618.0" y2="1084.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><line x1="1618.0" y1="1067.0" x2="1610.0" y2="1084.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><circle cx="1618.0" cy="1059.0" r="5" fill="#ffffff" stroke="#374151" stroke-width="1.6"/>
+<line x1="1705.0" y1="613.0" x2="1691.0" y2="613.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><circle cx="1698.0" cy="623.0" r="5" fill="#ffffff" stroke="#374151" stroke-width="1.6"/>
+<line x1="1698.0" y1="1067.0" x2="1706.0" y2="1084.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><line x1="1698.0" y1="1067.0" x2="1698.0" y2="1084.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><line x1="1698.0" y1="1067.0" x2="1690.0" y2="1084.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><circle cx="1698.0" cy="1059.0" r="5" fill="#ffffff" stroke="#374151" stroke-width="1.6"/>
+<line x1="411.0" y1="1254.0" x2="411.0" y2="1268.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><circle cx="421.0" cy="1261.0" r="5" fill="#ffffff" stroke="#374151" stroke-width="1.6"/>
+<line x1="539.0" y1="1085.0" x2="556.0" y2="1077.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><line x1="539.0" y1="1085.0" x2="556.0" y2="1085.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><line x1="539.0" y1="1085.0" x2="556.0" y2="1093.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><circle cx="531.0" cy="1085.0" r="5" fill="#ffffff" stroke="#374151" stroke-width="1.6"/>
+<line x1="411.0" y1="1254.0" x2="411.0" y2="1268.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><circle cx="421.0" cy="1261.0" r="5" fill="#ffffff" stroke="#374151" stroke-width="1.6"/>
+<line x1="539.0" y1="1481.0" x2="556.0" y2="1473.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><line x1="539.0" y1="1481.0" x2="556.0" y2="1481.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><line x1="539.0" y1="1481.0" x2="556.0" y2="1489.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><circle cx="531.0" cy="1481.0" r="5" fill="#ffffff" stroke="#374151" stroke-width="1.6"/>
+<line x1="411.0" y1="1254.0" x2="411.0" y2="1268.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><circle cx="421.0" cy="1261.0" r="5" fill="#ffffff" stroke="#374151" stroke-width="1.6"/>
+<line x1="539.0" y1="1899.0" x2="556.0" y2="1891.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><line x1="539.0" y1="1899.0" x2="556.0" y2="1899.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><line x1="539.0" y1="1899.0" x2="556.0" y2="1907.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><circle cx="531.0" cy="1899.0" r="5" fill="#ffffff" stroke="#374151" stroke-width="1.6"/>
+<line x1="237.0" y1="1355.0" x2="223.0" y2="1355.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><circle cx="230.0" cy="1365.0" r="5" fill="#ffffff" stroke="#374151" stroke-width="1.6"/>
+<line x1="230.0" y1="1397.0" x2="238.0" y2="1414.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><line x1="230.0" y1="1397.0" x2="230.0" y2="1414.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><line x1="230.0" y1="1397.0" x2="222.0" y2="1414.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><circle cx="230.0" cy="1389.0" r="5" fill="#ffffff" stroke="#374151" stroke-width="1.6"/>
+<line x1="907.0" y1="1034.0" x2="907.0" y2="1048.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><circle cx="917.0" cy="1041.0" r="5" fill="#ffffff" stroke="#374151" stroke-width="1.6"/>
+<line x1="1035.0" y1="1041.0" x2="1052.0" y2="1033.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><line x1="1035.0" y1="1041.0" x2="1052.0" y2="1041.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><line x1="1035.0" y1="1041.0" x2="1052.0" y2="1049.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><circle cx="1027.0" cy="1041.0" r="5" fill="#ffffff" stroke="#374151" stroke-width="1.6"/>
+<line x1="907.0" y1="1408.0" x2="907.0" y2="1422.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><circle cx="917.0" cy="1415.0" r="5" fill="#ffffff" stroke="#374151" stroke-width="1.6"/>
+<line x1="1035.0" y1="1063.0" x2="1052.0" y2="1055.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><line x1="1035.0" y1="1063.0" x2="1052.0" y2="1063.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><line x1="1035.0" y1="1063.0" x2="1052.0" y2="1071.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><circle cx="1027.0" cy="1063.0" r="5" fill="#ffffff" stroke="#374151" stroke-width="1.6"/>
+<line x1="907.0" y1="1760.0" x2="907.0" y2="1774.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><circle cx="917.0" cy="1767.0" r="5" fill="#ffffff" stroke="#374151" stroke-width="1.6"/>
+<line x1="1035.0" y1="1085.0" x2="1052.0" y2="1077.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><line x1="1035.0" y1="1085.0" x2="1052.0" y2="1085.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><line x1="1035.0" y1="1085.0" x2="1052.0" y2="1093.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><circle cx="1027.0" cy="1085.0" r="5" fill="#ffffff" stroke="#374151" stroke-width="1.6"/>
+<line x1="411.0" y1="1452.0" x2="411.0" y2="1466.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><circle cx="421.0" cy="1459.0" r="5" fill="#ffffff" stroke="#374151" stroke-width="1.6"/>
+<line x1="1035.0" y1="1107.0" x2="1052.0" y2="1099.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><line x1="1035.0" y1="1107.0" x2="1052.0" y2="1107.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><line x1="1035.0" y1="1107.0" x2="1052.0" y2="1115.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/><circle cx="1027.0" cy="1107.0" r="5" fill="#ffffff" stroke="#374151" stroke-width="1.6"/>
+</g><g id="fk_labels">
+<text x="1470.0" y="533.0" text-anchor="middle" font-size="11" font-style="italic" fill="#6b7280" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">role_id</text>
+<text x="734.0" y="629.0" text-anchor="start" font-size="11" font-style="italic" fill="#6b7280" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">permission_id</text>
+<text x="734.0" y="1339.0" text-anchor="start" font-size="11" font-style="italic" fill="#6b7280" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">camera_id</text>
+<text x="734.0" y="1691.0" text-anchor="start" font-size="11" font-style="italic" fill="#6b7280" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">zone_id</text>
+<text x="238.0" y="1806.0" text-anchor="start" font-size="11" font-style="italic" fill="#6b7280" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">sensor_id</text>
+<text x="1230.0" y="1388.0" text-anchor="start" font-size="11" font-style="italic" fill="#6b7280" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">event_id</text>
+<text x="2222.0" y="1302.0" text-anchor="start" font-size="11" font-style="italic" fill="#6b7280" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">alert_id</text>
+<text x="2222.0" y="1691.0" text-anchor="start" font-size="11" font-style="italic" fill="#6b7280" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">target_id</text>
+<text x="1610.0" y="847.0" text-anchor="end" font-size="11" font-style="italic" fill="#6b7280" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">reviewed_by</text>
+<text x="1706.0" y="847.0" text-anchor="start" font-size="11" font-style="italic" fill="#6b7280" stroke="#ffffff" stroke-width="3" paint-order="stroke" stroke-linejoin="round">resolved_by</text>
+</g>
+<g id="tbl_factories" transform="translate(648,-314)">
+<rect x="900" y="480" width="340" height="216" rx="7" fill="#ffffff" stroke="#46647f" stroke-width="1.6"/>
+<path d="M900,514 V487 Q900,480 907,480 H1233 Q1240,480 1240,487 V514 Z" fill="#46647f"/>
+<text x="912" y="502" font-size="15" font-weight="700" fill="#ffffff">factories</text>
+<rect x="1125.8" y="489" width="104" height="16" rx="8" fill="#ffffff" fill-opacity="0.22"/>
+<text x="1178" y="500.5" font-size="9.5" font-weight="700" letter-spacing="0.6" text-anchor="middle" fill="#ffffff">TENANT ROOT</text>
+<rect x="908" y="518" width="21" height="14" rx="3" fill="#b7791f"/><text x="918.5" y="528.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">PK</text>
+<text x="978" y="529" font-size="12.5" font-weight="700" fill="#111827">id</text>
+<text x="1230" y="529" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">uuid</text>
+<rect x="901" y="536" width="338" height="22" fill="#f6f7f9"/>
+<text x="978" y="551" font-size="12.5" fill="#111827">name</text>
+<text x="1230" y="551" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">varchar(120)</text>
+<rect x="908" y="562" width="21" height="14" rx="3" fill="#2f855a"/><text x="918.5" y="572.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">UQ</text>
+<text x="978" y="573" font-size="12.5" fill="#111827">slug</text>
+<text x="1230" y="573" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">varchar(60)</text>
+<rect x="901" y="580" width="338" height="22" fill="#f6f7f9"/>
+<text x="978" y="595" font-size="12.5" fill="#111827">status</text>
+<text x="1230" y="595" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">factory_status</text>
+<text x="978" y="617" font-size="12.5" fill="#111827">timezone</text>
+<text x="1230" y="617" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">varchar(40)</text>
+<rect x="901" y="624" width="338" height="22" fill="#f6f7f9"/>
+<text x="978" y="639" font-size="12.5" fill="#111827">evidence_retention_days</text>
+<text x="1230" y="639" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">integer</text>
+<text x="978" y="661" font-size="12.5" fill="#111827">created_at</text>
+<text x="1230" y="661" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">timestamptz</text>
+<rect x="901" y="668" width="338" height="22" fill="#f6f7f9"/>
+<text x="978" y="683" font-size="12.5" fill="#111827">updated_at</text>
+<text x="1230" y="683" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">timestamptz</text>
+</g>
+<g id="tbl_users" transform="translate(284,-28)">
+<rect x="1760" y="502" width="340" height="304" rx="7" fill="#ffffff" stroke="#46647f" stroke-width="1.6"/>
+<path d="M1760,536 V509 Q1760,502 1767,502 H2093 Q2100,502 2100,509 V536 Z" fill="#46647f"/>
+<text x="1772" y="524" font-size="15" font-weight="700" fill="#ffffff">users</text>
+<rect x="2026.8" y="511" width="63" height="16" rx="8" fill="#ffffff" fill-opacity="0.22"/>
+<text x="2058" y="522.5" font-size="9.5" font-weight="700" letter-spacing="0.6" text-anchor="middle" fill="#ffffff">GLOBAL</text>
+<rect x="1768" y="540" width="21" height="14" rx="3" fill="#b7791f"/><text x="1778.5" y="550.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">PK</text>
+<text x="1838" y="551" font-size="12.5" font-weight="700" fill="#111827">id</text>
+<text x="2090" y="551" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">uuid</text>
+<rect x="1761" y="558" width="338" height="22" fill="#f6f7f9"/>
+<rect x="1768" y="562" width="21" height="14" rx="3" fill="#2f855a"/><text x="1778.5" y="572.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">UQ</text>
+<text x="1838" y="573" font-size="12.5" fill="#111827">email</text>
+<text x="2090" y="573" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">citext</text>
+<text x="1838" y="595" font-size="12.5" fill="#111827">password_hash</text>
+<text x="2090" y="595" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">text</text>
+<rect x="1761" y="602" width="338" height="22" fill="#f6f7f9"/>
+<text x="1838" y="617" font-size="12.5" fill="#111827">full_name</text>
+<text x="2090" y="617" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">varchar(120)</text>
+<text x="1838" y="639" font-size="12.5" fill="#111827">status</text>
+<text x="2090" y="639" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">user_status</text>
+<rect x="1761" y="646" width="338" height="22" fill="#f6f7f9"/>
+<text x="1838" y="661" font-size="12.5" fill="#111827">is_platform_admin</text>
+<text x="2090" y="661" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">boolean</text>
+<text x="1838" y="683" font-size="12.5" fill="#111827">failed_login_count</text>
+<text x="2090" y="683" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">smallint</text>
+<rect x="1761" y="690" width="338" height="22" fill="#f6f7f9"/>
+<text x="1838" y="705" font-size="12.5" fill="#111827">locked_until</text>
+<text x="2090" y="705" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">timestamptz ?</text>
+<text x="1838" y="727" font-size="12.5" fill="#111827">last_login_at</text>
+<text x="2090" y="727" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">timestamptz ?</text>
+<rect x="1761" y="734" width="338" height="22" fill="#f6f7f9"/>
+<text x="1838" y="749" font-size="12.5" fill="#111827">activated_at</text>
+<text x="2090" y="749" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">timestamptz ?</text>
+<text x="1838" y="771" font-size="12.5" fill="#111827">password_changed_at</text>
+<text x="2090" y="771" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">timestamptz</text>
+<rect x="1761" y="778" width="338" height="22" fill="#f6f7f9"/>
+<text x="1838" y="793" font-size="12.5" fill="#111827">created_at</text>
+<text x="2090" y="793" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">timestamptz</text>
+</g>
+<g id="tbl_auth_tokens" transform="translate(-146,-292)">
+<rect x="2190" y="480" width="340" height="216" rx="7" fill="#ffffff" stroke="#46647f" stroke-width="1.6"/>
+<path d="M2190,514 V487 Q2190,480 2197,480 H2523 Q2530,480 2530,487 V514 Z" fill="#46647f"/>
+<text x="2202" y="502" font-size="15" font-weight="700" fill="#ffffff">auth_tokens</text>
+<rect x="2456.8" y="489" width="63" height="16" rx="8" fill="#ffffff" fill-opacity="0.22"/>
+<text x="2488" y="500.5" font-size="9.5" font-weight="700" letter-spacing="0.6" text-anchor="middle" fill="#ffffff">GLOBAL</text>
+<rect x="2198" y="518" width="21" height="14" rx="3" fill="#b7791f"/><text x="2208.5" y="528.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">PK</text>
+<text x="2268" y="529" font-size="12.5" font-weight="700" fill="#111827">id</text>
+<text x="2520" y="529" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">uuid</text>
+<rect x="2191" y="536" width="338" height="22" fill="#f6f7f9"/>
+<rect x="2198" y="540" width="21" height="14" rx="3" fill="#2b6cb0"/><text x="2208.5" y="550.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">FK</text>
+<text x="2268" y="551" font-size="12.5" fill="#111827">user_id</text>
+<text x="2520" y="551" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">uuid</text>
+<text x="2268" y="573" font-size="12.5" fill="#111827">purpose</text>
+<text x="2520" y="573" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">token_purpose</text>
+<rect x="2191" y="580" width="338" height="22" fill="#f6f7f9"/>
+<rect x="2198" y="584" width="21" height="14" rx="3" fill="#2f855a"/><text x="2208.5" y="594.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">UQ</text>
+<text x="2268" y="595" font-size="12.5" fill="#111827">token_hash</text>
+<text x="2520" y="595" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">char(64)</text>
+<text x="2268" y="617" font-size="12.5" fill="#111827">expires_at</text>
+<text x="2520" y="617" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">timestamptz</text>
+<rect x="2191" y="624" width="338" height="22" fill="#f6f7f9"/>
+<text x="2268" y="639" font-size="12.5" fill="#111827">used_at</text>
+<text x="2520" y="639" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">timestamptz ?</text>
+<text x="2268" y="661" font-size="12.5" fill="#111827">revoked_at</text>
+<text x="2520" y="661" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">timestamptz ?</text>
+<rect x="2191" y="668" width="338" height="22" fill="#f6f7f9"/>
+<text x="2268" y="683" font-size="12.5" fill="#111827">created_at</text>
+<text x="2520" y="683" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">timestamptz</text>
+</g>
+<g id="tbl_roles" transform="translate(-278,196)">
+<rect x="1330" y="300" width="340" height="106" rx="7" fill="#ffffff" stroke="#46647f" stroke-width="1.6"/>
+<path d="M1330,334 V307 Q1330,300 1337,300 H1663 Q1670,300 1670,307 V334 Z" fill="#46647f"/>
+<text x="1342" y="322" font-size="15" font-weight="700" fill="#ffffff">roles</text>
+<rect x="1596.8" y="309" width="63" height="16" rx="8" fill="#ffffff" fill-opacity="0.22"/>
+<text x="1628" y="320.5" font-size="9.5" font-weight="700" letter-spacing="0.6" text-anchor="middle" fill="#ffffff">GLOBAL</text>
+<rect x="1338" y="338" width="21" height="14" rx="3" fill="#b7791f"/><text x="1348.5" y="348.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">PK</text>
+<text x="1408" y="349" font-size="12.5" font-weight="700" fill="#111827">id</text>
+<text x="1660" y="349" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">uuid</text>
+<rect x="1331" y="356" width="338" height="22" fill="#f6f7f9"/>
+<rect x="1338" y="360" width="21" height="14" rx="3" fill="#2f855a"/><text x="1348.5" y="370.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">UQ</text>
+<text x="1408" y="371" font-size="12.5" fill="#111827">code</text>
+<text x="1660" y="371" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">varchar(40)</text>
+<text x="1408" y="393" font-size="12.5" fill="#111827">name</text>
+<text x="1660" y="393" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">varchar(80)</text>
+</g>
+<g id="tbl_permissions" transform="translate(-344,540)">
+<rect x="900" y="130" width="340" height="106" rx="7" fill="#ffffff" stroke="#46647f" stroke-width="1.6"/>
+<path d="M900,164 V137 Q900,130 907,130 H1233 Q1240,130 1240,137 V164 Z" fill="#46647f"/>
+<text x="912" y="152" font-size="15" font-weight="700" fill="#ffffff">permissions</text>
+<rect x="1166.8" y="139" width="63" height="16" rx="8" fill="#ffffff" fill-opacity="0.22"/>
+<text x="1198" y="150.5" font-size="9.5" font-weight="700" letter-spacing="0.6" text-anchor="middle" fill="#ffffff">GLOBAL</text>
+<rect x="908" y="168" width="21" height="14" rx="3" fill="#b7791f"/><text x="918.5" y="178.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">PK</text>
+<text x="978" y="179" font-size="12.5" font-weight="700" fill="#111827">id</text>
+<text x="1230" y="179" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">uuid</text>
+<rect x="901" y="186" width="338" height="22" fill="#f6f7f9"/>
+<rect x="908" y="190" width="21" height="14" rx="3" fill="#2f855a"/><text x="918.5" y="200.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">UQ</text>
+<text x="978" y="201" font-size="12.5" fill="#111827">code</text>
+<text x="1230" y="201" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">varchar(60)</text>
+<text x="978" y="223" font-size="12.5" fill="#111827">description</text>
+<text x="1230" y="223" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">varchar(200)</text>
+</g>
+<g id="tbl_role_permissions" transform="translate(-344,196)">
+<rect x="900" y="300" width="340" height="84" rx="7" fill="#ffffff" stroke="#46647f" stroke-width="1.6"/>
+<path d="M900,334 V307 Q900,300 907,300 H1233 Q1240,300 1240,307 V334 Z" fill="#46647f"/>
+<text x="912" y="322" font-size="15" font-weight="700" fill="#ffffff">role_permissions</text>
+<rect x="1166.8" y="309" width="63" height="16" rx="8" fill="#ffffff" fill-opacity="0.22"/>
+<text x="1198" y="320.5" font-size="9.5" font-weight="700" letter-spacing="0.6" text-anchor="middle" fill="#ffffff">GLOBAL</text>
+<rect x="908" y="338" width="21" height="14" rx="3" fill="#b7791f"/><text x="918.5" y="348.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">PK</text>
+<rect x="931" y="338" width="21" height="14" rx="3" fill="#2b6cb0"/><text x="941.5" y="348.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">FK</text>
+<text x="978" y="349" font-size="12.5" font-weight="700" fill="#111827">role_id</text>
+<text x="1230" y="349" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">uuid</text>
+<rect x="901" y="356" width="338" height="22" fill="#f6f7f9"/>
+<rect x="908" y="360" width="21" height="14" rx="3" fill="#b7791f"/><text x="918.5" y="370.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">PK</text>
+<rect x="931" y="360" width="21" height="14" rx="3" fill="#2b6cb0"/><text x="941.5" y="370.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">FK</text>
+<text x="978" y="371" font-size="12.5" font-weight="700" fill="#111827">permission_id</text>
+<text x="1230" y="371" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">uuid</text>
+</g>
+<g id="tbl_factory_memberships" transform="translate(218,-28)">
+<rect x="1330" y="480" width="340" height="150" rx="7" fill="#ffffff" stroke="#46647f" stroke-width="1.6"/>
+<path d="M1330,514 V487 Q1330,480 1337,480 H1663 Q1670,480 1670,487 V514 Z" fill="#46647f"/>
+<text x="1342" y="502" font-size="15" font-weight="700" fill="#ffffff">factory_memberships</text>
+<rect x="1331" y="514" width="338" height="22" fill="#fdecc8"/>
+<rect x="1338" y="518" width="21" height="14" rx="3" fill="#b7791f"/><text x="1348.5" y="528.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">PK</text>
+<rect x="1361" y="518" width="21" height="14" rx="3" fill="#2b6cb0"/><text x="1371.5" y="528.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">FK</text>
+<text x="1408" y="529" font-size="12.5" font-weight="700" fill="#111827">factory_id</text>
+<text x="1660" y="529" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">uuid</text>
+<rect x="1331" y="536" width="338" height="22" fill="#f6f7f9"/>
+<rect x="1338" y="540" width="21" height="14" rx="3" fill="#b7791f"/><text x="1348.5" y="550.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">PK</text>
+<rect x="1361" y="540" width="21" height="14" rx="3" fill="#2b6cb0"/><text x="1371.5" y="550.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">FK</text>
+<text x="1408" y="551" font-size="12.5" font-weight="700" fill="#111827">user_id</text>
+<text x="1660" y="551" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">uuid</text>
+<rect x="1338" y="562" width="21" height="14" rx="3" fill="#2b6cb0"/><text x="1348.5" y="572.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">FK</text>
+<text x="1408" y="573" font-size="12.5" fill="#111827">role_id</text>
+<text x="1660" y="573" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">uuid</text>
+<rect x="1331" y="580" width="338" height="22" fill="#f6f7f9"/>
+<text x="1408" y="595" font-size="12.5" fill="#111827">is_active</text>
+<text x="1660" y="595" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">boolean</text>
+<text x="1408" y="617" font-size="12.5" fill="#111827">created_at</text>
+<text x="1660" y="617" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">timestamptz</text>
+</g>
+<g id="tbl_departments" transform="translate(0,516)">
+<rect x="60" y="700" width="340" height="128" rx="7" fill="#ffffff" stroke="#4c7a5a" stroke-width="1.6"/>
+<path d="M60,734 V707 Q60,700 67,700 H393 Q400,700 400,707 V734 Z" fill="#4c7a5a"/>
+<text x="72" y="722" font-size="15" font-weight="700" fill="#ffffff">departments</text>
+<rect x="68" y="738" width="21" height="14" rx="3" fill="#b7791f"/><text x="78.5" y="748.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">PK</text>
+<text x="138" y="749" font-size="12.5" font-weight="700" fill="#111827">id</text>
+<text x="390" y="749" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">uuid</text>
+<rect x="61" y="756" width="338" height="22" fill="#fdecc8"/>
+<rect x="68" y="760" width="21" height="14" rx="3" fill="#2b6cb0"/><text x="78.5" y="770.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">FK</text>
+<text x="138" y="771" font-size="12.5" fill="#111827">factory_id</text>
+<text x="390" y="771" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">uuid</text>
+<rect x="68" y="782" width="21" height="14" rx="3" fill="#2f855a"/><text x="78.5" y="792.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">UQ</text>
+<text x="138" y="793" font-size="12.5" fill="#111827">name</text>
+<text x="390" y="793" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">varchar(100)</text>
+<rect x="61" y="800" width="338" height="22" fill="#f6f7f9"/>
+<text x="138" y="815" font-size="12.5" fill="#111827">created_at</text>
+<text x="390" y="815" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">timestamptz</text>
+</g>
+<g id="tbl_unobserved_gaps" transform="translate(0,826)">
+<rect x="60" y="126" width="340" height="194" rx="7" fill="#ffffff" stroke="#4c7a5a" stroke-width="1.6"/>
+<path d="M60,160 V133 Q60,126 67,126 H393 Q400,126 400,133 V160 Z" fill="#4c7a5a"/>
+<text x="72" y="148" font-size="15" font-weight="700" fill="#ffffff">unobserved_gaps</text>
+<rect x="68" y="164" width="21" height="14" rx="3" fill="#b7791f"/><text x="78.5" y="174.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">PK</text>
+<text x="138" y="175" font-size="12.5" font-weight="700" fill="#111827">id</text>
+<text x="390" y="175" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">uuid</text>
+<rect x="61" y="182" width="338" height="22" fill="#fdecc8"/>
+<rect x="68" y="186" width="21" height="14" rx="3" fill="#2b6cb0"/><text x="78.5" y="196.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">FK</text>
+<text x="138" y="197" font-size="12.5" fill="#111827">factory_id</text>
+<text x="390" y="197" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">uuid</text>
+<rect x="68" y="208" width="21" height="14" rx="3" fill="#2b6cb0"/><text x="78.5" y="218.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">FK</text>
+<text x="138" y="219" font-size="12.5" fill="#111827">camera_id</text>
+<text x="390" y="219" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">uuid</text>
+<rect x="61" y="226" width="338" height="22" fill="#f6f7f9"/>
+<text x="138" y="241" font-size="12.5" fill="#111827">started_at</text>
+<text x="390" y="241" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">timestamptz</text>
+<text x="138" y="263" font-size="12.5" fill="#111827">ended_at</text>
+<text x="390" y="263" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">timestamptz ?</text>
+<rect x="61" y="270" width="338" height="22" fill="#f6f7f9"/>
+<text x="138" y="285" font-size="12.5" fill="#111827">reason</text>
+<text x="390" y="285" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">gap_reason</text>
+<text x="138" y="307" font-size="12.5" fill="#111827">created_at</text>
+<text x="390" y="307" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">timestamptz</text>
+</g>
+<g id="tbl_cameras" transform="translate(86,826)">
+<rect x="470" y="170" width="340" height="304" rx="7" fill="#ffffff" stroke="#4c7a5a" stroke-width="1.6"/>
+<path d="M470,204 V177 Q470,170 477,170 H803 Q810,170 810,177 V204 Z" fill="#4c7a5a"/>
+<text x="482" y="192" font-size="15" font-weight="700" fill="#ffffff">cameras</text>
+<rect x="478" y="208" width="21" height="14" rx="3" fill="#b7791f"/><text x="488.5" y="218.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">PK</text>
+<text x="548" y="219" font-size="12.5" font-weight="700" fill="#111827">id</text>
+<text x="800" y="219" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">uuid</text>
+<rect x="471" y="226" width="338" height="22" fill="#fdecc8"/>
+<rect x="478" y="230" width="21" height="14" rx="3" fill="#2b6cb0"/><text x="488.5" y="240.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">FK</text>
+<text x="548" y="241" font-size="12.5" fill="#111827">factory_id</text>
+<text x="800" y="241" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">uuid</text>
+<rect x="478" y="252" width="21" height="14" rx="3" fill="#2b6cb0"/><text x="488.5" y="262.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">FK</text>
+<text x="548" y="263" font-size="12.5" fill="#111827">department_id</text>
+<text x="800" y="263" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">uuid ?</text>
+<rect x="471" y="270" width="338" height="22" fill="#f6f7f9"/>
+<rect x="478" y="274" width="21" height="14" rx="3" fill="#2f855a"/><text x="488.5" y="284.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">UQ</text>
+<text x="548" y="285" font-size="12.5" fill="#111827">name</text>
+<text x="800" y="285" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">varchar(100)</text>
+<text x="548" y="307" font-size="12.5" fill="#111827">camera_type</text>
+<text x="800" y="307" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">camera_type</text>
+<rect x="471" y="314" width="338" height="22" fill="#f6f7f9"/>
+<text x="548" y="329" font-size="12.5" fill="#111827">location_label</text>
+<text x="800" y="329" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">varchar(200) ?</text>
+<text x="548" y="351" font-size="12.5" fill="#111827">stream_url_ref</text>
+<text x="800" y="351" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">text</text>
+<rect x="471" y="358" width="338" height="22" fill="#f6f7f9"/>
+<text x="548" y="373" font-size="12.5" fill="#111827">status</text>
+<text x="800" y="373" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">source_status</text>
+<text x="548" y="395" font-size="12.5" fill="#111827">status_since</text>
+<text x="800" y="395" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">timestamptz</text>
+<rect x="471" y="402" width="338" height="22" fill="#f6f7f9"/>
+<text x="548" y="417" font-size="12.5" fill="#111827">is_active</text>
+<text x="800" y="417" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">boolean</text>
+<text x="548" y="439" font-size="12.5" fill="#111827">created_at</text>
+<text x="800" y="439" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">timestamptz</text>
+<rect x="471" y="446" width="338" height="22" fill="#f6f7f9"/>
+<text x="548" y="461" font-size="12.5" fill="#111827">updated_at</text>
+<text x="800" y="461" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">timestamptz</text>
+</g>
+<g id="tbl_monitoring_zones" transform="translate(86,820)">
+<rect x="470" y="550" width="340" height="282" rx="7" fill="#ffffff" stroke="#4c7a5a" stroke-width="1.6"/>
+<path d="M470,584 V557 Q470,550 477,550 H803 Q810,550 810,557 V584 Z" fill="#4c7a5a"/>
+<text x="482" y="572" font-size="15" font-weight="700" fill="#ffffff">monitoring_zones</text>
+<rect x="478" y="588" width="21" height="14" rx="3" fill="#b7791f"/><text x="488.5" y="598.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">PK</text>
+<text x="548" y="599" font-size="12.5" font-weight="700" fill="#111827">id</text>
+<text x="800" y="599" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">uuid</text>
+<rect x="471" y="606" width="338" height="22" fill="#fdecc8"/>
+<rect x="478" y="610" width="21" height="14" rx="3" fill="#2b6cb0"/><text x="488.5" y="620.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">FK</text>
+<text x="548" y="621" font-size="12.5" fill="#111827">factory_id</text>
+<text x="800" y="621" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">uuid</text>
+<rect x="478" y="632" width="21" height="14" rx="3" fill="#2b6cb0"/><text x="488.5" y="642.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">FK</text>
+<text x="548" y="643" font-size="12.5" fill="#111827">camera_id</text>
+<text x="800" y="643" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">uuid</text>
+<rect x="471" y="650" width="338" height="22" fill="#f6f7f9"/>
+<rect x="478" y="654" width="21" height="14" rx="3" fill="#2b6cb0"/><text x="488.5" y="664.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">FK</text>
+<text x="548" y="665" font-size="12.5" fill="#111827">department_id</text>
+<text x="800" y="665" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">uuid ?</text>
+<text x="548" y="687" font-size="12.5" fill="#111827">name</text>
+<text x="800" y="687" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">varchar(100)</text>
+<rect x="471" y="694" width="338" height="22" fill="#f6f7f9"/>
+<text x="548" y="709" font-size="12.5" fill="#111827">zone_type</text>
+<text x="800" y="709" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">zone_type</text>
+<text x="548" y="731" font-size="12.5" fill="#111827">polygon</text>
+<text x="800" y="731" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">jsonb</text>
+<rect x="471" y="738" width="338" height="22" fill="#f6f7f9"/>
+<text x="548" y="753" font-size="12.5" fill="#111827">version</text>
+<text x="800" y="753" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">integer</text>
+<text x="548" y="775" font-size="12.5" fill="#111827">is_active</text>
+<text x="800" y="775" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">boolean</text>
+<rect x="471" y="782" width="338" height="22" fill="#f6f7f9"/>
+<text x="548" y="797" font-size="12.5" fill="#111827">created_at</text>
+<text x="800" y="797" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">timestamptz</text>
+<text x="548" y="819" font-size="12.5" fill="#111827">updated_at</text>
+<text x="800" y="819" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">timestamptz</text>
+</g>
+<g id="tbl_safety_rules" transform="translate(86,814)">
+<rect x="470" y="908" width="340" height="392" rx="7" fill="#ffffff" stroke="#4c7a5a" stroke-width="1.6"/>
+<path d="M470,942 V915 Q470,908 477,908 H803 Q810,908 810,915 V942 Z" fill="#4c7a5a"/>
+<text x="482" y="930" font-size="15" font-weight="700" fill="#ffffff">safety_rules</text>
+<rect x="478" y="946" width="21" height="14" rx="3" fill="#b7791f"/><text x="488.5" y="956.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">PK</text>
+<text x="548" y="957" font-size="12.5" font-weight="700" fill="#111827">id</text>
+<text x="800" y="957" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">uuid</text>
+<rect x="471" y="964" width="338" height="22" fill="#fdecc8"/>
+<rect x="478" y="968" width="21" height="14" rx="3" fill="#2b6cb0"/><text x="488.5" y="978.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">FK</text>
+<text x="548" y="979" font-size="12.5" fill="#111827">factory_id</text>
+<text x="800" y="979" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">uuid</text>
+<text x="548" y="1001" font-size="12.5" fill="#111827">name</text>
+<text x="800" y="1001" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">varchar(120)</text>
+<rect x="471" y="1008" width="338" height="22" fill="#f6f7f9"/>
+<text x="548" y="1023" font-size="12.5" fill="#111827">event_type</text>
+<text x="800" y="1023" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">event_type</text>
+<text x="548" y="1045" font-size="12.5" fill="#111827">severity</text>
+<text x="800" y="1045" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">severity_level</text>
+<rect x="471" y="1052" width="338" height="22" fill="#f6f7f9"/>
+<rect x="478" y="1056" width="21" height="14" rx="3" fill="#2b6cb0"/><text x="488.5" y="1066.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">FK</text>
+<text x="548" y="1067" font-size="12.5" fill="#111827">zone_id</text>
+<text x="800" y="1067" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">uuid ?</text>
+<rect x="478" y="1078" width="21" height="14" rx="3" fill="#2b6cb0"/><text x="488.5" y="1088.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">FK</text>
+<text x="548" y="1089" font-size="12.5" fill="#111827">department_id</text>
+<text x="800" y="1089" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">uuid ?</text>
+<rect x="471" y="1096" width="338" height="22" fill="#f6f7f9"/>
+<rect x="478" y="1100" width="21" height="14" rx="3" fill="#2b6cb0"/><text x="488.5" y="1110.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">FK</text>
+<text x="548" y="1111" font-size="12.5" fill="#111827">sensor_id</text>
+<text x="800" y="1111" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">uuid ?</text>
+<text x="548" y="1133" font-size="12.5" fill="#111827">min_confidence</text>
+<text x="800" y="1133" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">real ?</text>
+<rect x="471" y="1140" width="338" height="22" fill="#f6f7f9"/>
+<text x="548" y="1155" font-size="12.5" fill="#111827">min_duration_s</text>
+<text x="800" y="1155" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">integer ?</text>
+<text x="548" y="1177" font-size="12.5" fill="#111827">threshold_value</text>
+<text x="800" y="1177" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">numeric(8,3) ?</text>
+<rect x="471" y="1184" width="338" height="22" fill="#f6f7f9"/>
+<text x="548" y="1199" font-size="12.5" fill="#111827">notify</text>
+<text x="800" y="1199" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">boolean</text>
+<text x="548" y="1221" font-size="12.5" fill="#111827">is_enabled</text>
+<text x="800" y="1221" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">boolean</text>
+<rect x="471" y="1228" width="338" height="22" fill="#f6f7f9"/>
+<text x="548" y="1243" font-size="12.5" fill="#111827">version</text>
+<text x="800" y="1243" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">integer</text>
+<text x="548" y="1265" font-size="12.5" fill="#111827">created_at</text>
+<text x="800" y="1265" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">timestamptz</text>
+<rect x="471" y="1272" width="338" height="22" fill="#f6f7f9"/>
+<text x="548" y="1287" font-size="12.5" fill="#111827">updated_at</text>
+<text x="800" y="1287" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">timestamptz</text>
+</g>
+<g id="tbl_sensors" transform="translate(-410,4)">
+<rect x="470" y="1410" width="340" height="348" rx="7" fill="#ffffff" stroke="#3b7c84" stroke-width="1.6"/>
+<path d="M470,1444 V1417 Q470,1410 477,1410 H803 Q810,1410 810,1417 V1444 Z" fill="#3b7c84"/>
+<text x="482" y="1432" font-size="15" font-weight="700" fill="#ffffff">sensors</text>
+<rect x="478" y="1448" width="21" height="14" rx="3" fill="#b7791f"/><text x="488.5" y="1458.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">PK</text>
+<text x="548" y="1459" font-size="12.5" font-weight="700" fill="#111827">id</text>
+<text x="800" y="1459" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">uuid</text>
+<rect x="471" y="1466" width="338" height="22" fill="#fdecc8"/>
+<rect x="478" y="1470" width="21" height="14" rx="3" fill="#2b6cb0"/><text x="488.5" y="1480.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">FK</text>
+<text x="548" y="1481" font-size="12.5" fill="#111827">factory_id</text>
+<text x="800" y="1481" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">uuid</text>
+<rect x="478" y="1492" width="21" height="14" rx="3" fill="#2b6cb0"/><text x="488.5" y="1502.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">FK</text>
+<text x="548" y="1503" font-size="12.5" fill="#111827">department_id</text>
+<text x="800" y="1503" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">uuid ?</text>
+<rect x="471" y="1510" width="338" height="22" fill="#f6f7f9"/>
+<rect x="478" y="1514" width="21" height="14" rx="3" fill="#2f855a"/><text x="488.5" y="1524.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">UQ</text>
+<text x="548" y="1525" font-size="12.5" fill="#111827">name</text>
+<text x="800" y="1525" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">varchar(100)</text>
+<text x="548" y="1547" font-size="12.5" fill="#111827">sensor_type</text>
+<text x="800" y="1547" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">sensor_type</text>
+<rect x="471" y="1554" width="338" height="22" fill="#f6f7f9"/>
+<text x="548" y="1569" font-size="12.5" fill="#111827">unit</text>
+<text x="800" y="1569" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">varchar(8)</text>
+<text x="548" y="1591" font-size="12.5" fill="#111827">location_label</text>
+<text x="800" y="1591" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">varchar(200) ?</text>
+<rect x="471" y="1598" width="338" height="22" fill="#f6f7f9"/>
+<text x="548" y="1613" font-size="12.5" fill="#111827">sampling_interval_s</text>
+<text x="800" y="1613" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">integer</text>
+<text x="548" y="1635" font-size="12.5" fill="#111827">device_key_hash</text>
+<text x="800" y="1635" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">char(64) ?</text>
+<rect x="471" y="1642" width="338" height="22" fill="#f6f7f9"/>
+<text x="548" y="1657" font-size="12.5" fill="#111827">status</text>
+<text x="800" y="1657" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">source_status</text>
+<text x="548" y="1679" font-size="12.5" fill="#111827">status_since</text>
+<text x="800" y="1679" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">timestamptz</text>
+<rect x="471" y="1686" width="338" height="22" fill="#f6f7f9"/>
+<text x="548" y="1701" font-size="12.5" fill="#111827">is_active</text>
+<text x="800" y="1701" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">boolean</text>
+<text x="548" y="1723" font-size="12.5" fill="#111827">created_at</text>
+<text x="800" y="1723" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">timestamptz</text>
+<rect x="471" y="1730" width="338" height="22" fill="#f6f7f9"/>
+<text x="548" y="1745" font-size="12.5" fill="#111827">updated_at</text>
+<text x="800" y="1745" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">timestamptz</text>
+</g>
+<g id="tbl_sensor_readings" transform="translate(-410,8)">
+<rect x="470" y="1834" width="340" height="150" rx="7" fill="#ffffff" stroke="#3b7c84" stroke-width="1.6"/>
+<path d="M470,1868 V1841 Q470,1834 477,1834 H803 Q810,1834 810,1841 V1868 Z" fill="#3b7c84"/>
+<text x="482" y="1856" font-size="15" font-weight="700" fill="#ffffff">sensor_readings</text>
+<rect x="695.8" y="1843" width="104" height="16" rx="8" fill="#ffffff" fill-opacity="0.22"/>
+<text x="748" y="1854.5" font-size="9.5" font-weight="700" letter-spacing="0.6" text-anchor="middle" fill="#ffffff">PARTITIONED</text>
+<rect x="478" y="1872" width="21" height="14" rx="3" fill="#b7791f"/><text x="488.5" y="1882.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">PK</text>
+<rect x="501" y="1872" width="21" height="14" rx="3" fill="#2b6cb0"/><text x="511.5" y="1882.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">FK</text>
+<text x="548" y="1883" font-size="12.5" font-weight="700" fill="#111827">sensor_id</text>
+<text x="800" y="1883" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">uuid</text>
+<rect x="471" y="1890" width="338" height="22" fill="#f6f7f9"/>
+<rect x="478" y="1894" width="21" height="14" rx="3" fill="#b7791f"/><text x="488.5" y="1904.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">PK</text>
+<text x="548" y="1905" font-size="12.5" font-weight="700" fill="#111827">recorded_at</text>
+<text x="800" y="1905" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">timestamptz</text>
+<rect x="471" y="1912" width="338" height="22" fill="#fdecc8"/>
+<rect x="478" y="1916" width="21" height="14" rx="3" fill="#2b6cb0"/><text x="488.5" y="1926.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">FK</text>
+<text x="548" y="1927" font-size="12.5" fill="#111827">factory_id</text>
+<text x="800" y="1927" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">uuid</text>
+<rect x="471" y="1934" width="338" height="22" fill="#f6f7f9"/>
+<text x="548" y="1949" font-size="12.5" fill="#111827">value</text>
+<text x="800" y="1949" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">numeric(8,3)</text>
+<text x="548" y="1971" font-size="12.5" fill="#111827">ingested_at</text>
+<text x="800" y="1971" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">timestamptz</text>
+</g>
+<g id="tbl_events" transform="translate(152,0)">
+<rect x="900" y="930" width="340" height="414" rx="7" fill="#ffffff" stroke="#9c6538" stroke-width="1.6"/>
+<path d="M900,964 V937 Q900,930 907,930 H1233 Q1240,930 1240,937 V964 Z" fill="#9c6538"/>
+<text x="912" y="952" font-size="15" font-weight="700" fill="#ffffff">events</text>
+<rect x="908" y="968" width="21" height="14" rx="3" fill="#b7791f"/><text x="918.5" y="978.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">PK</text>
+<text x="978" y="979" font-size="12.5" font-weight="700" fill="#111827">id</text>
+<text x="1230" y="979" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">uuid</text>
+<rect x="901" y="986" width="338" height="22" fill="#fdecc8"/>
+<rect x="908" y="990" width="21" height="14" rx="3" fill="#2b6cb0"/><text x="918.5" y="1000.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">FK</text>
+<text x="978" y="1001" font-size="12.5" fill="#111827">factory_id</text>
+<text x="1230" y="1001" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">uuid</text>
+<text x="978" y="1023" font-size="12.5" fill="#111827">event_type</text>
+<text x="1230" y="1023" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">event_type</text>
+<rect x="901" y="1030" width="338" height="22" fill="#f6f7f9"/>
+<rect x="908" y="1034" width="21" height="14" rx="3" fill="#2b6cb0"/><text x="918.5" y="1044.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">FK</text>
+<text x="978" y="1045" font-size="12.5" fill="#111827">camera_id</text>
+<text x="1230" y="1045" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">uuid ?</text>
+<rect x="908" y="1056" width="21" height="14" rx="3" fill="#2b6cb0"/><text x="918.5" y="1066.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">FK</text>
+<text x="978" y="1067" font-size="12.5" fill="#111827">zone_id</text>
+<text x="1230" y="1067" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">uuid ?</text>
+<rect x="901" y="1074" width="338" height="22" fill="#f6f7f9"/>
+<rect x="908" y="1078" width="21" height="14" rx="3" fill="#2b6cb0"/><text x="918.5" y="1088.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">FK</text>
+<text x="978" y="1089" font-size="12.5" fill="#111827">rule_id</text>
+<text x="1230" y="1089" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">uuid ?</text>
+<rect x="908" y="1100" width="21" height="14" rx="3" fill="#2b6cb0"/><text x="918.5" y="1110.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">FK</text>
+<text x="978" y="1111" font-size="12.5" fill="#111827">sensor_id</text>
+<text x="1230" y="1111" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">uuid ?</text>
+<rect x="901" y="1118" width="338" height="22" fill="#f6f7f9"/>
+<rect x="908" y="1122" width="21" height="14" rx="3" fill="#2b6cb0"/><text x="918.5" y="1132.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">FK</text>
+<text x="978" y="1133" font-size="12.5" fill="#111827">incident_id</text>
+<text x="1230" y="1133" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">uuid ?</text>
+<text x="978" y="1155" font-size="12.5" fill="#111827">detected_at</text>
+<text x="1230" y="1155" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">timestamptz</text>
+<rect x="901" y="1162" width="338" height="22" fill="#f6f7f9"/>
+<text x="978" y="1177" font-size="12.5" fill="#111827">ingested_at</text>
+<text x="1230" y="1177" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">timestamptz</text>
+<text x="978" y="1199" font-size="12.5" fill="#111827">confidence</text>
+<text x="1230" y="1199" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">real ?</text>
+<rect x="901" y="1206" width="338" height="22" fill="#f6f7f9"/>
+<text x="978" y="1221" font-size="12.5" fill="#111827">track_ref</text>
+<text x="1230" y="1221" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">integer ?</text>
+<text x="978" y="1243" font-size="12.5" fill="#111827">bbox_x</text>
+<text x="1230" y="1243" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">real ?</text>
+<rect x="901" y="1250" width="338" height="22" fill="#f6f7f9"/>
+<text x="978" y="1265" font-size="12.5" fill="#111827">bbox_y</text>
+<text x="1230" y="1265" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">real ?</text>
+<text x="978" y="1287" font-size="12.5" fill="#111827">bbox_w</text>
+<text x="1230" y="1287" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">real ?</text>
+<rect x="901" y="1294" width="338" height="22" fill="#f6f7f9"/>
+<text x="978" y="1309" font-size="12.5" fill="#111827">bbox_h</text>
+<text x="1230" y="1309" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">real ?</text>
+<text x="978" y="1331" font-size="12.5" fill="#111827">details</text>
+<text x="1230" y="1331" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">jsonb ?</text>
+</g>
+<g id="tbl_incidents" transform="translate(218,0)">
+<rect x="1330" y="1084" width="340" height="326" rx="7" fill="#ffffff" stroke="#9c6538" stroke-width="1.6"/>
+<path d="M1330,1118 V1091 Q1330,1084 1337,1084 H1663 Q1670,1084 1670,1091 V1118 Z" fill="#9c6538"/>
+<text x="1342" y="1106" font-size="15" font-weight="700" fill="#ffffff">incidents</text>
+<rect x="1338" y="1122" width="21" height="14" rx="3" fill="#b7791f"/><text x="1348.5" y="1132.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">PK</text>
+<text x="1408" y="1133" font-size="12.5" font-weight="700" fill="#111827">id</text>
+<text x="1660" y="1133" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">uuid</text>
+<rect x="1331" y="1140" width="338" height="22" fill="#fdecc8"/>
+<rect x="1338" y="1144" width="21" height="14" rx="3" fill="#2b6cb0"/><text x="1348.5" y="1154.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">FK</text>
+<text x="1408" y="1155" font-size="12.5" fill="#111827">factory_id</text>
+<text x="1660" y="1155" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">uuid</text>
+<text x="1408" y="1177" font-size="12.5" fill="#111827">incident_type</text>
+<text x="1660" y="1177" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">event_type</text>
+<rect x="1331" y="1184" width="338" height="22" fill="#f6f7f9"/>
+<text x="1408" y="1199" font-size="12.5" fill="#111827">severity</text>
+<text x="1660" y="1199" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">severity_level</text>
+<text x="1408" y="1221" font-size="12.5" fill="#111827">state</text>
+<text x="1660" y="1221" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">incident_state</text>
+<rect x="1331" y="1228" width="338" height="22" fill="#f6f7f9"/>
+<text x="1408" y="1243" font-size="12.5" fill="#111827">opened_at</text>
+<text x="1660" y="1243" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">timestamptz</text>
+<text x="1408" y="1265" font-size="12.5" fill="#111827">last_event_at</text>
+<text x="1660" y="1265" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">timestamptz</text>
+<rect x="1331" y="1272" width="338" height="22" fill="#f6f7f9"/>
+<rect x="1338" y="1276" width="21" height="14" rx="3" fill="#2b6cb0"/><text x="1348.5" y="1286.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">FK</text>
+<text x="1408" y="1287" font-size="12.5" fill="#111827">reviewed_by</text>
+<text x="1660" y="1287" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">uuid ?</text>
+<text x="1408" y="1309" font-size="12.5" fill="#111827">reviewed_at</text>
+<text x="1660" y="1309" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">timestamptz ?</text>
+<rect x="1331" y="1316" width="338" height="22" fill="#f6f7f9"/>
+<rect x="1338" y="1320" width="21" height="14" rx="3" fill="#2b6cb0"/><text x="1348.5" y="1330.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">FK</text>
+<text x="1408" y="1331" font-size="12.5" fill="#111827">resolved_by</text>
+<text x="1660" y="1331" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">uuid ?</text>
+<text x="1408" y="1353" font-size="12.5" fill="#111827">resolved_at</text>
+<text x="1660" y="1353" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">timestamptz ?</text>
+<rect x="1331" y="1360" width="338" height="22" fill="#f6f7f9"/>
+<text x="1408" y="1375" font-size="12.5" fill="#111827">resolution_note</text>
+<text x="1660" y="1375" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">text ?</text>
+<text x="1408" y="1397" font-size="12.5" fill="#111827">updated_at</text>
+<text x="1660" y="1397" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">timestamptz</text>
+</g>
+<g id="tbl_evidence_files" transform="translate(152,-10)">
+<rect x="900" y="1434" width="340" height="326" rx="7" fill="#ffffff" stroke="#9c6538" stroke-width="1.6"/>
+<path d="M900,1468 V1441 Q900,1434 907,1434 H1233 Q1240,1434 1240,1441 V1468 Z" fill="#9c6538"/>
+<text x="912" y="1456" font-size="15" font-weight="700" fill="#ffffff">evidence_files</text>
+<rect x="908" y="1472" width="21" height="14" rx="3" fill="#b7791f"/><text x="918.5" y="1482.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">PK</text>
+<text x="978" y="1483" font-size="12.5" font-weight="700" fill="#111827">id</text>
+<text x="1230" y="1483" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">uuid</text>
+<rect x="901" y="1490" width="338" height="22" fill="#fdecc8"/>
+<rect x="908" y="1494" width="21" height="14" rx="3" fill="#2b6cb0"/><text x="918.5" y="1504.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">FK</text>
+<text x="978" y="1505" font-size="12.5" fill="#111827">factory_id</text>
+<text x="1230" y="1505" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">uuid</text>
+<rect x="908" y="1516" width="21" height="14" rx="3" fill="#2b6cb0"/><text x="918.5" y="1526.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">FK</text>
+<text x="978" y="1527" font-size="12.5" fill="#111827">event_id</text>
+<text x="1230" y="1527" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">uuid</text>
+<rect x="901" y="1534" width="338" height="22" fill="#f6f7f9"/>
+<text x="978" y="1549" font-size="12.5" fill="#111827">kind</text>
+<text x="1230" y="1549" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">evidence_kind</text>
+<rect x="908" y="1560" width="21" height="14" rx="3" fill="#2f855a"/><text x="918.5" y="1570.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">UQ</text>
+<text x="978" y="1571" font-size="12.5" fill="#111827">storage_key</text>
+<text x="1230" y="1571" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">text</text>
+<rect x="901" y="1578" width="338" height="22" fill="#f6f7f9"/>
+<text x="978" y="1593" font-size="12.5" fill="#111827">content_type</text>
+<text x="1230" y="1593" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">varchar(60)</text>
+<text x="978" y="1615" font-size="12.5" fill="#111827">size_bytes</text>
+<text x="1230" y="1615" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">bigint</text>
+<rect x="901" y="1622" width="338" height="22" fill="#f6f7f9"/>
+<text x="978" y="1637" font-size="12.5" fill="#111827">sha256</text>
+<text x="1230" y="1637" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">char(64) ?</text>
+<text x="978" y="1659" font-size="12.5" fill="#111827">duration_s</text>
+<text x="1230" y="1659" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">numeric(6,2) ?</text>
+<rect x="901" y="1666" width="338" height="22" fill="#f6f7f9"/>
+<text x="978" y="1681" font-size="12.5" fill="#111827">captured_at</text>
+<text x="1230" y="1681" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">timestamptz</text>
+<text x="978" y="1703" font-size="12.5" fill="#111827">expires_at</text>
+<text x="1230" y="1703" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">timestamptz ?</text>
+<rect x="901" y="1710" width="338" height="22" fill="#f6f7f9"/>
+<text x="978" y="1725" font-size="12.5" fill="#111827">purged_at</text>
+<text x="1230" y="1725" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">timestamptz ?</text>
+<text x="978" y="1747" font-size="12.5" fill="#111827">created_at</text>
+<text x="1230" y="1747" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">timestamptz</text>
+</g>
+<g id="tbl_alerts" transform="translate(284,0)">
+<rect x="1760" y="1040" width="340" height="216" rx="7" fill="#ffffff" stroke="#76588f" stroke-width="1.6"/>
+<path d="M1760,1074 V1047 Q1760,1040 1767,1040 H2093 Q2100,1040 2100,1047 V1074 Z" fill="#76588f"/>
+<text x="1772" y="1062" font-size="15" font-weight="700" fill="#ffffff">alerts</text>
+<rect x="1768" y="1078" width="21" height="14" rx="3" fill="#b7791f"/><text x="1778.5" y="1088.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">PK</text>
+<text x="1838" y="1089" font-size="12.5" font-weight="700" fill="#111827">id</text>
+<text x="2090" y="1089" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">uuid</text>
+<rect x="1761" y="1096" width="338" height="22" fill="#fdecc8"/>
+<rect x="1768" y="1100" width="21" height="14" rx="3" fill="#2b6cb0"/><text x="1778.5" y="1110.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">FK</text>
+<text x="1838" y="1111" font-size="12.5" fill="#111827">factory_id</text>
+<text x="2090" y="1111" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">uuid</text>
+<rect x="1768" y="1122" width="21" height="14" rx="3" fill="#2b6cb0"/><text x="1778.5" y="1132.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">FK</text>
+<text x="1838" y="1133" font-size="12.5" fill="#111827">incident_id</text>
+<text x="2090" y="1133" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">uuid</text>
+<rect x="1761" y="1140" width="338" height="22" fill="#f6f7f9"/>
+<text x="1838" y="1155" font-size="12.5" fill="#111827">severity</text>
+<text x="2090" y="1155" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">severity_level</text>
+<text x="1838" y="1177" font-size="12.5" fill="#111827">message</text>
+<text x="2090" y="1177" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">text</text>
+<rect x="1761" y="1184" width="338" height="22" fill="#f6f7f9"/>
+<text x="1838" y="1199" font-size="12.5" fill="#111827">status</text>
+<text x="2090" y="1199" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">alert_status</text>
+<text x="1838" y="1221" font-size="12.5" fill="#111827">created_at</text>
+<text x="2090" y="1221" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">timestamptz</text>
+<rect x="1761" y="1228" width="338" height="22" fill="#f6f7f9"/>
+<text x="1838" y="1243" font-size="12.5" fill="#111827">dispatched_at</text>
+<text x="2090" y="1243" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">timestamptz ?</text>
+</g>
+<g id="tbl_alert_deliveries" transform="translate(284,0)">
+<rect x="1760" y="1340" width="340" height="304" rx="7" fill="#ffffff" stroke="#76588f" stroke-width="1.6"/>
+<path d="M1760,1374 V1347 Q1760,1340 1767,1340 H2093 Q2100,1340 2100,1347 V1374 Z" fill="#76588f"/>
+<text x="1772" y="1362" font-size="15" font-weight="700" fill="#ffffff">alert_deliveries</text>
+<rect x="1768" y="1378" width="21" height="14" rx="3" fill="#b7791f"/><text x="1778.5" y="1388.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">PK</text>
+<text x="1838" y="1389" font-size="12.5" font-weight="700" fill="#111827">id</text>
+<text x="2090" y="1389" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">uuid</text>
+<rect x="1761" y="1396" width="338" height="22" fill="#fdecc8"/>
+<rect x="1768" y="1400" width="21" height="14" rx="3" fill="#2b6cb0"/><text x="1778.5" y="1410.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">FK</text>
+<text x="1838" y="1411" font-size="12.5" fill="#111827">factory_id</text>
+<text x="2090" y="1411" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">uuid</text>
+<rect x="1768" y="1422" width="21" height="14" rx="3" fill="#2b6cb0"/><text x="1778.5" y="1432.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">FK</text>
+<text x="1838" y="1433" font-size="12.5" fill="#111827">alert_id</text>
+<text x="2090" y="1433" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">uuid</text>
+<rect x="1761" y="1440" width="338" height="22" fill="#f6f7f9"/>
+<rect x="1768" y="1444" width="21" height="14" rx="3" fill="#2b6cb0"/><text x="1778.5" y="1454.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">FK</text>
+<text x="1838" y="1455" font-size="12.5" fill="#111827">target_id</text>
+<text x="2090" y="1455" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">uuid ?</text>
+<text x="1838" y="1477" font-size="12.5" fill="#111827">channel</text>
+<text x="2090" y="1477" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">notification_channel</text>
+<rect x="1761" y="1484" width="338" height="22" fill="#f6f7f9"/>
+<text x="1838" y="1499" font-size="12.5" fill="#111827">status</text>
+<text x="2090" y="1499" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">delivery_status</text>
+<text x="1838" y="1521" font-size="12.5" fill="#111827">attempt_count</text>
+<text x="2090" y="1521" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">smallint</text>
+<rect x="1761" y="1528" width="338" height="22" fill="#f6f7f9"/>
+<text x="1838" y="1543" font-size="12.5" fill="#111827">last_attempt_at</text>
+<text x="2090" y="1543" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">timestamptz ?</text>
+<text x="1838" y="1565" font-size="12.5" fill="#111827">sent_at</text>
+<text x="2090" y="1565" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">timestamptz ?</text>
+<rect x="1761" y="1572" width="338" height="22" fill="#f6f7f9"/>
+<text x="1838" y="1587" font-size="12.5" fill="#111827">provider_ref</text>
+<text x="2090" y="1587" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">varchar(120) ?</text>
+<text x="1838" y="1609" font-size="12.5" fill="#111827">error_detail</text>
+<text x="2090" y="1609" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">text ?</text>
+<rect x="1761" y="1616" width="338" height="22" fill="#f6f7f9"/>
+<text x="1838" y="1631" font-size="12.5" fill="#111827">created_at</text>
+<text x="2090" y="1631" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">timestamptz</text>
+</g>
+<g id="tbl_notification_targets" transform="translate(284,0)">
+<rect x="1760" y="1730" width="340" height="216" rx="7" fill="#ffffff" stroke="#76588f" stroke-width="1.6"/>
+<path d="M1760,1764 V1737 Q1760,1730 1767,1730 H2093 Q2100,1730 2100,1737 V1764 Z" fill="#76588f"/>
+<text x="1772" y="1752" font-size="15" font-weight="700" fill="#ffffff">notification_targets</text>
+<rect x="1768" y="1768" width="21" height="14" rx="3" fill="#b7791f"/><text x="1778.5" y="1778.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">PK</text>
+<text x="1838" y="1779" font-size="12.5" font-weight="700" fill="#111827">id</text>
+<text x="2090" y="1779" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">uuid</text>
+<rect x="1761" y="1786" width="338" height="22" fill="#fdecc8"/>
+<rect x="1768" y="1790" width="21" height="14" rx="3" fill="#2b6cb0"/><text x="1778.5" y="1800.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">FK</text>
+<text x="1838" y="1801" font-size="12.5" fill="#111827">factory_id</text>
+<text x="2090" y="1801" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">uuid</text>
+<text x="1838" y="1823" font-size="12.5" fill="#111827">label</text>
+<text x="2090" y="1823" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">varchar(100)</text>
+<rect x="1761" y="1830" width="338" height="22" fill="#f6f7f9"/>
+<text x="1838" y="1845" font-size="12.5" fill="#111827">channel</text>
+<text x="2090" y="1845" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">notification_channel</text>
+<text x="1838" y="1867" font-size="12.5" fill="#111827">address</text>
+<text x="2090" y="1867" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">varchar(255)</text>
+<rect x="1761" y="1874" width="338" height="22" fill="#f6f7f9"/>
+<text x="1838" y="1889" font-size="12.5" fill="#111827">min_severity</text>
+<text x="2090" y="1889" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">severity_level</text>
+<text x="1838" y="1911" font-size="12.5" fill="#111827">is_enabled</text>
+<text x="2090" y="1911" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">boolean</text>
+<rect x="1761" y="1918" width="338" height="22" fill="#f6f7f9"/>
+<text x="1838" y="1933" font-size="12.5" fill="#111827">created_at</text>
+<text x="2090" y="1933" font-size="11.5" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">timestamptz</text>
+</g>
+<g id="note_tenant_isolation" transform="translate(-1160,48)">
+<rect x="1716" y="118" width="836" height="270" rx="10" fill="#ffffff" stroke="#46647f" stroke-width="1.4" stroke-dasharray="6 4"/>
+<text x="1732" y="144" font-size="14" font-weight="700" fill="#46647f">How tenant isolation is enforced (database level)</text>
+<text x="1732" y="168" font-size="12.5" fill="#374151">1. Every tenant table has factory_id NOT NULL -&gt; factories.id (amber rows).</text>
+<text x="1732" y="187" font-size="12.5" fill="#374151">    Global catalogs without RLS: users, roles, permissions, role_permissions, auth_tokens.</text>
+<text x="1732" y="206" font-size="12.5" fill="#374151">2. Each parent has UNIQUE (factory_id, id); every FK between tenant tables is composite:</text>
+<text x="1732" y="225" font-size="12.5" fill="#374151">    (factory_id, parent_id) -&gt; parent (factory_id, id). A child row cannot reference another</text>
+<text x="1732" y="244" font-size="12.5" fill="#374151">    factory's camera, zone, rule, sensor, event or incident (lines show the single-column link).</text>
+<text x="1732" y="263" font-size="12.5" fill="#374151">3. Row-Level Security (ENABLE + FORCE) on every tenant table:</text>
+<text x="1732" y="282" font-size="12.5" fill="#374151">    USING / WITH CHECK (factory_id = current_setting('app.factory_id')::uuid).</text>
+<text x="1732" y="301" font-size="12.5" fill="#374151">    The API sets app.factory_id per transaction after verifying factory_memberships;</text>
+<text x="1732" y="320" font-size="12.5" fill="#374151">    the application DB role has no BYPASSRLS.</text>
+<text x="1732" y="339" font-size="12.5" fill="#374151">4. Evidence keys start with f/&lt;factory_id&gt;/ and signed URLs are issued after the same check.</text>
+<text x="1732" y="358" font-size="12.5" fill="#374151">    Ingestion services derive factory_id from the camera / sensor, never from the payload.</text>
+</g>
+<g id="legend" transform="translate(-2090,-734)">
+<rect x="2150" y="900" width="400" height="272" rx="10" fill="#fbfbfd" stroke="#6b7280" stroke-width="1.4" stroke-dasharray="6 4"/>
+<text x="2166" y="926" font-size="14" font-weight="700" fill="#6b7280">Legend</text>
+<rect x="2170" y="940" width="21" height="14" rx="3" fill="#b7791f"/>
+<text x="2180.5" y="950.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">PK</text>
+<text x="2200" y="951" font-size="12" fill="#374151">primary key</text>
+<rect x="2320" y="940" width="21" height="14" rx="3" fill="#2b6cb0"/>
+<text x="2330.5" y="950.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">FK</text>
+<text x="2350" y="951" font-size="12" fill="#374151">foreign key</text>
+<rect x="2170" y="964" width="21" height="14" rx="3" fill="#2f855a"/>
+<text x="2180.5" y="974.6" font-size="9" font-weight="700" text-anchor="middle" fill="#ffffff">UQ</text>
+<text x="2200" y="975" font-size="12" fill="#374151">unique</text>
+<text x="2320" y="975" font-size="12" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" fill="#6b7280">type ?</text>
+<text x="2375" y="975" font-size="12" fill="#374151">nullable</text>
+<rect x="2170" y="990" width="40" height="16" fill="#fdecc8" stroke="#e0c27a"/>
+<text x="2220" y="1002" font-size="12" fill="#374151">factory_id = tenant key</text>
+<line x1="2187.0" y1="1025.0" x2="2187.0" y2="1039.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+<line x1="2193.0" y1="1025.0" x2="2193.0" y2="1039.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+<line x1="2176" y1="1032" x2="2230" y2="1032" stroke="#4b5563" stroke-width="1.6"/>
+<text x="2242" y="1036" font-size="12" fill="#374151">exactly one (mandatory parent)</text>
+<line x1="2176" y1="1062" x2="2230" y2="1062" stroke="#4b5563" stroke-width="1.6"/>
+<line x1="2187.0" y1="1055.0" x2="2187.0" y2="1069.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+<circle cx="2197.0" cy="1062.0" r="5" fill="#ffffff" stroke="#374151" stroke-width="1.6"/>
+<text x="2242" y="1066" font-size="12" fill="#374151">zero or one (nullable FK)</text>
+<line x1="2176" y1="1092" x2="2230" y2="1092" stroke="#4b5563" stroke-width="1.6"/>
+<line x1="2193.0" y1="1092.0" x2="2176.0" y2="1084.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+<line x1="2193.0" y1="1092.0" x2="2176.0" y2="1092.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+<line x1="2193.0" y1="1092.0" x2="2176.0" y2="1100.0" stroke="#374151" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+<circle cx="2201.0" cy="1092.0" r="5" fill="#ffffff" stroke="#374151" stroke-width="1.6"/>
+<text x="2242" y="1096" font-size="12" fill="#374151">zero or many (child rows)</text>
+<text x="2170" y="1128" font-size="11.5" fill="#6b7280">GLOBAL = not tenant-scoped (no RLS)</text>
+<text x="2170" y="1146" font-size="11.5" fill="#6b7280">Enum types (e.g. event_type) are PostgreSQL ENUMs.</text>
+<text x="2170" y="1164" font-size="11.5" fill="#6b7280">All keys are UUID; time columns are timestamptz (UTC).</text>
+</g>
+<g id="note_selective_storage" transform="translate(-2090,-722)">
+<rect x="2150" y="1196" width="400" height="206" rx="10" fill="#fbfbfd" stroke="#9c6538" stroke-width="1.4" stroke-dasharray="6 4"/>
+<text x="2166" y="1222" font-size="14" font-weight="700" fill="#9c6538">Selective storage (what is NOT here)</text>
+<text x="2166" y="1246" font-size="12.5" fill="#374151">- No frames, no per-frame detections, no raw video.</text>
+<text x="2166" y="1265" font-size="12.5" fill="#374151">- No continuous tracking: only events that passed</text>
+<text x="2166" y="1284" font-size="12.5" fill="#374151">  the rules, plus incidents that need a human.</text>
+<text x="2166" y="1303" font-size="12.5" fill="#374151">- Evidence = files in object storage; the DB keeps</text>
+<text x="2166" y="1322" font-size="12.5" fill="#374151">  storage_key, metadata and retention only.</text>
+<text x="2166" y="1341" font-size="12.5" fill="#374151">- Sensor readings: one row per sampling interval,</text>
+<text x="2166" y="1360" font-size="12.5" fill="#374151">  monthly range partitions on recorded_at.</text>
+<text x="2166" y="1379" font-size="12.5" fill="#374151">- Outages: unobserved_gaps (+ event source_failure).</text>
+</g>
+<metadata><c2pa:manifest>AAAWgmp1bWIAAAAeanVtZGMycGEAEQAQgAAAqgA4m3EDYzJwYQAAABZcanVtYgAAAEdqdW1kYzJtYQARABCAAACqADibcQN1cm46YzJwYTo1YjI2Mjc0ZS0wZjExLTRlZjctODY2NS0zZmRkMDBlOGFhZTcAAAADl2p1bWIAAAApanVtZGMyYXMAEQAQgAAAqgA4m3EDYzJwYS5hc3NlcnRpb25zAAAAALxqdW1iAAAARGp1bWRjYm9yABEAEIAAAKoAOJtxE2MycGEuaW5ncmVkaWVudC52MwAAAAAYYzJzaGL0pBrMRxbhT5hQAweCWEwAAABwY2JvcqNpZGM6Zm9ybWF0bWltYWdlL3N2Zyt4bWxqaW5zdGFuY2VJRHgseG1wOmlpZDo1NTljMGFjZi02YjE5LTQ1OGEtODkyYi1lYTUwZDIyMDc4OWVscmVsYXRpb25zaGlwaHBhcmVudE9mAAAB4mp1bWIAAABBanVtZGNib3IAEQAQgAAAqgA4m3ETYzJwYS5hY3Rpb25zLnYyAAAAABhjMnNoufgZTwSL+lyMoJq4peOySwAAAZljYm9yomdhY3Rpb25zgqJmYWN0aW9ua2MycGEub3BlbmVkanBhcmFtZXRlcnOha2luZ3JlZGllbnRzgaJjdXJseC1zZWxmI2p1bWJmPWMycGEuYXNzZXJ0aW9ucy9jMnBhLmluZ3JlZGllbnQudjNkaGFzaFgg0ODR/VzwXOxRwdyEVbG+oPoo8AK9dUfC3mGQbexnPOykZmFjdGlvbngdY29tLmFudGhyb3BpYy5jbGF1ZGUucHJvdmlkZWRqcGFyYW1ldGVyc6F4H2NvbS5hbnRocm9waWMub3JpZ2luLWNvbmZpZGVuY2VndW5rbm93bmtkZXNjcmlwdGlvbnhmQ2xhdWRlIHByb3ZpZGVkIHRoaXMgZmlsZSBhdCB0aGUgcmVxdWVzdCBvZiBhIHVzZXIgYW5kIG1heSBoYXZlIGNyZWF0ZWQgb3IgbW9kaWZpZWQgdGhlIGZpbGUgY29udGVudHMubXNvZnR3YXJlQWdlbnShZG5hbWVmQ2xhdWRlcmFsbEFjdGlvbnNJbmNsdWRlZPUAAADIanVtYgAAAEBqdW1kY2JvcgARABCAAACqADibcRNjMnBhLmhhc2guZGF0YQAAAAAYYzJzaMO5vusSO6z/BhfXCJtuW78AAACAY2JvcqVjYWxnZnNoYTI1NmNwYWRKAAAAAAAAAAAAAGRoYXNoWCBd12Wx+WyhlOlBuOK15L+h7fjDLncd4cVtMwbFtzjWSWRuYW1lbmp1bWJmIG1hbmlmZXN0amV4Y2x1c2lvbnOBomVzdGFydBoAAZqXZmxlbmd0aBkeBAAAAj5qdW1iAAAAJ2p1bWRjMmNsABEAEIAAAKoAOJtxA2MycGEuY2xhaW0udjIAAAACD2Nib3KlY2FsZ2ZzaGEyNTZpc2lnbmF0dXJleE1zZWxmI2p1bWJmPS9jMnBhL3VybjpjMnBhOjViMjYyNzRlLTBmMTEtNGVmNy04NjY1LTNmZGQwMGU4YWFlNy9jMnBhLnNpZ25hdHVyZWppbnN0YW5jZUlEeCx4bXA6aWlkOjI0ODQ2YTJiLTQ3ODgtNDljMS1hMzk2LTVhOTcyMzkyZjI4MHJjcmVhdGVkX2Fzc2VydGlvbnODomN1cmx4LXNlbGYjanVtYmY9YzJwYS5hc3NlcnRpb25zL2MycGEuaW5ncmVkaWVudC52M2RoYXNoWCDQ4NH9XPBc7FHB3IRVsb6g+ijwAr11R8LeYZBt7Gc87KJjdXJseCpzZWxmI2p1bWJmPWMycGEuYXNzZXJ0aW9ucy9jMnBhLmFjdGlvbnMudjJkaGFzaFggkF+PAIKgquWFREUE5zDFk1qlttlgMjA80/WQqVLVi6yiY3VybHgpc2VsZiNqdW1iZj1jMnBhLmFzc2VydGlvbnMvYzJwYS5oYXNoLmRhdGFkaGFzaFggRUy/JWu/hC+uaUU1xU3dGFuOYEd/rFt3QYOYI3L2LhN0Y2xhaW1fZ2VuZXJhdG9yX2luZm+jZG5hbWVvQW50aHJvcGljIEZpbGVzZ3ZlcnNpb25lMS4wLjBrc3BlY1ZlcnNpb25lMi40LjAAABA4anVtYgAAAChqdW1kYzJjcwARABCAAACqADibcQNjMnBhLnNpZ25hdHVyZQAAABAIY2JvctKEWQISogEmGCFZAgowggIGMIIBjaADAgECAhRA5aAK7sI50L64g/oGQgU9Z1UTADAKBggqhkjOPQQDAzBJMRcwFQYDVQQKEw5BbnRocm9waWMsIFBCQzEuMCwGA1UEAxMlQW50aHJvcGljIENvbnRlbnQgQ3JlZGVudGlhbHMgUm9vdCBDQTAeFw0yNjA4MDcxODQzNTZaFw0yODA4MDYxOTQzNTZaMEQxFzAVBgNVBAoTDkFudGhyb3BpYywgUEJDMSkwJwYDVQQDEyBBbnRocm9waWMgQ2xhdWRlIENvbnRlbnQgU2lnbmluZzBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABJh6CmvLUBgFFNU0vUKlOVtE6djd17L5SuwX0LemFisBM3dkd/3cyjxFA3Qo5S46fX0/ihY0VZ7mfb9KF703t5OjWDBWMA4GA1UdDwEB/wQEAwIHgDAVBgNVHSUEDjAMBgorBgEEAYPoXgIBMAwGA1UdEwEB/wQCMAAwHwYDVR0jBBgwFoAUzlHiBIFOZFsj+OPEz5o+nMHXXMIwCgYIKoZIzj0EAwMDZwAwZAIwMXMdFJ4BetLLVY7ORuE9noqbbAZOZn/aArXyTwFAZfKrPzxF2vPoJNf1+UCdg1XGAjBwX1zd9WGqYkqmL5SFqw1QySjr1zJfpJM9+1rdDwSPLMOPOjKuiXjoU/pUUeG9RwmhY3BhZFkNngAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPZYQF34vgtLrUKL65HtZXtF3V4Gaq8hxHeoz6PeVb1MBnkGpp2pBLilU/ZeBPKHI5l/68KNthmmekz1soUpnh1hVQA=</c2pa:manifest></metadata></svg>
