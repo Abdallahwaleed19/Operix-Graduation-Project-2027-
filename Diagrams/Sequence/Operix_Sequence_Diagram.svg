@@ -1,0 +1,206 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2970 2525" width="2970" height="2525" font-family="Helvetica, Arial, sans-serif" xmlns:c2pa="http://c2pa.org/manifest">
+<defs><marker id="fill" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,1 L10,5 L0,9 z" fill="#1e3a5f"/></marker><marker id="open" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,1 L10,5 L0,9" fill="none" stroke="#1e3a5f" stroke-width="1.4"/></marker></defs>
+<rect width="2970" height="2525" fill="#ffffff"/>
+<text x="24" y="30" font-size="15" font-weight="700" fill="#0f766e">Operix</text>
+<text x="24" y="66" font-size="28" font-weight="700" fill="#111827">Sequence Diagram – Safety Violation Detection &amp; Incident Reporting</text>
+<text x="2946" y="30" font-size="12" fill="#6b7280" text-anchor="end">AI-Powered Industrial Vision &amp; Safety Intelligence Platform · Graduation Project</text>
+<line x1="24" y1="82" x2="2946" y2="82" stroke="#0f766e" stroke-width="2"/>
+<rect x="40" y="100" width="2890" height="2345" rx="16" fill="#f8faf9" stroke="#8ea3c4" stroke-width="1.5"/>
+<text x="58" y="122" font-size="14" font-weight="700" fill="#374151">Operix Platform</text>
+<line x1="250" y1="208" x2="250" y2="2415" stroke="#8ea3c4" stroke-width="1.3" stroke-dasharray="7 5"/>
+<line x1="440" y1="190" x2="440" y2="2415" stroke="#8ea3c4" stroke-width="1.3" stroke-dasharray="7 5"/>
+<line x1="630" y1="190" x2="630" y2="2415" stroke="#8ea3c4" stroke-width="1.3" stroke-dasharray="7 5"/>
+<line x1="820" y1="190" x2="820" y2="2415" stroke="#8ea3c4" stroke-width="1.3" stroke-dasharray="7 5"/>
+<line x1="1010" y1="190" x2="1010" y2="2415" stroke="#8ea3c4" stroke-width="1.3" stroke-dasharray="7 5"/>
+<line x1="1200" y1="190" x2="1200" y2="2415" stroke="#8ea3c4" stroke-width="1.3" stroke-dasharray="7 5"/>
+<line x1="1390" y1="190" x2="1390" y2="2415" stroke="#8ea3c4" stroke-width="1.3" stroke-dasharray="7 5"/>
+<line x1="1580" y1="190" x2="1580" y2="2415" stroke="#8ea3c4" stroke-width="1.3" stroke-dasharray="7 5"/>
+<line x1="1770" y1="190" x2="1770" y2="2415" stroke="#8ea3c4" stroke-width="1.3" stroke-dasharray="7 5"/>
+<line x1="1960" y1="190" x2="1960" y2="2415" stroke="#8ea3c4" stroke-width="1.3" stroke-dasharray="7 5"/>
+<line x1="2150" y1="190" x2="2150" y2="2415" stroke="#8ea3c4" stroke-width="1.3" stroke-dasharray="7 5"/>
+<line x1="2340" y1="190" x2="2340" y2="2415" stroke="#8ea3c4" stroke-width="1.3" stroke-dasharray="7 5"/>
+<line x1="2530" y1="190" x2="2530" y2="2415" stroke="#8ea3c4" stroke-width="1.3" stroke-dasharray="7 5"/>
+<line x1="2720" y1="208" x2="2720" y2="2415" stroke="#8ea3c4" stroke-width="1.3" stroke-dasharray="7 5"/>
+<text x="86" y="237" font-size="12.5" font-weight="700" fill="#0f766e" letter-spacing=".6">A · CONTINUOUS DETECTION, INCIDENT STORAGE &amp; ALERTING</text>
+<line x1="70" y1="2037" x2="2900" y2="2037" stroke="#8ea3c4" stroke-width="1.2" stroke-dasharray="6 4"/>
+<text x="86" y="2057" font-size="12.5" font-weight="700" fill="#0f766e" letter-spacing=".6">B · AI ASSISTANT – AUTHORIZED DATA ACCESS</text>
+<rect x="64" y="279" width="2842" height="1728" fill="none" stroke="#0f766e" stroke-width="1.8"/>
+<path d="M64,279 H120 V293 L112,301 H64 Z" fill="#ffffff" stroke="#0f766e" stroke-width="1.3"/>
+<text x="70" y="295" font-size="12.5" font-weight="700" fill="#0f766e">loop</text>
+<text x="130.0" y="295.0" font-size="12.5" text-anchor="start" fill="#1e3a5f" font-weight="400" font-style="italic" stroke="#ffffff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">[monitoring active]</text>
+<rect x="80" y="319" width="2810" height="1662" fill="none" stroke="#8ea3c4" stroke-width="1.3"/>
+<path d="M80,319 H124 V333 L116,341 H80 Z" fill="#ffffff" stroke="#0f766e" stroke-width="1.3"/>
+<text x="86" y="335" font-size="12.5" font-weight="700" fill="#0f766e">alt</text>
+<text x="134.0" y="335.0" font-size="12.5" text-anchor="start" fill="#1e3a5f" font-weight="400" font-style="italic" stroke="#ffffff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">[stream available]</text>
+<line x1="80" y1="1535" x2="2890" y2="1535" stroke="#8ea3c4" stroke-width="1.3" stroke-dasharray="7 5"/>
+<text x="90.0" y="1551.0" font-size="12.5" text-anchor="start" fill="#1e3a5f" font-weight="400" font-style="italic" stroke="#ffffff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">[camera disconnected]</text>
+<rect x="96" y="775" width="2778" height="700" fill="none" stroke="#8ea3c4" stroke-width="1.3"/>
+<path d="M96,775 H140 V789 L132,797 H96 Z" fill="#ffffff" stroke="#0f766e" stroke-width="1.3"/>
+<text x="102" y="791" font-size="12.5" font-weight="700" fill="#0f766e">alt</text>
+<text x="150.0" y="791.0" font-size="12.5" text-anchor="start" fill="#1e3a5f" font-weight="400" font-style="italic" stroke="#ffffff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">[violation detected]</text>
+<line x1="96" y1="1389" x2="2874" y2="1389" stroke="#8ea3c4" stroke-width="1.3" stroke-dasharray="7 5"/>
+<text x="106.0" y="1405.0" font-size="12.5" text-anchor="start" fill="#1e3a5f" font-weight="400" font-style="italic" stroke="#ffffff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">[no violation]</text>
+<rect x="112" y="923" width="2746" height="186" fill="none" stroke="#8ea3c4" stroke-width="1.3"/>
+<path d="M112,923 H156 V937 L148,945 H112 Z" fill="#ffffff" stroke="#0f766e" stroke-width="1.3"/>
+<text x="118" y="939" font-size="12.5" font-weight="700" fill="#0f766e">opt</text>
+<text x="166.0" y="939.0" font-size="12.5" text-anchor="start" fill="#1e3a5f" font-weight="400" font-style="italic" stroke="#ffffff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">[evidence available]</text>
+<rect x="112" y="1133" width="2746" height="124" fill="none" stroke="#8ea3c4" stroke-width="1.3"/>
+<path d="M112,1133 H156 V1147 L148,1155 H112 Z" fill="#ffffff" stroke="#0f766e" stroke-width="1.3"/>
+<text x="118" y="1149" font-size="12.5" font-weight="700" fill="#0f766e">opt</text>
+<text x="166.0" y="1149.0" font-size="12.5" text-anchor="start" fill="#1e3a5f" font-weight="400" font-style="italic" stroke="#ffffff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">[alert required by notification rules]</text>
+<rect x="434" y="371" width="12" height="96" fill="#e3f3ee" stroke="#0f766e" stroke-width="1.3"/>
+<rect x="624" y="453" width="12" height="1072" fill="#e3f3ee" stroke="#0f766e" stroke-width="1.3"/>
+<rect x="814" y="489" width="12" height="50" fill="#e3f3ee" stroke="#0f766e" stroke-width="1.3"/>
+<rect x="1004" y="561" width="12" height="50" fill="#e3f3ee" stroke="#0f766e" stroke-width="1.3"/>
+<rect x="1194" y="633" width="12" height="50" fill="#e3f3ee" stroke="#0f766e" stroke-width="1.3"/>
+<rect x="1384" y="705" width="12" height="820" fill="#e3f3ee" stroke="#0f766e" stroke-width="1.3"/>
+<rect x="1574" y="827" width="12" height="552" fill="#e3f3ee" stroke="#0f766e" stroke-width="1.3"/>
+<rect x="1764" y="863" width="12" height="50" fill="#e3f3ee" stroke="#0f766e" stroke-width="1.3"/>
+<rect x="1764" y="1047" width="12" height="50" fill="#e3f3ee" stroke="#0f766e" stroke-width="1.3"/>
+<rect x="1954" y="975" width="12" height="50" fill="#e3f3ee" stroke="#0f766e" stroke-width="1.3"/>
+<rect x="2144" y="1185" width="12" height="50" fill="#e3f3ee" stroke="#0f766e" stroke-width="1.3"/>
+<rect x="2334" y="1293" width="12" height="50" fill="#e3f3ee" stroke="#0f766e" stroke-width="1.3"/>
+<rect x="434" y="1631" width="12" height="122" fill="#e3f3ee" stroke="#0f766e" stroke-width="1.3"/>
+<rect x="1574" y="1631" width="12" height="122" fill="#e3f3ee" stroke="#0f766e" stroke-width="1.3"/>
+<rect x="1764" y="1667" width="12" height="50" fill="#e3f3ee" stroke="#0f766e" stroke-width="1.3"/>
+<rect x="244" y="1775" width="12" height="50" fill="#e3f3ee" stroke="#0f766e" stroke-width="1.3"/>
+<rect x="1574" y="1847" width="12" height="122" fill="#e3f3ee" stroke="#0f766e" stroke-width="1.3"/>
+<rect x="1764" y="1883" width="12" height="50" fill="#e3f3ee" stroke="#0f766e" stroke-width="1.3"/>
+<rect x="2524" y="2097" width="12" height="286" fill="#e3f3ee" stroke="#0f766e" stroke-width="1.3"/>
+<rect x="1574" y="2133" width="12" height="168" fill="#e3f3ee" stroke="#0f766e" stroke-width="1.3"/>
+<rect x="1764" y="2215" width="12" height="50" fill="#e3f3ee" stroke="#0f766e" stroke-width="1.3"/>
+<line x1="256" y1="377" x2="434" y2="377" stroke="#1e3a5f" stroke-width="1.5" marker-end="url(#open)"/>
+<text x="345.0" y="370.0" font-size="12.5" text-anchor="middle" fill="#1e3a5f" font-weight="400"  stroke="#ffffff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">1: RTSP stream</text>
+<path d="M446,405 H490 V425 H448" fill="none" stroke="#1e3a5f" stroke-width="1.5" marker-end="url(#fill)"/>
+<text x="498.0" y="415.0" font-size="12.5" text-anchor="start" fill="#1e3a5f" font-weight="400"  stroke="#ffffff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">2: extractFrames()</text>
+<line x1="446" y1="459" x2="624" y2="459" stroke="#1e3a5f" stroke-width="1.5" marker-end="url(#fill)"/>
+<text x="535.0" y="452.0" font-size="12.5" text-anchor="middle" fill="#1e3a5f" font-weight="400"  stroke="#ffffff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">3: sendFrames(frame)</text>
+<line x1="636" y1="495" x2="814" y2="495" stroke="#1e3a5f" stroke-width="1.5" marker-end="url(#fill)"/>
+<text x="725.0" y="488.0" font-size="12.5" text-anchor="middle" fill="#1e3a5f" font-weight="400"  stroke="#ffffff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">4: detectPersons(frame)</text>
+<line x1="814" y1="531" x2="636" y2="531" stroke="#1e3a5f" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#open)"/>
+<text x="725.0" y="524.0" font-size="12.5" text-anchor="middle" fill="#1e3a5f" font-weight="400" font-style="italic" stroke="#ffffff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">worker boxes</text>
+<line x1="636" y1="567" x2="1004" y2="567" stroke="#1e3a5f" stroke-width="1.5" marker-end="url(#fill)"/>
+<text x="820.0" y="560.0" font-size="12.5" text-anchor="middle" fill="#1e3a5f" font-weight="400"  stroke="#ffffff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">5: detectPPE(workerRegions)</text>
+<line x1="1004" y1="603" x2="636" y2="603" stroke="#1e3a5f" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#open)"/>
+<text x="820.0" y="596.0" font-size="12.5" text-anchor="middle" fill="#1e3a5f" font-weight="400" font-style="italic" stroke="#ffffff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">helmet / vest status</text>
+<line x1="636" y1="639" x2="1194" y2="639" stroke="#1e3a5f" stroke-width="1.5" marker-end="url(#fill)"/>
+<text x="915.0" y="632.0" font-size="12.5" text-anchor="middle" fill="#1e3a5f" font-weight="400"  stroke="#ffffff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">6: assignTrackIds(boxes)</text>
+<line x1="1194" y1="675" x2="636" y2="675" stroke="#1e3a5f" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#open)"/>
+<text x="915.0" y="668.0" font-size="12.5" text-anchor="middle" fill="#1e3a5f" font-weight="400" font-style="italic" stroke="#ffffff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">trackIds</text>
+<line x1="636" y1="711" x2="1384" y2="711" stroke="#1e3a5f" stroke-width="1.5" marker-end="url(#fill)"/>
+<text x="1010.0" y="704.0" font-size="12.5" text-anchor="middle" fill="#1e3a5f" font-weight="400"  stroke="#ffffff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">7: evaluateRules(tracks, PPE)</text>
+<path d="M1396,739 H1440 V759 H1398" fill="none" stroke="#1e3a5f" stroke-width="1.5" marker-end="url(#fill)"/>
+<text x="1448.0" y="749.0" font-size="12.5" text-anchor="start" fill="#1e3a5f" font-weight="400"  stroke="#ffffff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">check safety rules &amp; zones</text>
+<line x1="1396" y1="833" x2="1574" y2="833" stroke="#1e3a5f" stroke-width="1.5" marker-end="url(#fill)"/>
+<text x="1485.0" y="826.0" font-size="12.5" text-anchor="middle" fill="#1e3a5f" font-weight="400"  stroke="#ffffff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">8: sendEvent(violation)</text>
+<line x1="1586" y1="869" x2="1764" y2="869" stroke="#1e3a5f" stroke-width="1.5" marker-end="url(#fill)"/>
+<text x="1675.0" y="862.0" font-size="12.5" text-anchor="middle" fill="#1e3a5f" font-weight="400"  stroke="#ffffff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">9: storeEventMetadata()</text>
+<line x1="1764" y1="905" x2="1586" y2="905" stroke="#1e3a5f" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#open)"/>
+<text x="1675.0" y="898.0" font-size="12.5" text-anchor="middle" fill="#1e3a5f" font-weight="400" font-style="italic" stroke="#ffffff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">eventId</text>
+<line x1="1586" y1="981" x2="1954" y2="981" stroke="#1e3a5f" stroke-width="1.5" marker-end="url(#fill)"/>
+<text x="1770.0" y="974.0" font-size="12.5" text-anchor="middle" fill="#1e3a5f" font-weight="400"  stroke="#ffffff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">10: saveEvidence(image / clip)</text>
+<line x1="1954" y1="1017" x2="1586" y2="1017" stroke="#1e3a5f" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#open)"/>
+<text x="1770.0" y="1010.0" font-size="12.5" text-anchor="middle" fill="#1e3a5f" font-weight="400" font-style="italic" stroke="#ffffff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">evidenceRef</text>
+<line x1="1586" y1="1053" x2="1764" y2="1053" stroke="#1e3a5f" stroke-width="1.5" marker-end="url(#fill)"/>
+<text x="1675.0" y="1046.0" font-size="12.5" text-anchor="middle" fill="#1e3a5f" font-weight="400"  stroke="#ffffff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">storeEvidenceRef(eventId)</text>
+<line x1="1764" y1="1089" x2="1586" y2="1089" stroke="#1e3a5f" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#open)"/>
+<text x="1675.0" y="1082.0" font-size="12.5" text-anchor="middle" fill="#1e3a5f" font-weight="400" font-style="italic" stroke="#ffffff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">ok</text>
+<line x1="1586" y1="1191" x2="2144" y2="1191" stroke="#1e3a5f" stroke-width="1.5" marker-end="url(#open)"/>
+<text x="1865.0" y="1184.0" font-size="12.5" text-anchor="middle" fill="#1e3a5f" font-weight="400"  stroke="#ffffff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">11: sendAlert(event)</text>
+<path d="M2156,1219 H2200 V1239 H2158" fill="none" stroke="#1e3a5f" stroke-width="1.5" marker-end="url(#fill)"/>
+<text x="2208.0" y="1229.0" font-size="12.5" text-anchor="start" fill="#1e3a5f" font-weight="400"  stroke="#ffffff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">dispatch via configured channels</text>
+<line x1="1586" y1="1299" x2="2334" y2="1299" stroke="#1e3a5f" stroke-width="1.5" marker-end="url(#open)"/>
+<text x="1960.0" y="1292.0" font-size="12.5" text-anchor="middle" fill="#1e3a5f" font-weight="400"  stroke="#ffffff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">12: pushIncident &amp; alert</text>
+<line x1="2346" y1="1335" x2="2714" y2="1335" stroke="#1e3a5f" stroke-width="1.5" marker-end="url(#open)"/>
+<text x="2530.0" y="1328.0" font-size="12.5" text-anchor="middle" fill="#1e3a5f" font-weight="400"  stroke="#ffffff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">display incidents &amp; alerts</text>
+<line x1="1574" y1="1371" x2="1396" y2="1371" stroke="#1e3a5f" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#open)"/>
+<text x="1485.0" y="1364.0" font-size="12.5" text-anchor="middle" fill="#1e3a5f" font-weight="400" font-style="italic" stroke="#ffffff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">event accepted</text>
+<path d="M1396,1437 H1440 V1457 H1398" fill="none" stroke="#1e3a5f" stroke-width="1.5" marker-end="url(#fill)"/>
+<text x="1448.0" y="1447.0" font-size="12.5" text-anchor="start" fill="#1e3a5f" font-weight="400"  stroke="#ffffff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">no event raised</text>
+<line x1="1384" y1="1517" x2="636" y2="1517" stroke="#1e3a5f" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#open)"/>
+<text x="1010.0" y="1510.0" font-size="12.5" text-anchor="middle" fill="#1e3a5f" font-weight="400" font-style="italic" stroke="#ffffff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">evaluation result</text>
+<path d="M446,1583 H490 V1603 H448" fill="none" stroke="#1e3a5f" stroke-width="1.5" marker-end="url(#fill)"/>
+<text x="498.0" y="1593.0" font-size="12.5" text-anchor="start" fill="#1e3a5f" font-weight="400"  stroke="#ffffff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">detect stream loss (timeout)</text>
+<line x1="446" y1="1637" x2="1574" y2="1637" stroke="#1e3a5f" stroke-width="1.5" marker-end="url(#fill)"/>
+<text x="1010.0" y="1630.0" font-size="12.5" text-anchor="middle" fill="#1e3a5f" font-weight="400"  stroke="#ffffff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">reportCameraStatus(offline)</text>
+<line x1="1586" y1="1673" x2="1764" y2="1673" stroke="#1e3a5f" stroke-width="1.5" marker-end="url(#fill)"/>
+<text x="1675.0" y="1666.0" font-size="12.5" text-anchor="middle" fill="#1e3a5f" font-weight="400"  stroke="#ffffff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">recordUnobservedGap()</text>
+<line x1="1764" y1="1709" x2="1586" y2="1709" stroke="#1e3a5f" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#open)"/>
+<text x="1675.0" y="1702.0" font-size="12.5" text-anchor="middle" fill="#1e3a5f" font-weight="400" font-style="italic" stroke="#ffffff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">ok</text>
+<line x1="1574" y1="1745" x2="446" y2="1745" stroke="#1e3a5f" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#open)"/>
+<text x="1010.0" y="1738.0" font-size="12.5" text-anchor="middle" fill="#1e3a5f" font-weight="400" font-style="italic" stroke="#ffffff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">ack</text>
+<line x1="434" y1="1781" x2="256" y2="1781" stroke="#1e3a5f" stroke-width="1.5" marker-end="url(#fill)"/>
+<text x="345.0" y="1774.0" font-size="12.5" text-anchor="middle" fill="#1e3a5f" font-weight="400"  stroke="#ffffff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">retryConnection()</text>
+<line x1="256" y1="1817" x2="434" y2="1817" stroke="#1e3a5f" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#open)"/>
+<text x="345.0" y="1810.0" font-size="12.5" text-anchor="middle" fill="#1e3a5f" font-weight="400" font-style="italic" stroke="#ffffff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">stream restored</text>
+<line x1="446" y1="1853" x2="1574" y2="1853" stroke="#1e3a5f" stroke-width="1.5" marker-end="url(#fill)"/>
+<text x="1010.0" y="1846.0" font-size="12.5" text-anchor="middle" fill="#1e3a5f" font-weight="400"  stroke="#ffffff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">reportCameraStatus(online)</text>
+<line x1="1586" y1="1889" x2="1764" y2="1889" stroke="#1e3a5f" stroke-width="1.5" marker-end="url(#fill)"/>
+<text x="1675.0" y="1882.0" font-size="12.5" text-anchor="middle" fill="#1e3a5f" font-weight="400"  stroke="#ffffff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">updateSourceStatus()</text>
+<line x1="1764" y1="1925" x2="1586" y2="1925" stroke="#1e3a5f" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#open)"/>
+<text x="1675.0" y="1918.0" font-size="12.5" text-anchor="middle" fill="#1e3a5f" font-weight="400" font-style="italic" stroke="#ffffff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">ok</text>
+<line x1="1574" y1="1961" x2="446" y2="1961" stroke="#1e3a5f" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#open)"/>
+<text x="1010.0" y="1954.0" font-size="12.5" text-anchor="middle" fill="#1e3a5f" font-weight="400" font-style="italic" stroke="#ffffff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">ack</text>
+<line x1="2714" y1="2103" x2="2536" y2="2103" stroke="#1e3a5f" stroke-width="1.5" marker-end="url(#fill)"/>
+<text x="2625.0" y="2096.0" font-size="12.5" text-anchor="middle" fill="#1e3a5f" font-weight="400"  stroke="#ffffff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">13: askQuestion(text)</text>
+<line x1="2524" y1="2139" x2="1586" y2="2139" stroke="#1e3a5f" stroke-width="1.5" marker-end="url(#fill)"/>
+<text x="2055.0" y="2132.0" font-size="12.5" text-anchor="middle" fill="#1e3a5f" font-weight="400"  stroke="#ffffff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">14: requestData(query, user)</text>
+<path d="M1586,2167 H1630 V2187 H1588" fill="none" stroke="#1e3a5f" stroke-width="1.5" marker-end="url(#fill)"/>
+<text x="1638.0" y="2177.0" font-size="12.5" text-anchor="start" fill="#1e3a5f" font-weight="400"  stroke="#ffffff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">authorizeRequest()</text>
+<line x1="1586" y1="2221" x2="1764" y2="2221" stroke="#1e3a5f" stroke-width="1.5" marker-end="url(#fill)"/>
+<text x="1675.0" y="2214.0" font-size="12.5" text-anchor="middle" fill="#1e3a5f" font-weight="400"  stroke="#ffffff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">queryAuthorizedData()</text>
+<line x1="1764" y1="2257" x2="1586" y2="2257" stroke="#1e3a5f" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#open)"/>
+<text x="1675.0" y="2250.0" font-size="12.5" text-anchor="middle" fill="#1e3a5f" font-weight="400" font-style="italic" stroke="#ffffff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">records</text>
+<line x1="1586" y1="2293" x2="2524" y2="2293" stroke="#1e3a5f" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#open)"/>
+<text x="2055.0" y="2286.0" font-size="12.5" text-anchor="middle" fill="#1e3a5f" font-weight="400" font-style="italic" stroke="#ffffff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">authorized data</text>
+<path d="M2536,2321 H2580 V2341 H2538" fill="none" stroke="#1e3a5f" stroke-width="1.5" marker-end="url(#fill)"/>
+<text x="2588.0" y="2331.0" font-size="12.5" text-anchor="start" fill="#1e3a5f" font-weight="400"  stroke="#ffffff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">generateAnswer()</text>
+<line x1="2536" y1="2375" x2="2714" y2="2375" stroke="#1e3a5f" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#open)"/>
+<text x="2625.0" y="2368.0" font-size="12.5" text-anchor="middle" fill="#1e3a5f" font-weight="400" font-style="italic" stroke="#ffffff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">answer</text>
+<g stroke="#111827" stroke-width="1.8" fill="none" stroke-linecap="round"><circle cx="250" cy="136" r="10" fill="#fff"/><line x1="250" y1="146" x2="250" y2="178"/><line x1="233" y1="156" x2="267" y2="156"/><line x1="250" y1="178" x2="237" y2="196"/><line x1="250" y1="178" x2="263" y2="196"/></g>
+<text x="250" y="214" font-size="14" font-weight="700" fill="#111827" text-anchor="middle">CCTV Cameras</text>
+<rect x="360" y="130" width="160" height="60" rx="10" fill="#e3f3ee" stroke="#0f766e" stroke-width="1.5"/>
+<text x="440" y="158" font-size="14" font-weight="700" fill="#111827" text-anchor="middle">Video Ingestion</text>
+<text x="440" y="175" font-size="14" font-weight="700" fill="#111827" text-anchor="middle">Service</text>
+<rect x="550" y="130" width="160" height="60" rx="10" fill="#e3f3ee" stroke="#0f766e" stroke-width="1.5"/>
+<text x="630" y="158" font-size="14" font-weight="700" fill="#111827" text-anchor="middle">Computer Vision</text>
+<text x="630" y="175" font-size="14" font-weight="700" fill="#111827" text-anchor="middle">Service</text>
+<rect x="740" y="130" width="160" height="60" rx="10" fill="#e3f3ee" stroke="#0f766e" stroke-width="1.5"/>
+<text x="820" y="158" font-size="14" font-weight="700" fill="#111827" text-anchor="middle">Person</text>
+<text x="820" y="175" font-size="14" font-weight="700" fill="#111827" text-anchor="middle">Detection</text>
+<rect x="930" y="130" width="160" height="60" rx="10" fill="#e3f3ee" stroke="#0f766e" stroke-width="1.5"/>
+<text x="1010" y="158" font-size="14" font-weight="700" fill="#111827" text-anchor="middle">PPE</text>
+<text x="1010" y="175" font-size="14" font-weight="700" fill="#111827" text-anchor="middle">Detection</text>
+<rect x="1120" y="130" width="160" height="60" rx="10" fill="#e3f3ee" stroke="#0f766e" stroke-width="1.5"/>
+<text x="1200" y="158" font-size="14" font-weight="700" fill="#111827" text-anchor="middle">Tracking Service</text>
+<text x="1200" y="175" font-size="14" font-weight="700" fill="#111827" text-anchor="middle">(ByteTrack)</text>
+<rect x="1310" y="130" width="160" height="60" rx="10" fill="#e3f3ee" stroke="#0f766e" stroke-width="1.5"/>
+<text x="1390" y="158" font-size="14" font-weight="700" fill="#111827" text-anchor="middle">Rule Evaluation</text>
+<text x="1390" y="175" font-size="14" font-weight="700" fill="#111827" text-anchor="middle">Engine</text>
+<rect x="1500" y="130" width="160" height="60" rx="10" fill="#e3f3ee" stroke="#0f766e" stroke-width="1.5"/>
+<text x="1580" y="158" font-size="14" font-weight="700" fill="#111827" text-anchor="middle">FastAPI</text>
+<text x="1580" y="175" font-size="14" font-weight="700" fill="#111827" text-anchor="middle">Backend</text>
+<rect x="1690" y="130" width="160" height="60" rx="10" fill="#e3f3ee" stroke="#0f766e" stroke-width="1.5"/>
+<text x="1770" y="158" font-size="14" font-weight="700" fill="#111827" text-anchor="middle">PostgreSQL</text>
+<text x="1770" y="175" font-size="14" font-weight="700" fill="#111827" text-anchor="middle">Database</text>
+<rect x="1880" y="130" width="160" height="60" rx="10" fill="#e3f3ee" stroke="#0f766e" stroke-width="1.5"/>
+<text x="1960" y="158" font-size="14" font-weight="700" fill="#111827" text-anchor="middle">Evidence</text>
+<text x="1960" y="175" font-size="14" font-weight="700" fill="#111827" text-anchor="middle">Storage</text>
+<rect x="2070" y="130" width="160" height="60" rx="10" fill="#e3f3ee" stroke="#0f766e" stroke-width="1.5"/>
+<text x="2150" y="158" font-size="14" font-weight="700" fill="#111827" text-anchor="middle">Notification</text>
+<text x="2150" y="175" font-size="14" font-weight="700" fill="#111827" text-anchor="middle">Service</text>
+<rect x="2260" y="130" width="160" height="60" rx="10" fill="#e3f3ee" stroke="#0f766e" stroke-width="1.5"/>
+<text x="2340" y="158" font-size="14" font-weight="700" fill="#111827" text-anchor="middle">Web</text>
+<text x="2340" y="175" font-size="14" font-weight="700" fill="#111827" text-anchor="middle">Dashboard</text>
+<rect x="2450" y="130" width="160" height="60" rx="10" fill="#e3f3ee" stroke="#0f766e" stroke-width="1.5"/>
+<text x="2530" y="158" font-size="14" font-weight="700" fill="#111827" text-anchor="middle">AI</text>
+<text x="2530" y="175" font-size="14" font-weight="700" fill="#111827" text-anchor="middle">Assistant</text>
+<g stroke="#111827" stroke-width="1.8" fill="none" stroke-linecap="round"><circle cx="2720" cy="136" r="10" fill="#fff"/><line x1="2720" y1="146" x2="2720" y2="178"/><line x1="2703" y1="156" x2="2737" y2="156"/><line x1="2720" y1="178" x2="2707" y2="196"/><line x1="2720" y1="178" x2="2733" y2="196"/></g>
+<text x="2720" y="214" font-size="14" font-weight="700" fill="#111827" text-anchor="middle">Factory User</text>
+<line x1="70" y1="2481" x2="130" y2="2481" stroke="#1e3a5f" stroke-width="1.5" marker-end="url(#fill)"/><text x="140" y="2485" font-size="12" fill="#374151">Synchronous message</text>
+<line x1="330" y1="2481" x2="390" y2="2481" stroke="#1e3a5f" stroke-width="1.5" marker-end="url(#open)"/><text x="400" y="2485" font-size="12" fill="#374151">Asynchronous message</text>
+<line x1="600" y1="2481" x2="660" y2="2481" stroke="#1e3a5f" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#open)"/><text x="670" y="2485" font-size="12" fill="#374151">Return message</text>
+<rect x="820" y="2471" width="12" height="20" fill="#e3f3ee" stroke="#0f766e" stroke-width="1.3"/><text x="842" y="2485" font-size="12" fill="#374151">Activation bar</text>
+<rect x="960" y="2471" width="40" height="20" fill="none" stroke="#8ea3c4" stroke-width="1.3"/><text x="1010" y="2485" font-size="12" fill="#374151">Combined fragment (loop / alt / opt)</text>
+<text x="1330" y="2485" font-size="12" fill="#374151">Numbers 1–14 follow the main Operix workflow; unnumbered messages are supporting steps.</text>
+<metadata><c2pa:manifest>AAAWgmp1bWIAAAAeanVtZGMycGEAEQAQgAAAqgA4m3EDYzJwYQAAABZcanVtYgAAAEdqdW1kYzJtYQARABCAAACqADibcQN1cm46YzJwYTo1ZTUxNDBmMy1jNWIxLTRhZDEtYjVkNi00ZjAzNTQ1NGZmOWQAAAADl2p1bWIAAAApanVtZGMyYXMAEQAQgAAAqgA4m3EDYzJwYS5hc3NlcnRpb25zAAAAALxqdW1iAAAARGp1bWRjYm9yABEAEIAAAKoAOJtxE2MycGEuaW5ncmVkaWVudC52MwAAAAAYYzJzaIsGoeFekT48s+U3bqWCjjgAAABwY2JvcqNpZGM6Zm9ybWF0bWltYWdlL3N2Zyt4bWxqaW5zdGFuY2VJRHgseG1wOmlpZDowM2Q3YmE0MS1jNTZkLTQxZDctYjFiZC1lYmE0ZmQxOGQ4YjFscmVsYXRpb25zaGlwaHBhcmVudE9mAAAB4mp1bWIAAABBanVtZGNib3IAEQAQgAAAqgA4m3ETYzJwYS5hY3Rpb25zLnYyAAAAABhjMnNo62MI/PlYAdonvT9BQzF5QgAAAZljYm9yomdhY3Rpb25zgqJmYWN0aW9ua2MycGEub3BlbmVkanBhcmFtZXRlcnOha2luZ3JlZGllbnRzgaJjdXJseC1zZWxmI2p1bWJmPWMycGEuYXNzZXJ0aW9ucy9jMnBhLmluZ3JlZGllbnQudjNkaGFzaFggJYdbkFKVro87KJbUDQGqpWuRVpWqoXxOxZ+ef4uG1j2kZmFjdGlvbngdY29tLmFudGhyb3BpYy5jbGF1ZGUucHJvdmlkZWRqcGFyYW1ldGVyc6F4H2NvbS5hbnRocm9waWMub3JpZ2luLWNvbmZpZGVuY2VndW5rbm93bmtkZXNjcmlwdGlvbnhmQ2xhdWRlIHByb3ZpZGVkIHRoaXMgZmlsZSBhdCB0aGUgcmVxdWVzdCBvZiBhIHVzZXIgYW5kIG1heSBoYXZlIGNyZWF0ZWQgb3IgbW9kaWZpZWQgdGhlIGZpbGUgY29udGVudHMubXNvZnR3YXJlQWdlbnShZG5hbWVmQ2xhdWRlcmFsbEFjdGlvbnNJbmNsdWRlZPUAAADIanVtYgAAAEBqdW1kY2JvcgARABCAAACqADibcRNjMnBhLmhhc2guZGF0YQAAAAAYYzJzaGalMyuVyreE7F87DuG1jJwAAACAY2JvcqVjYWxnZnNoYTI1NmNwYWRMAAAAAAAAAAAAAAAAZGhhc2hYIEx4r0QE1yCunfvhwTZFVKAU3FDaDXimpqCczNAGZPqUZG5hbWVuanVtYmYgbWFuaWZlc3RqZXhjbHVzaW9uc4GiZXN0YXJ0GW/WZmxlbmd0aBkeBAAAAj5qdW1iAAAAJ2p1bWRjMmNsABEAEIAAAKoAOJtxA2MycGEuY2xhaW0udjIAAAACD2Nib3KlY2FsZ2ZzaGEyNTZpc2lnbmF0dXJleE1zZWxmI2p1bWJmPS9jMnBhL3VybjpjMnBhOjVlNTE0MGYzLWM1YjEtNGFkMS1iNWQ2LTRmMDM1NDU0ZmY5ZC9jMnBhLnNpZ25hdHVyZWppbnN0YW5jZUlEeCx4bXA6aWlkOjJkZGUwOGY2LTRmYTUtNGVmZS04ZTg1LWI2OTM5Y2ZmMDQ3YnJjcmVhdGVkX2Fzc2VydGlvbnODomN1cmx4LXNlbGYjanVtYmY9YzJwYS5hc3NlcnRpb25zL2MycGEuaW5ncmVkaWVudC52M2RoYXNoWCAlh1uQUpWujzsoltQNAaqla5FWlaqhfE7Fn55/i4bWPaJjdXJseCpzZWxmI2p1bWJmPWMycGEuYXNzZXJ0aW9ucy9jMnBhLmFjdGlvbnMudjJkaGFzaFggKu++oJZ2QGYH3ytGMmn69xBqh6eu9chiS2dP2pugw3KiY3VybHgpc2VsZiNqdW1iZj1jMnBhLmFzc2VydGlvbnMvYzJwYS5oYXNoLmRhdGFkaGFzaFggL1FnA4HIwbqusxNNrfBhfrN9GlyNJZmjlLbdCa1jVRp0Y2xhaW1fZ2VuZXJhdG9yX2luZm+jZG5hbWVvQW50aHJvcGljIEZpbGVzZ3ZlcnNpb25lMS4wLjBrc3BlY1ZlcnNpb25lMi40LjAAABA4anVtYgAAAChqdW1kYzJjcwARABCAAACqADibcQNjMnBhLnNpZ25hdHVyZQAAABAIY2JvctKEWQISogEmGCFZAgowggIGMIIBjaADAgECAhRA5aAK7sI50L64g/oGQgU9Z1UTADAKBggqhkjOPQQDAzBJMRcwFQYDVQQKEw5BbnRocm9waWMsIFBCQzEuMCwGA1UEAxMlQW50aHJvcGljIENvbnRlbnQgQ3JlZGVudGlhbHMgUm9vdCBDQTAeFw0yNjA4MDcxODQzNTZaFw0yODA4MDYxOTQzNTZaMEQxFzAVBgNVBAoTDkFudGhyb3BpYywgUEJDMSkwJwYDVQQDEyBBbnRocm9waWMgQ2xhdWRlIENvbnRlbnQgU2lnbmluZzBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABJh6CmvLUBgFFNU0vUKlOVtE6djd17L5SuwX0LemFisBM3dkd/3cyjxFA3Qo5S46fX0/ihY0VZ7mfb9KF703t5OjWDBWMA4GA1UdDwEB/wQEAwIHgDAVBgNVHSUEDjAMBgorBgEEAYPoXgIBMAwGA1UdEwEB/wQCMAAwHwYDVR0jBBgwFoAUzlHiBIFOZFsj+OPEz5o+nMHXXMIwCgYIKoZIzj0EAwMDZwAwZAIwMXMdFJ4BetLLVY7ORuE9noqbbAZOZn/aArXyTwFAZfKrPzxF2vPoJNf1+UCdg1XGAjBwX1zd9WGqYkqmL5SFqw1QySjr1zJfpJM9+1rdDwSPLMOPOjKuiXjoU/pUUeG9RwmhY3BhZFkNngAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPZYQMgZMXl9iVO8G28qGc0m8lJgrkF84a/c5r/Xi6rlbrHkHc9zOiLHxUXlWTTUE2+uOrJAEQ/smUQBK/6YFl9hMRg=</c2pa:manifest></metadata></svg>
