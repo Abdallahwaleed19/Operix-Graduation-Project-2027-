@@ -2,8 +2,9 @@
 workforce_analytics/database.py
 SQLAlchemy 2.x engine + session factory.
 
-Uses psycopg 3 (postgresql+psycopg) driver.
-Provides a simple get_session() context-manager for synchronous analytics queries.
+Supports both psycopg 3 (postgresql+psycopg) and psycopg2 (postgresql+psycopg2).
+The driver is selected automatically based on what is installed, or set explicitly
+via DATABASE_URL in .env.
 
 SAFETY: This module opens read-only-style sessions (no DDL, no bulk writes).
         The analytics functions only issue SELECT statements.

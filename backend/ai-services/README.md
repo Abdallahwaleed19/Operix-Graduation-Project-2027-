@@ -51,23 +51,25 @@ reusable Python functions that the main FastAPI backend can call directly.
 ## Project Structure
 
 ```
-ai-services/
-├── .env                          ← Real DB credentials (git-ignored)
-├── .env.example                  ← Template — copy to .env
-├── requirements.txt
-├── run_demo.py                   ← Quick CLI demo
-└── workforce_analytics/
-    ├── __init__.py
-    ├── config.py                 ← Env-var loading + constants
-    ├── database.py               ← SQLAlchemy engine + session
-    ├── models.py                 ← ORM stubs (documentation only)
-    ├── repositories.py           ← All SELECT queries (raw SQL)
-    ├── analytics.py              ← Public API functions
-    ├── schemas.py                ← Pydantic v2 output models
-    ├── sample_data_seed.sql      ← Sample data (already inserted)
-    └── tests/
+backend/
+└── ai-services/
+    ├── .env                          ← Real DB credentials (git-ignored)
+    ├── .env.example                  ← Template — copy to .env
+    ├── requirements.txt
+    ├── run_demo.py                   ← Quick CLI demo
+    ├── run_tests.py                  ← Built-in 40-test suite (zero extra dependencies)
+    └── workforce_analytics/
         ├── __init__.py
-        └── test_analytics.py     ← pytest suite (30+ tests)
+        ├── config.py                 ← Env-var loading + constants
+        ├── database.py               ← SQLAlchemy engine + session (supports psycopg2 & psycopg3)
+        ├── models.py                 ← ORM stubs (documentation only)
+        ├── repositories.py           ← All SELECT queries (raw SQL)
+        ├── analytics.py              ← Public API functions
+        ├── schemas.py                ← Pydantic v2 output models
+        ├── sample_data_seed.sql      ← Sample data (already inserted)
+        └── tests/
+            ├── __init__.py
+            └── test_analytics.py     ← pytest suite (30+ tests)
 ```
 
 ---
@@ -76,29 +78,17 @@ ai-services/
 
 ### Requirements
 
-- Python 3.14 (from `C:\Users\<you>\AppData\Local\Programs\Python\Python314\`)
+- Python 3.14 (or any Python 3.10+)
 - PostgreSQL 18 running on `localhost:5432`
 - Database `operix_db` already created and seeded
 
-### 1 — Clone / navigate to the module
+### 1 — Navigate to the module
 
 ```powershell
-cd "d:\...\Operix\ai-services"
+cd "d:\Menoufia National University 2026-2027\Faculty_of_Computers_&_Artificial_Intelligence\Level 4\Graduated Project 2026-2027\Operix\backend\ai-services"
 ```
 
-### 2 — Create virtual environment
-
-```powershell
-"C:\Users\<YourName>\AppData\Local\Programs\Python\Python314\python.exe" -m venv .venv
-```
-
-### 3 — Install dependencies
-
-```powershell
-.\.venv\Scripts\pip install sqlalchemy "psycopg[binary]" pydantic python-dotenv pytest pytest-asyncio
-```
-
-### 4 — Configure `.env`
+### 2 — Configure `.env`
 
 Copy the example and fill in your credentials:
 
@@ -106,11 +96,11 @@ Copy the example and fill in your credentials:
 Copy-Item .env.example .env
 ```
 
-Edit `.env`:
+Default content of `.env`:
 
 ```
-DATABASE_URL=postgresql+psycopg://postgres:abdallah@localhost:5432/operix_db
-DEFAULT_FACTORY_ID=aaaaaaaa-0001-0001-0001-000000000001
+DATABASE_URL=postgresql+psycopg2://postgres:abdallah@localhost:5432/operix_db
+OPERIX_FACTORY_ID=aaaaaaaa-0001-0001-0001-000000000001
 LOW_PRODUCTIVITY_THRESHOLD=2
 HIGH_PRODUCTIVITY_THRESHOLD=5
 RESOLUTION_RATE_TARGET=0.80
@@ -120,50 +110,24 @@ RESOLUTION_RATE_TARGET=0.80
 > Never commit `.env` to Git — it contains your database password.
 > The `.gitignore` already excludes it.
 
-### 5 — Run the demo
+### 3 — Run the demo
 
 ```powershell
-.\.venv\Scripts\python run_demo.py
+python run_demo.py
 ```
 
-Expected output:
+### 4 — Run automated tests
 
-```
-=================================================================
-  Operix — Workforce Analytics Demo
-=================================================================
-[OK] Database connection successful.
-
-── A. WORKFORCE OVERVIEW ─────────────────────────────────────
-  Total users    : 8
-  Active workers : 7
-  Inactive       : 1
-  By role        : {'factory_admin': 1, 'factory_manager': 2, 'safety_supervisor': 4}
-
-── B. ATTENDANCE (proxy) ──────────────────────────────────────
-  Members with activity : 6 / 8
-  Activity rate         : 75.0%
-
-── C. INCIDENT ANALYTICS ──────────────────────────────────────
-  Total incidents      : 15
-  Resolved             : 7
-  Resolution rate      : 46.67%
-  Target met (≥80%)    : False
-
-── D. PRODUCTIVITY METRICS ────────────────────────────────────
-  Workers analysed     : 7
-  Avg handled/worker   : ...
-
-── E. CAMERA COVERAGE ─────────────────────────────────────────
-  Total cameras        : 4
-  Active / Inactive    : 3 / 1
-  Overall coverage     : ...%
-```
-
-### 6 — Run automated tests
+You can run the zero-dependency test runner directly using Python's standard library:
 
 ```powershell
-.\.venv\Scripts\pytest workforce_analytics/tests/test_analytics.py -v
+python run_tests.py
+```
+
+Or using pytest:
+
+```powershell
+pytest workforce_analytics/tests/test_analytics.py -v
 ```
 
 ---
