@@ -306,5 +306,11 @@ class TestWorkforceSummary(unittest.TestCase):
         self.assertTrue(len(json_str) > 0)
 
 
+from workforce_analytics.tests.test_service import (
+    TestAPIContracts,
+    TestServiceEdgeCases,
+    TestWorkforceAnalyticsService,
+)
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
