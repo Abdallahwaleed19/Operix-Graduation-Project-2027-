@@ -4,7 +4,7 @@
 > Faculty of Computers & Artificial Intelligence — Level 4  
 > **Module Owner:** Abdallah Waleed  
 > **Backend Integration Lead:** Seif Sameh (FastAPI)  
-> **Frontend Integration Lead:** Taqi (HTML/CSS/JS Dashboard)  
+> **Frontend Integration Lead:** Toka (HTML/CSS/JS Dashboard)  
 
 ---
 
@@ -14,7 +14,7 @@ This package provides an **independent, production-ready Workforce Analytics Ser
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│              Taqi's Frontend Dashboard                  │
+│              Toka's Frontend Dashboard                  │
 │             (HTML5 / CSS3 / JavaScript)                 │
 └────────────────────────────┬────────────────────────────┘
                              │ HTTP REST API (JSON)
