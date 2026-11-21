@@ -1,0 +1,26 @@
+# Operix — LLM / RAG Assistant Dependencies
+# Python 3.10+ / 3.14 Compatible
+
+# Core Framework & Validation
+pydantic>=2.9.2
+python-dotenv>=1.0.0
+httpx>=0.28.0
+requests>=2.32.0
+
+# Numerical Computing & Vector Operations (Pure NumPy cosine similarity)
+numpy>=2.0.0
+
+# Database Access (Read-Only Operational PostgreSQL)
+sqlalchemy>=2.0.36
+psycopg2-binary>=2.9.13
+
+# Document Ingestion & PDF Parsing
+pypdf>=5.1.0
+pymupdf>=1.24.0
+
+# Cloud AI Provider (Optional when using Ollama or Mock)
+openai>=1.40.0
+
+# Testing & Quality Assurance
+pytest>=8.3.0
+pytest-asyncio>=0.24.0

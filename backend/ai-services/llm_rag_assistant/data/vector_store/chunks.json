@@ -1,0 +1,407 @@
+[
+  {
+    "content": "Safety Rule: 'Potential Fatigue Detection'\nRule ID: ffffffff-0003-0003-0003-000000000003\nTarget Event: potential_fatigue\nSeverity Level: medium\nThreshold: Immediate trigger\nNotification Dispatched: Yes\nDescription: Enforces mandatory safety compliance against potential_fatigue with medium severity level.",
+    "metadata": {
+      "chunk_id": "chk_b27dfc9df2d29b1b",
+      "source_id": "ffffffff-0003-0003-0003-000000000003",
+      "source_title": "Safety Rule: Potential Fatigue Detection",
+      "source_type": "db_safety_rule",
+      "factory_id": "aaaaaaaa-0001-0001-0001-000000000001",
+      "department_id": null,
+      "page_number": null,
+      "created_at": "2026-11-21T22:12:29.143413Z",
+      "extra": {}
+    },
+    "token_estimate": 76
+  },
+  {
+    "content": "Safety Rule: 'PPE Violation — Welding'\nRule ID: ffffffff-0001-0001-0001-000000000001\nTarget Event: ppe_violation\nSeverity Level: high\nThreshold: Immediate trigger\nNotification Dispatched: Yes\nDescription: Enforces mandatory safety compliance against ppe_violation with high severity level.",
+    "metadata": {
+      "chunk_id": "chk_9a127496236897b8",
+      "source_id": "ffffffff-0001-0001-0001-000000000001",
+      "source_title": "Safety Rule: PPE Violation — Welding",
+      "source_type": "db_safety_rule",
+      "factory_id": "aaaaaaaa-0001-0001-0001-000000000001",
+      "department_id": null,
+      "page_number": null,
+      "created_at": "2026-11-21T22:12:29.143477Z",
+      "extra": {}
+    },
+    "token_estimate": 72
+  },
+  {
+    "content": "Safety Rule: 'Restricted Zone Intrusion'\nRule ID: ffffffff-0002-0002-0002-000000000002\nTarget Event: restricted_zone_intrusion\nSeverity Level: critical\nThreshold: Immediate trigger\nNotification Dispatched: Yes\nDescription: Enforces mandatory safety compliance against restricted_zone_intrusion with critical severity level.",
+    "metadata": {
+      "chunk_id": "chk_02f8649dd06d47f2",
+      "source_id": "ffffffff-0002-0002-0002-000000000002",
+      "source_title": "Safety Rule: Restricted Zone Intrusion",
+      "source_type": "db_safety_rule",
+      "factory_id": "aaaaaaaa-0001-0001-0001-000000000001",
+      "department_id": null,
+      "page_number": null,
+      "created_at": "2026-11-21T22:12:29.143508Z",
+      "extra": {}
+    },
+    "token_estimate": 80
+  },
+  {
+    "content": "Monitoring Zone: 'Warehouse PPE Zone'\nZone ID: eeeeeeee-0002-0002-0002-000000000002\nZone Type: ppe_required\nAssociated Camera: Warehouse-CAM-01\nDepartment: Warehouse\nDetails: Industrial safety zone designated as 'ppe_required' for continuous AI inspection.",
+    "metadata": {
+      "chunk_id": "chk_84d7bc90b9507155",
+      "source_id": "eeeeeeee-0002-0002-0002-000000000002",
+      "source_title": "Monitoring Zone: Warehouse PPE Zone",
+      "source_type": "db_monitoring_zone",
+      "factory_id": "aaaaaaaa-0001-0001-0001-000000000001",
+      "department_id": null,
+      "page_number": null,
+      "created_at": "2026-11-21T22:12:29.143529Z",
+      "extra": {}
+    },
+    "token_estimate": 64
+  },
+  {
+    "content": "Monitoring Zone: 'Welding Restricted Zone'\nZone ID: eeeeeeee-0001-0001-0001-000000000001\nZone Type: restricted\nAssociated Camera: Welding-CAM-01\nDepartment: Welding Zone\nDetails: Industrial safety zone designated as 'restricted' for continuous AI inspection.",
+    "metadata": {
+      "chunk_id": "chk_81f7c3dafea8bed2",
+      "source_id": "eeeeeeee-0001-0001-0001-000000000001",
+      "source_title": "Monitoring Zone: Welding Restricted Zone",
+      "source_type": "db_monitoring_zone",
+      "factory_id": "aaaaaaaa-0001-0001-0001-000000000001",
+      "department_id": null,
+      "page_number": null,
+      "created_at": "2026-11-21T22:12:29.143548Z",
+      "extra": {}
+    },
+    "token_estimate": 64
+  },
+  {
+    "content": "Incident Record: #11111111-000f-000f-000f-00000000000f\nType: potential_fatigue\nSeverity: low\nCurrent State: OPEN (detected)\nOpened At: 2026-11-19 13:59:50.650043+02:00\nReviewed At: Pending review\nReviewed By: N/A\nResolved At: Unresolved\nResolved By: N/A",
+    "metadata": {
+      "chunk_id": "chk_3078b6d472f07d40",
+      "source_id": "11111111-000f-000f-000f-00000000000f",
+      "source_title": "Incident #11111111 (potential_fatigue)",
+      "source_type": "db_incident",
+      "factory_id": "aaaaaaaa-0001-0001-0001-000000000001",
+      "department_id": null,
+      "page_number": null,
+      "created_at": "2026-11-21T22:12:29.143569Z",
+      "extra": {}
+    },
+    "token_estimate": 63
+  },
+  {
+    "content": "Incident Record: #11111111-000e-000e-000e-00000000000e\nType: ppe_violation\nSeverity: medium\nCurrent State: OPEN (detected)\nOpened At: 2026-11-19 01:59:50.650043+02:00\nReviewed At: Pending review\nReviewed By: N/A\nResolved At: Unresolved\nResolved By: N/A",
+    "metadata": {
+      "chunk_id": "chk_36c6ee03b8accb14",
+      "source_id": "11111111-000e-000e-000e-00000000000e",
+      "source_title": "Incident #11111111 (ppe_violation)",
+      "source_type": "db_incident",
+      "factory_id": "aaaaaaaa-0001-0001-0001-000000000001",
+      "department_id": null,
+      "page_number": null,
+      "created_at": "2026-11-21T22:12:29.143587Z",
+      "extra": {}
+    },
+    "token_estimate": 63
+  },
+  {
+    "content": "Incident Record: #11111111-000d-000d-000d-00000000000d\nType: restricted_zone_intrusion\nSeverity: high\nCurrent State: OPEN (classified)\nOpened At: 2026-11-18 01:59:50.650043+02:00\nReviewed At: Pending review\nReviewed By: N/A\nResolved At: Unresolved\nResolved By: N/A",
+    "metadata": {
+      "chunk_id": "chk_0113ff98594cba8e",
+      "source_id": "11111111-000d-000d-000d-00000000000d",
+      "source_title": "Incident #11111111 (restricted_zone_intrusion)",
+      "source_type": "db_incident",
+      "factory_id": "aaaaaaaa-0001-0001-0001-000000000001",
+      "department_id": null,
+      "page_number": null,
+      "created_at": "2026-11-21T22:12:29.143606Z",
+      "extra": {}
+    },
+    "token_estimate": 66
+  },
+  {
+    "content": "Incident Record: #11111111-000c-000c-000c-00000000000c\nType: fall\nSeverity: critical\nCurrent State: OPEN (recorded)\nOpened At: 2026-11-17 01:59:50.650043+02:00\nReviewed At: Pending review\nReviewed By: N/A\nResolved At: Unresolved\nResolved By: N/A",
+    "metadata": {
+      "chunk_id": "chk_832c0f6778c3a9a6",
+      "source_id": "11111111-000c-000c-000c-00000000000c",
+      "source_title": "Incident #11111111 (fall)",
+      "source_type": "db_incident",
+      "factory_id": "aaaaaaaa-0001-0001-0001-000000000001",
+      "department_id": null,
+      "page_number": null,
+      "created_at": "2026-11-21T22:12:29.143624Z",
+      "extra": {}
+    },
+    "token_estimate": 61
+  },
+  {
+    "content": "Incident Record: #11111111-000b-000b-000b-00000000000b\nType: ppe_violation\nSeverity: critical\nCurrent State: OPEN (alert_pending)\nOpened At: 2026-11-16 01:59:50.650043+02:00\nReviewed At: Pending review\nReviewed By: N/A\nResolved At: Unresolved\nResolved By: N/A",
+    "metadata": {
+      "chunk_id": "chk_36ec42287f56152b",
+      "source_id": "11111111-000b-000b-000b-00000000000b",
+      "source_title": "Incident #11111111 (ppe_violation)",
+      "source_type": "db_incident",
+      "factory_id": "aaaaaaaa-0001-0001-0001-000000000001",
+      "department_id": null,
+      "page_number": null,
+      "created_at": "2026-11-21T22:12:29.143643Z",
+      "extra": {}
+    },
+    "token_estimate": 64
+  },
+  {
+    "content": "Incident Record: #11111111-000a-000a-000a-00000000000a\nType: potential_fatigue\nSeverity: medium\nCurrent State: OPEN (under_review)\nOpened At: 2026-11-14 01:59:50.650043+02:00\nReviewed At: 2026-11-14 05:59:50.650043+02:00\nReviewed By: Khaled Ibrahim\nResolved At: Unresolved\nResolved By: N/A",
+    "metadata": {
+      "chunk_id": "chk_b77416e5f9ef4ac5",
+      "source_id": "11111111-000a-000a-000a-00000000000a",
+      "source_title": "Incident #11111111 (potential_fatigue)",
+      "source_type": "db_incident",
+      "factory_id": "aaaaaaaa-0001-0001-0001-000000000001",
+      "department_id": null,
+      "page_number": null,
+      "created_at": "2026-11-21T22:12:29.143662Z",
+      "extra": {}
+    },
+    "token_estimate": 72
+  },
+  {
+    "content": "Incident Record: #11111111-0009-0009-0009-000000000009\nType: ppe_violation\nSeverity: high\nCurrent State: OPEN (under_review)\nOpened At: 2026-11-12 01:59:50.650043+02:00\nReviewed At: 2026-11-12 03:59:50.650043+02:00\nReviewed By: Ahmed Hassan\nResolved At: Unresolved\nResolved By: N/A",
+    "metadata": {
+      "chunk_id": "chk_12b251fa7b3f3c8b",
+      "source_id": "11111111-0009-0009-0009-000000000009",
+      "source_title": "Incident #11111111 (ppe_violation)",
+      "source_type": "db_incident",
+      "factory_id": "aaaaaaaa-0001-0001-0001-000000000001",
+      "department_id": null,
+      "page_number": null,
+      "created_at": "2026-11-21T22:12:29.143683Z",
+      "extra": {}
+    },
+    "token_estimate": 70
+  },
+  {
+    "content": "Incident Record: #11111111-0008-0008-0008-000000000008\nType: restricted_zone_intrusion\nSeverity: high\nCurrent State: OPEN (under_review)\nOpened At: 2026-11-10 01:59:50.650043+02:00\nReviewed At: 2026-11-10 03:59:50.650043+02:00\nReviewed By: Mahmoud Ali\nResolved At: Unresolved\nResolved By: N/A",
+    "metadata": {
+      "chunk_id": "chk_fa2e0e905ed477b7",
+      "source_id": "11111111-0008-0008-0008-000000000008",
+      "source_title": "Incident #11111111 (restricted_zone_intrusion)",
+      "source_type": "db_incident",
+      "factory_id": "aaaaaaaa-0001-0001-0001-000000000001",
+      "department_id": null,
+      "page_number": null,
+      "created_at": "2026-11-21T22:12:29.143704Z",
+      "extra": {}
+    },
+    "token_estimate": 73
+  },
+  {
+    "content": "Incident Record: #11111111-0007-0007-0007-000000000007\nType: potential_fatigue\nSeverity: low\nCurrent State: RESOLVED\nOpened At: 2026-11-04 01:59:50.650043+02:00\nReviewed At: 2026-11-04 05:59:50.650043+02:00\nReviewed By: Toka Medhat\nResolved At: 2026-11-04 09:59:50.650043+02:00\nResolved By: Seif Sameh",
+    "metadata": {
+      "chunk_id": "chk_3a40d463a755dcbb",
+      "source_id": "11111111-0007-0007-0007-000000000007",
+      "source_title": "Incident #11111111 (potential_fatigue)",
+      "source_type": "db_incident",
+      "factory_id": "aaaaaaaa-0001-0001-0001-000000000001",
+      "department_id": null,
+      "page_number": null,
+      "created_at": "2026-11-21T22:12:29.143725Z",
+      "extra": {}
+    },
+    "token_estimate": 75
+  },
+  {
+    "content": "Incident Record: #11111111-0006-0006-0006-000000000006\nType: ppe_violation\nSeverity: medium\nCurrent State: RESOLVED\nOpened At: 2026-11-02 01:59:50.650043+02:00\nReviewed At: 2026-11-02 03:59:50.650043+02:00\nReviewed By: Khaled Ibrahim\nResolved At: 2026-11-02 06:59:50.650043+02:00\nResolved By: Mohamed Shaheen",
+    "metadata": {
+      "chunk_id": "chk_08acf13c459c68b6",
+      "source_id": "11111111-0006-0006-0006-000000000006",
+      "source_title": "Incident #11111111 (ppe_violation)",
+      "source_type": "db_incident",
+      "factory_id": "aaaaaaaa-0001-0001-0001-000000000001",
+      "department_id": null,
+      "page_number": null,
+      "created_at": "2026-11-21T22:12:29.143743Z",
+      "extra": {}
+    },
+    "token_estimate": 77
+  },
+  {
+    "content": "Incident Record: #11111111-0005-0005-0005-000000000005\nType: fall\nSeverity: critical\nCurrent State: RESOLVED\nOpened At: 2026-10-31 01:59:50.650043+02:00\nReviewed At: 2026-10-31 05:59:50.650043+02:00\nReviewed By: Ahmed Hassan\nResolved At: 2026-10-31 11:59:50.650043+02:00\nResolved By: Seif Sameh",
+    "metadata": {
+      "chunk_id": "chk_9148dfd3d8a9824f",
+      "source_id": "11111111-0005-0005-0005-000000000005",
+      "source_title": "Incident #11111111 (fall)",
+      "source_type": "db_incident",
+      "factory_id": "aaaaaaaa-0001-0001-0001-000000000001",
+      "department_id": null,
+      "page_number": null,
+      "created_at": "2026-11-21T22:12:29.143761Z",
+      "extra": {}
+    },
+    "token_estimate": 73
+  },
+  {
+    "content": "Incident Record: #11111111-0004-0004-0004-000000000004\nType: ppe_violation\nSeverity: high\nCurrent State: RESOLVED\nOpened At: 2026-10-29 01:59:50.650043+03:00\nReviewed At: 2026-10-29 03:59:50.650043+03:00\nReviewed By: Mahmoud Ali\nResolved At: 2026-10-29 06:59:50.650043+03:00\nResolved By: Mohamed Shaheen",
+    "metadata": {
+      "chunk_id": "chk_355838938463f0ce",
+      "source_id": "11111111-0004-0004-0004-000000000004",
+      "source_title": "Incident #11111111 (ppe_violation)",
+      "source_type": "db_incident",
+      "factory_id": "aaaaaaaa-0001-0001-0001-000000000001",
+      "department_id": null,
+      "page_number": null,
+      "created_at": "2026-11-21T22:12:29.143779Z",
+      "extra": {}
+    },
+    "token_estimate": 75
+  },
+  {
+    "content": "Incident Record: #11111111-0003-0003-0003-000000000003\nType: potential_fatigue\nSeverity: medium\nCurrent State: RESOLVED\nOpened At: 2026-10-27 01:59:50.650043+03:00\nReviewed At: 2026-10-27 05:59:50.650043+03:00\nReviewed By: Toka Medhat\nResolved At: 2026-10-27 10:59:50.650043+03:00\nResolved By: Seif Sameh",
+    "metadata": {
+      "chunk_id": "chk_b159a7af01abb1bc",
+      "source_id": "11111111-0003-0003-0003-000000000003",
+      "source_title": "Incident #11111111 (potential_fatigue)",
+      "source_type": "db_incident",
+      "factory_id": "aaaaaaaa-0001-0001-0001-000000000001",
+      "department_id": null,
+      "page_number": null,
+      "created_at": "2026-11-21T22:12:29.143799Z",
+      "extra": {}
+    },
+    "token_estimate": 76
+  },
+  {
+    "content": "Incident Record: #11111111-0002-0002-0002-000000000002\nType: restricted_zone_intrusion\nSeverity: critical\nCurrent State: RESOLVED\nOpened At: 2026-10-25 01:59:50.650043+03:00\nReviewed At: 2026-10-25 03:59:50.650043+03:00\nReviewed By: Ahmed Hassan\nResolved At: 2026-10-25 07:59:50.650043+03:00\nResolved By: Mohamed Shaheen",
+    "metadata": {
+      "chunk_id": "chk_6c829754ba90a086",
+      "source_id": "11111111-0002-0002-0002-000000000002",
+      "source_title": "Incident #11111111 (restricted_zone_intrusion)",
+      "source_type": "db_incident",
+      "factory_id": "aaaaaaaa-0001-0001-0001-000000000001",
+      "department_id": null,
+      "page_number": null,
+      "created_at": "2026-11-21T22:12:29.143820Z",
+      "extra": {}
+    },
+    "token_estimate": 80
+  },
+  {
+    "content": "Incident Record: #11111111-0001-0001-0001-000000000001\nType: ppe_violation\nSeverity: high\nCurrent State: RESOLVED\nOpened At: 2026-10-23 01:59:50.650043+03:00\nReviewed At: 2026-10-23 02:59:50.650043+03:00\nReviewed By: Toka Medhat\nResolved At: 2026-10-23 05:59:50.650043+03:00\nResolved By: Seif Sameh",
+    "metadata": {
+      "chunk_id": "chk_e2be6c1cdf60977b",
+      "source_id": "11111111-0001-0001-0001-000000000001",
+      "source_title": "Incident #11111111 (ppe_violation)",
+      "source_type": "db_incident",
+      "factory_id": "aaaaaaaa-0001-0001-0001-000000000001",
+      "department_id": null,
+      "page_number": null,
+      "created_at": "2026-11-21T22:12:29.143838Z",
+      "extra": {}
+    },
+    "token_estimate": 74
+  },
+  {
+    "content": "Camera Stream: 'Maint-CAM-01'\nCamera ID: dddddddd-0004-0004-0004-000000000004\nType: cctv\nDepartment: Maintenance\nOperational Status: INACTIVE / MAINTENANCE\nRecorded Outage Gaps: 0\nTotal Downtime: 0.00 hours",
+    "metadata": {
+      "chunk_id": "chk_6771dc658720d3f9",
+      "source_id": "dddddddd-0004-0004-0004-000000000004",
+      "source_title": "Camera Telemetry: Maint-CAM-01",
+      "source_type": "db_camera",
+      "factory_id": "aaaaaaaa-0001-0001-0001-000000000001",
+      "department_id": null,
+      "page_number": null,
+      "created_at": "2026-11-21T22:12:29.143854Z",
+      "extra": {}
+    },
+    "token_estimate": 51
+  },
+  {
+    "content": "Camera Stream: 'Warehouse-CAM-01'\nCamera ID: dddddddd-0003-0003-0003-000000000003\nType: cctv\nDepartment: Warehouse\nOperational Status: ACTIVE\nRecorded Outage Gaps: 1\nTotal Downtime: 1.00 hours",
+    "metadata": {
+      "chunk_id": "chk_b7349167a4638ff3",
+      "source_id": "dddddddd-0003-0003-0003-000000000003",
+      "source_title": "Camera Telemetry: Warehouse-CAM-01",
+      "source_type": "db_camera",
+      "factory_id": "aaaaaaaa-0001-0001-0001-000000000001",
+      "department_id": null,
+      "page_number": null,
+      "created_at": "2026-11-21T22:12:29.143872Z",
+      "extra": {}
+    },
+    "token_estimate": 48
+  },
+  {
+    "content": "Camera Stream: 'Welding-CAM-01'\nCamera ID: dddddddd-0001-0001-0001-000000000001\nType: cctv\nDepartment: Welding Zone\nOperational Status: ACTIVE\nRecorded Outage Gaps: 1\nTotal Downtime: 2.00 hours",
+    "metadata": {
+      "chunk_id": "chk_3a87ce12199f80f0",
+      "source_id": "dddddddd-0001-0001-0001-000000000001",
+      "source_title": "Camera Telemetry: Welding-CAM-01",
+      "source_type": "db_camera",
+      "factory_id": "aaaaaaaa-0001-0001-0001-000000000001",
+      "department_id": null,
+      "page_number": null,
+      "created_at": "2026-11-21T22:12:29.143887Z",
+      "extra": {}
+    },
+    "token_estimate": 48
+  },
+  {
+    "content": "Camera Stream: 'Welding-CAM-02'\nCamera ID: dddddddd-0002-0002-0002-000000000002\nType: cctv\nDepartment: Welding Zone\nOperational Status: ACTIVE\nRecorded Outage Gaps: 1\nTotal Downtime: 1.00 hours",
+    "metadata": {
+      "chunk_id": "chk_2e0d29dc016ce44a",
+      "source_id": "dddddddd-0002-0002-0002-000000000002",
+      "source_title": "Camera Telemetry: Welding-CAM-02",
+      "source_type": "db_camera",
+      "factory_id": "aaaaaaaa-0001-0001-0001-000000000001",
+      "department_id": null,
+      "page_number": null,
+      "created_at": "2026-11-21T22:12:29.143902Z",
+      "extra": {}
+    },
+    "token_estimate": 48
+  },
+  {
+    "content": "# Operix Industrial Facility Standard Operating Procedure (SOP) ## Document ID: SOP-SAFE-2026-01\n**Facility Scope:** Heavy Manufacturing & Automated Welding Cells \n**Status:** Approved Operational Regulation ### Section 1: Personal Protective Equipment (PPE) Requirements\n1. Every operator entering the Welding Zone must wear ANSI Z87.1 approved impact-resistant safety goggles. 2. Fire-retardant leather aprons and welding gloves are mandatory during active arc welding operations. 3.",
+    "metadata": {
+      "chunk_id": "chk_9b6b9f9bdff5ddfa",
+      "source_id": "safety_sop_sample.md",
+      "source_title": "Safety Sop Sample",
+      "source_type": "manual_markdown",
+      "factory_id": "aaaaaaaa-0001-0001-0001-000000000001",
+      "department_id": null,
+      "page_number": 1,
+      "created_at": "2026-11-21T22:12:29.144153Z",
+      "extra": {}
+    },
+    "token_estimate": 121
+  },
+  {
+    "content": "3. Steel-toed boots must be worn in all areas where heavy machinery, overhead cranes, or transport forklifts are operating. 4. Failure to comply with PPE rules will result in immediate system incident flagging and supervisor notification. ### Section 2: Restricted Monitoring Zones\n1. The Welding Restricted Zone (Zone ID: eeeeeeee-0001-0001-0001-000000000001) is strictly designated for automated robotic welders. 2.",
+    "metadata": {
+      "chunk_id": "chk_288284fbccb5034a",
+      "source_id": "safety_sop_sample.md",
+      "source_title": "Safety Sop Sample",
+      "source_type": "manual_markdown",
+      "factory_id": "aaaaaaaa-0001-0001-0001-000000000001",
+      "department_id": null,
+      "page_number": 1,
+      "created_at": "2026-11-21T22:12:29.144171Z",
+      "extra": {}
+    },
+    "token_estimate": 104
+  },
+  {
+    "content": "2. Human entry is prohibited during active welding cycles without lockout/tagout (LOTO) key interlock engagement. 3. If an unauthorized person is detected within the perimeter polygon, the AI vision system immediately raises a Critical severity intrusion incident. ### Section 3: Camera Telemetry & Blackout Reporting\n1. Cameras must maintain 99.5% continuous streaming uptime. 2. Any unobserved outage gap exceeding 15 minutes triggers an alert to plant maintenance personnel.",
+    "metadata": {
+      "chunk_id": "chk_df120e3da0e199d5",
+      "source_id": "safety_sop_sample.md",
+      "source_title": "Safety Sop Sample",
+      "source_type": "manual_markdown",
+      "factory_id": "aaaaaaaa-0001-0001-0001-000000000001",
+      "department_id": null,
+      "page_number": 1,
+      "created_at": "2026-11-21T22:12:29.144184Z",
+      "extra": {}
+    },
+    "token_estimate": 119
+  }
+]
