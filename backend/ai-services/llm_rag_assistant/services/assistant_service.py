@@ -12,6 +12,7 @@ from ..config.settings import get_settings
 from ..ingestion.text_processor import detect_language
 from ..llm.context_manager import ConversationManager
 from ..llm.grounding_guardrails import extract_citations, is_refusal_response
+from ..llm.remediation_engine import RemediationEngine
 from ..prompts.templates import (
     BASE_SYSTEM_PROMPT_AR,
     BASE_SYSTEM_PROMPT_EN,
@@ -20,25 +21,31 @@ from ..prompts.templates import (
 from ..providers.llm_provider import ChatMessage, LLMProviderBase, get_llm_provider
 from ..retrieval.retriever import KnowledgeRetriever
 from ..schemas.contracts import (
+    ActionExecutionRequest,
+    ActionExecutionResponse,
     AssistantQueryRequest,
     AssistantQueryResponse,
+    ProposedAction,
     RetrievalFilter,
     SourceCitation,
 )
+from .action_service import OperixActionService, get_action_service
 
 
 class OperixAssistantService:
-    """Production facade orchestrating RAG knowledge retrieval and LLM generation."""
+    """Production facade orchestrating RAG knowledge retrieval, LLM generation, and agentic actions."""
 
     def __init__(
         self,
         retriever: Optional[KnowledgeRetriever] = None,
         llm_provider: Optional[LLMProviderBase] = None,
         conversation_manager: Optional[ConversationManager] = None,
+        action_service: Optional[OperixActionService] = None,
     ) -> None:
         self.retriever = retriever or KnowledgeRetriever()
         self.llm_provider = llm_provider or get_llm_provider()
         self.conversation_manager = conversation_manager or ConversationManager()
+        self.action_service = action_service or get_action_service()
 
     def check_health(self) -> dict[str, str]:
         """Diagnostic health check."""
@@ -101,7 +108,16 @@ class OperixAssistantService:
         has_evidence = retrieval_res.has_sufficient_evidence and not is_refusal_response(generated_answer)
         citations = extract_citations(retrieval_res.chunks, generated_answer) if has_evidence else []
 
-        # 9. Update conversation history
+        # 9. Agentic Remediation & Action Proposals
+        suggested_actions: List[ProposedAction] = []
+        if has_evidence:
+            suggested_actions = RemediationEngine.evaluate_actions(
+                question=request.question,
+                retrieved_chunks=retrieval_res.chunks,
+                language=target_lang,
+            )
+
+        # 10. Update conversation history
         self.conversation_manager.add_turn(conv_id, request.question, generated_answer)
 
         duration = round(time.perf_counter() - start_time, 3)
@@ -111,11 +127,16 @@ class OperixAssistantService:
             conversation_id=conv_id,
             has_sufficient_evidence=has_evidence,
             citations=citations,
+            suggested_actions=suggested_actions,
             provider=self.llm_provider.provider_name,
             model_name=self.llm_provider.model_name,
             language=target_lang,
             processing_time_seconds=duration,
         )
+
+    def execute_action(self, request: ActionExecutionRequest) -> ActionExecutionResponse:
+        """Execute an authorized remediation action."""
+        return self.action_service.execute(request)
 
     def get_sources(self, query: str, factory_id: Optional[UUID] = None) -> List[SourceCitation]:
         """Fetch matching citations directly without generating a chat completion."""

@@ -31,7 +31,12 @@ from llm_rag_assistant.providers.llm_provider import (
 )
 from llm_rag_assistant.retrieval.retriever import KnowledgeRetriever
 from llm_rag_assistant.retrieval.vector_store import NumPyVectorStore
-from llm_rag_assistant.schemas.contracts import AssistantQueryRequest, UserContext
+from llm_rag_assistant.schemas.contracts import (
+    ActionExecutionRequest,
+    AssistantQueryRequest,
+    ProposedAction,
+    UserContext,
+)
 from llm_rag_assistant.services.assistant_service import OperixAssistantService
 
 
@@ -74,8 +79,9 @@ def main() -> int:
     print("=" * 70)
     print("Commands:")
     print("  - Type your question in Arabic or English (e.g. 'ما هي شروط منطقة اللحام؟')")
-    print("  - Type 'exit' or 'quit' to end chat.")
+    print("  - Type 'exec <num>' or 'نفذ <num>' to authorize and execute a proposed action.")
     print("  - Type 'sources' to inspect all currently indexed sources.")
+    print("  - Type 'exit' or 'quit' to end chat.")
     print("=" * 70)
 
     service = build_service()
@@ -89,6 +95,7 @@ def main() -> int:
         factory_id=settings.default_factory_id,
     )
     session_id = "interactive-cli-session"
+    last_actions: list[ProposedAction] = []
 
     while True:
         try:
@@ -100,6 +107,37 @@ def main() -> int:
             if user_input.lower() in ("exit", "quit", "q"):
                 print("\n[!] Exiting Operix Assistant. Stay safe!")
                 break
+
+            # Handle Action Execution Command: 'exec 1' or 'نفذ 1'
+            exec_match = None
+            for prefix in ("exec", "act", "نفذ", "طبق", "execute"):
+                if user_input.lower().startswith(prefix):
+                    parts = user_input.split()
+                    if len(parts) >= 2 and parts[1].isdigit():
+                        exec_match = int(parts[1]) - 1
+                    break
+
+            if exec_match is not None:
+                if not last_actions or exec_match < 0 or exec_match >= len(last_actions):
+                    print(f"\n[!] Invalid action index. Available actions count: {len(last_actions)}")
+                else:
+                    selected_act = last_actions[exec_match]
+                    print(f"\n[*] Executing Authorized Action: [{selected_act.title}]...")
+                    exec_res = service.execute_action(
+                        ActionExecutionRequest(
+                            action_id=selected_act.action_id,
+                            action_type=selected_act.action_type,
+                            parameters=selected_act.parameters,
+                            confirmed_by=user_ctx.full_name,
+                            factory_id=user_ctx.factory_id,
+                        )
+                    )
+                    print(f"\n[SUCCESS - ACTION EXECUTED]")
+                    print(f"  • Status          : {exec_res.status.upper()}")
+                    print(f"  • Audit Reference : {exec_res.audit_reference}")
+                    print(f"  • Message         : {exec_res.message}")
+                    print(f"  • Details         : {exec_res.details}\n")
+                continue
 
             if user_input.lower() == "sources":
                 chunks = getattr(service.retriever.vector_store, "_chunks", [])
@@ -120,6 +158,7 @@ def main() -> int:
             )
 
             resp = service.ask(req)
+            last_actions = resp.suggested_actions
 
             print(f"\nOperix Assistant ({resp.provider}/{resp.model_name} | {resp.processing_time_seconds}s):")
             print(f"  {resp.answer}\n")
@@ -131,6 +170,16 @@ def main() -> int:
                     page_str = f", Page {c.page_number}" if c.page_number else ""
                     stype = getattr(c.source_type, "value", str(c.source_type))
                     print(f"    - [{stype}] {c.source_title} (ID: {c.source_id}{page_str})")
+
+            # Display Suggested Agentic Actions if available
+            if resp.suggested_actions:
+                is_ar = resp.language == "ar"
+                hdr = "إجراءات تصحيحية مقترحة (اكتب 'نفذ 1' أو 'exec 1' للتنفيذ الآن):" if is_ar else "Suggested Remediation Actions (Type 'exec 1' to authorize):"
+                print(f"\n  [AGENTIC ACTIONS] {hdr}")
+                for idx, act in enumerate(resp.suggested_actions, 1):
+                    sev_badge = f"[{act.severity.upper()}]"
+                    print(f"    {idx}. {sev_badge} {act.title}")
+                    print(f"       -> {act.description}")
 
         except KeyboardInterrupt:
             print("\n[!] Session interrupted.")

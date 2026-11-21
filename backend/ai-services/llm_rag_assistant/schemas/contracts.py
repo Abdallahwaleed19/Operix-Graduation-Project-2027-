@@ -109,12 +109,55 @@ class SourceCitation(BaseModel):
     similarity_score: Optional[float] = None
 
 
+# ---------------------------------------------------------------------------
+# Agentic Action & Remediation Contracts
+# ---------------------------------------------------------------------------
+
+class ProposedAction(BaseModel):
+    """
+    Actionable remediation step proposed by the AI Agent.
+    Enables interactive frontend decision buttons (Human-in-the-Loop).
+    """
+    action_id: str = Field(description="Unique action proposal identifier.")
+    action_type: Literal["maintenance", "alert", "dispatch", "escalation", "protocol"] = Field(
+        description="Functional category of the action."
+    )
+    title: str = Field(description="Short human-readable title (Arabic or English).")
+    description: str = Field(description="Detailed explanation of the proposed remediation.")
+    severity: Literal["low", "medium", "high", "critical"] = Field(default="medium")
+    parameters: dict[str, Any] = Field(default_factory=dict, description="Execution parameters.")
+    requires_confirmation: bool = Field(default=True, description="Strict Human-in-the-loop safety confirmation.")
+
+
+class ActionExecutionRequest(BaseModel):
+    """Request payload to execute an approved action."""
+    action_id: str
+    action_type: str
+    parameters: dict[str, Any] = Field(default_factory=dict)
+    confirmed_by: Optional[str] = Field(default="user", description="Username or ID authorizing the action.")
+    factory_id: Optional[UUID] = None
+
+
+class ActionExecutionResponse(BaseModel):
+    """Result of an executed remediation action."""
+    action_id: str
+    status: Literal["executed", "failed", "rejected"]
+    message: str
+    execution_timestamp: datetime = Field(default_factory=lambda: datetime.now(tz=timezone.utc))
+    audit_reference: str = Field(description="Audit trail reference code.")
+    details: dict[str, Any] = Field(default_factory=dict)
+
+
 class AssistantQueryResponse(BaseModel):
     """Ground-truth output from the LLM/RAG assistant."""
     answer: str
     conversation_id: str
     has_sufficient_evidence: bool
     citations: List[SourceCitation] = Field(default_factory=list)
+    suggested_actions: List[ProposedAction] = Field(
+        default_factory=list,
+        description="Agentic remediation actions proposed based on detected hazards or issues."
+    )
     provider: str  # 'openai' | 'ollama' | 'mock'
     model_name: str
     language: str  # 'ar' | 'en'
