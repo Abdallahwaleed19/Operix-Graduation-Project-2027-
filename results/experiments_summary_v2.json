@@ -1,0 +1,24 @@
+[
+ {
+  "name": "v2a_yolo11s_960",
+  "model": "yolo11s.pt",
+  "imgsz": 960,
+  "batch": 16,
+  "minutes": 26.4,
+  "val_precision": 0.823,
+  "val_recall": 0.619,
+  "val_map50": 0.678,
+  "val_map50_95": 0.421
+ },
+ {
+  "name": "v2b_yolo11m_960",
+  "model": "yolo11m.pt",
+  "imgsz": 960,
+  "batch": 8,
+  "minutes": 64.7,
+  "val_precision": 0.759,
+  "val_recall": 0.612,
+  "val_map50": 0.661,
+  "val_map50_95": 0.419
+ }
+]

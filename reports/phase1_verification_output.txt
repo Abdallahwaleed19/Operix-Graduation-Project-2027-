@@ -1,0 +1,63 @@
+{
+ "train": {
+  "images": 521,
+  "labels": 521,
+  "annotations": 1385,
+  "empty_labels": 180,
+  "per_class": {
+   "Hardhat_Worn": 385,
+   "Hardhat_Not_Worn": 292,
+   "Safety_Vest_Worn": 322,
+   "Safety_Vest_Not_Worn": 386
+  },
+  "missing_label": 0,
+  "missing_image": 0,
+  "bad_lines": 0,
+  "unreadable": 0,
+  "exts": {
+   ".jpg": 521
+  }
+ },
+ "valid": {
+  "images": 114,
+  "labels": 114,
+  "annotations": 295,
+  "empty_labels": 33,
+  "per_class": {
+   "Hardhat_Worn": 79,
+   "Hardhat_Not_Worn": 69,
+   "Safety_Vest_Worn": 41,
+   "Safety_Vest_Not_Worn": 106
+  },
+  "missing_label": 0,
+  "missing_image": 0,
+  "bad_lines": 0,
+  "unreadable": 0,
+  "exts": {
+   ".jpg": 114
+  }
+ },
+ "test": {
+  "images": 82,
+  "labels": 82,
+  "annotations": 302,
+  "empty_labels": 27,
+  "per_class": {
+   "Hardhat_Worn": 110,
+   "Hardhat_Not_Worn": 41,
+   "Safety_Vest_Worn": 61,
+   "Safety_Vest_Not_Worn": 90
+  },
+  "missing_label": 0,
+  "missing_image": 0,
+  "bad_lines": 0,
+  "unreadable": 0,
+  "exts": {
+   ".jpg": 82
+  }
+ }
+}
+totals {'Hardhat_Worn': 574, 'Hardhat_Not_Worn': 402, 'Safety_Vest_Worn': 424, 'Safety_Vest_Not_Worn': 582} 1982
+filename overlap {'train&valid': 0, 'train&test': 0, 'valid&test': 0}
+problems []
+[]
