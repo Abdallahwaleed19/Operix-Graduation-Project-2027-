@@ -1,0 +1,24 @@
+# =============================================================================
+# Operix Main Backend — Python Dependencies
+# =============================================================================
+# Python 3.10+ / 3.14 Compatible
+
+# FastAPI & ASGI Server
+fastapi>=0.115.0
+uvicorn[standard]>=0.32.0
+websockets>=13.0
+
+# Validation & Settings
+pydantic>=2.9.2
+pydantic-settings>=2.6.0
+python-dotenv>=1.0.0
+
+# Database Access & PostgreSQL Driver
+sqlalchemy>=2.0.36
+psycopg[binary]>=3.2.3
+
+# Utilities & Networking
+httpx>=0.28.0
+
+# Testing & Quality Assurance
+pytest>=8.3.0
