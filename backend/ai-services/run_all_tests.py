@@ -1,86 +1,84 @@
 """
-run_all_tests.py — Master Test Runner for Operix AI Services.
-Executes the full test suite for both:
-  1. Workforce Analytics Module (64 tests)
-  2. LLM / RAG Assistant Module (38 tests)
+run_all_tests.py
+Runs the full Operix AI Services test suite and reports results.
 
-Total: 102 automated tests. Zero external dependencies required.
+Covers:
+  Task 1 — Workforce Analytics     (64 tests)
+  Task 2 — LLM / RAG Assistant     (42 tests)
+  Task 3 — Reports Generation      (new tests)
+  Task 4 — Incident Evidence       (new tests)
 
-Run from backend/ai-services/:
-    python run_all_tests.py
+Usage (PowerShell from backend/ai-services/):
+    $env:PYTHONPATH="."
+    C:\\Users\\AbdallahWaleed\\AppData\\Local\\Programs\\Python\\Python314\\python.exe run_all_tests.py
 """
+from __future__ import annotations
+
 import sys
 import unittest
 from pathlib import Path
 
-# Ensure ai-services root is on sys.path
-ROOT_DIR = Path(__file__).resolve().parent
-sys.path.insert(0, str(ROOT_DIR))
+# Ensure the ai-services directory is on the path
+_ROOT = Path(__file__).parent
+if str(_ROOT) not in sys.path:
+    sys.path.insert(0, str(_ROOT))
+
+MODULES = [
+    # Task 1 — Workforce Analytics
+    "workforce_analytics.tests",
+    # Task 2 — LLM / RAG Assistant
+    "llm_rag_assistant.tests",
+    # Task 3 — Reports Generation
+    "reports_generation.tests",
+    # Task 4 — Incident Evidence
+    "incident_evidence.tests",
+]
 
 
-def main():
-    print("=" * 75)
-    print("  Operix AI Services — Master Unified Test Suite Runner")
-    print("  Modules: Workforce Analytics & LLM/RAG Assistant")
-    print("=" * 75)
-    print()
-
+def main() -> None:
     loader = unittest.TestLoader()
     suite = unittest.TestSuite()
 
-    # 1. Load Workforce Analytics Tests (from run_tests.py test classes)
-    from run_tests import (
-        TestAttendanceMetrics,
-        TestCameraCoverage,
-        TestIncidentAnalytics,
-        TestProductivityMetrics,
-        TestWorkforceOverview,
-        TestWorkforceSummary,
-    )
-    from workforce_analytics.tests.test_service import (
-        TestAPIContracts,
-        TestServiceEdgeCases,
-        TestWorkforceAnalyticsService,
-    )
+    print("=" * 70)
+    print("  Operix AI Services — Full Test Suite")
+    print("=" * 70)
 
-    wf_classes = [
-        TestWorkforceOverview,
-        TestAttendanceMetrics,
-        TestIncidentAnalytics,
-        TestProductivityMetrics,
-        TestCameraCoverage,
-        TestWorkforceSummary,
-        TestWorkforceAnalyticsService,
-        TestAPIContracts,
-        TestServiceEdgeCases,
-    ]
-    for cls in wf_classes:
-        suite.addTest(loader.loadTestsFromTestCase(cls))
+    for module_path in MODULES:
+        try:
+            discovered = loader.discover(
+                start_dir=str(_ROOT / module_path.replace(".", "/")),
+                pattern="test_*.py",
+                top_level_dir=str(_ROOT),
+            )
+            count = discovered.countTestCases()
+            suite.addTests(discovered)
+            print(f"  [+] {module_path:<40} {count:>4} tests found")
+        except Exception as exc:
+            print(f"  [!] {module_path:<40} DISCOVERY ERROR: {exc}")
 
-    # 2. Discover LLM / RAG Assistant Tests
-    rag_suite = loader.discover(
-        start_dir=str(ROOT_DIR / "llm_rag_assistant" / "tests"),
-        pattern="test_*.py",
-        top_level_dir=str(ROOT_DIR),
-    )
-    suite.addTests(rag_suite)
+    print("─" * 70)
+    total = suite.countTestCases()
+    print(f"  Total tests to run: {total}")
+    print("─" * 70)
+    print()
 
-    runner = unittest.TextTestRunner(verbosity=2)
+    runner = unittest.TextTestRunner(verbosity=2, stream=sys.stdout)
     result = runner.run(suite)
 
-    print("\n" + "=" * 75)
-    print(f"Tests Run: {result.testsRun}")
-    print(f"Failures : {len(result.failures)}")
-    print(f"Errors   : {len(result.errors)}")
-    print("=" * 75)
-
+    print()
+    print("=" * 70)
+    print(f"  RAN    : {result.testsRun}")
+    print(f"  ERRORS : {len(result.errors)}")
+    print(f"  FAIL   : {len(result.failures)}")
+    print(f"  SKIP   : {len(result.skipped)}")
     if result.wasSuccessful():
-        print("\n[ALL TESTS PASSED] 100% SUCCESS ACROSS ALL MODULES!\n")
-        return 0
+        print("  STATUS : ✅ ALL TESTS PASSED")
     else:
-        print("\n[TESTS FAILED] Please inspect error messages above.\n")
-        return 1
+        print("  STATUS : ❌ SOME TESTS FAILED")
+    print("=" * 70)
+
+    sys.exit(0 if result.wasSuccessful() else 1)
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    main()

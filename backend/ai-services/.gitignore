@@ -1,0 +1,5 @@
+# Storage for generated reports and uploaded evidence
+storage/reports/*
+!storage/reports/.gitkeep
+storage/evidence/*
+!storage/evidence/.gitkeep
