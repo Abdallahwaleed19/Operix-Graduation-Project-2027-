@@ -102,10 +102,87 @@ Once the server is running, explore the interactive documentation:
 - **OpenAPI JSON Schema:** [http://127.0.0.1:8000/openapi.json](http://127.0.0.1:8000/openapi.json)
 - **Liveness Probe:** [http://127.0.0.1:8000/health/live](http://127.0.0.1:8000/health/live)
 - **Full Health & Subsystems Diagnostic:** [http://127.0.0.1:8000/health](http://127.0.0.1:8000/health)
+- **CV Event Ingestion API:** `POST /api/v1/events/ingest` & `POST /api/v1/events/batch`
+- **Real-Time WebSocket Stream:** `ws://127.0.0.1:8000/ws/events?factory_id=<UUID>`
 
 ---
 
-## 4. Standard API Envelope Specification
+## 4. Computer Vision Event Ingestion & WebSockets (Phase 2 Hardening)
+
+### A. Authenticated CV Ingestion API (`POST /api/v1/events/ingest`)
+Requires `X-Camera-Key` authentication header matching authorized camera credentials.
+Directly compatible with the CV Team Guide (§6). Sample request:
+```http
+POST /api/v1/events/ingest HTTP/1.1
+Host: 127.0.0.1:8000
+Content-Type: application/json
+X-Camera-Key: operix-dev-cv-key-change-in-production-2027
+X-Factory-Id: 00000000-0000-0000-0000-000000000001
+```
+```json
+{
+  "event_id": "9d2f7a11-3b6c-4d85-b3a9-5e0c1f2a7d44",
+  "event_type": "ppe_violation",
+  "event_state": "started",
+  "module": "ppe_detection",
+  "camera_id": "camera_01",
+  "timestamp": "2026-11-23T00:30:00Z",
+  "frame_index": 880,
+  "frame_size": [2304, 1296],
+  "bbox": [600.0, 250.0, 790.0, 840.0],
+  "confidence": 0.88,
+  "attributes": {
+    "helmet": false,
+    "safety_vest": true,
+    "missing": ["helmet"]
+  }
+}
+```
+
+### B. Authenticated Real-Time WebSocket for Toka's Frontend (`ws://.../ws/events`)
+Requires cryptographic token authentication: `ws://127.0.0.1:8000/ws/events?token=<access_token>&factory_id=<UUID>`
+
+1. **Connection Rejection Codes:**
+- `4401`: Missing, invalid, or expired cryptographic token.
+- `4403`: Cross-tenant attempt (token tenant scope does not match requested `factory_id`).
+
+2. **Initial Handshake (Code 1000):**
+```json
+{
+  "type": "connection_established",
+  "factory_id": "00000000-0000-0000-0000-000000000001",
+  "user_id": "user-uuid",
+  "status": "connected",
+  "message": "Connected to Operix real-time safety stream."
+}
+```
+
+3. **Real-Time Broadcast Event (pushed on violation):**
+```json
+{
+  "type": "safety_event",
+  "factory_id": "00000000-0000-0000-0000-000000000001",
+  "data": {
+    "event_id": "9d2f7a11-3b6c-4d85-b3a9-5e0c1f2a7d44",
+    "event_type": "ppe_violation",
+    "event_state": "started",
+    "module": "ppe_detection",
+    "camera_id": "camera_01",
+    "timestamp": "2026-11-23T00:30:00Z",
+    "confidence": 0.88,
+    "bbox_normalized": [0.2604, 0.1929, 0.0825, 0.4552],
+    "details": { ... }
+  },
+  "sent_at": "2026-11-23T00:30:00.123Z"
+}
+```
+
+### C. Database-Level Idempotency
+Ingestion enforces database-level atomic UPSERT (`INSERT INTO events (...) ON CONFLICT (id) DO NOTHING`). Duplicate submissions are recognized atomically without race conditions, returning `duplicate_ignored` with `broadcast=false`.
+
+---
+
+## 5. Standard API Envelope Specification
 
 All Operix API endpoints return predictable response envelopes:
 

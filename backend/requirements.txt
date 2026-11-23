@@ -20,5 +20,13 @@ psycopg[binary]>=3.2.3
 # Utilities & Networking
 httpx>=0.28.0
 
+# Redis — async client (redis.asyncio). Exact stable release, not a range.
+# Isolated install from this file resolved redis==8.2.0.
+# Redis.getdel and Redis.aclose are coroutines on that release.
+redis==8.2.0
+
+# SQLite async driver — test-only (unit/integration tests)
+aiosqlite>=0.17.0
+
 # Testing & Quality Assurance
 pytest>=8.3.0
