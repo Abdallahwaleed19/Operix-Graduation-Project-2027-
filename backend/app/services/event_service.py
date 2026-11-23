@@ -24,6 +24,7 @@ from ..schemas.events import (
     EventBatchIngestResponse,
     EventIngestResponse,
 )
+from .rule_evaluation_service import RuleEvaluationResult, RuleEvaluationService
 
 
 def normalize_coordinates(
@@ -104,6 +105,10 @@ class EventService:
         }
 
         persisted = False
+        primary_rule_id: Optional[uuid.UUID] = None
+        matched_count = 0
+        should_notify = False
+        persisted_event: Optional[Event] = None
 
         # 4. Database-level atomic idempotency & persistence
         if db is not None:
@@ -137,16 +142,58 @@ class EventService:
                 if rowcount == 0:
                     # Idempotent duplicate: existing record was not overwritten
                     logger.info(f"Duplicate event {event_in.event_id} ignored via database-level idempotency.")
+                    existing_rule_id = None
+                    try:
+                        existing = db.get(Event, event_in.event_id)
+                        raw_rid = getattr(existing, "rule_id", None)
+                        if isinstance(raw_rid, uuid.UUID):
+                            existing_rule_id = raw_rid
+                        elif isinstance(raw_rid, str):
+                            existing_rule_id = uuid.UUID(raw_rid)
+                    except Exception:
+                        existing_rule_id = None
+
                     return EventIngestResponse(
                         event_id=event_in.event_id,
                         status="duplicate_ignored",
                         event_type=db_event_type.value,
                         broadcast=False,
                         persisted=True,
+                        rule_id=existing_rule_id,
+                        matched_rules_count=0,
+                        should_notify=False,
                     )
 
                 persisted = True
                 logger.info(f"Persisted event {event_in.event_id} [{db_event_type.value}] for factory {factory_id}")
+
+                # 4b. Deterministic Safety Rule Evaluation on newly persisted event
+                persisted_event = db.get(Event, event_in.event_id)
+                if persisted_event is not None:
+                    try:
+                        eval_res = RuleEvaluationService.evaluate_event(
+                            db=db,
+                            factory_id=factory_id,
+                            event=persisted_event,
+                        )
+                        matched_count = len(eval_res.matched_rule_ids)
+                        should_notify = any(m.notify for m in eval_res.matches)
+                        primary_rule_id = persisted_event.rule_id
+
+                        details_payload["rule_evaluation"] = {
+                            "status": eval_res.evaluation_status,
+                            "evaluated_count": len(eval_res.evaluated_rule_ids),
+                            "matched_count": matched_count,
+                            "matched_rule_ids": [str(rid) for rid in eval_res.matched_rule_ids],
+                            "highest_severity": eval_res.matched_highest_severity.value if eval_res.matched_highest_severity else None,
+                            "should_notify": should_notify,
+                            "primary_rule_id": str(primary_rule_id) if primary_rule_id else None,
+                            "incident_id": str(persisted_event.incident_id) if persisted_event.incident_id else None,
+                        }
+                        persisted_event.details = dict(details_payload)
+                        db.commit()
+                    except Exception as eval_err:
+                        logger.warning(f"Non-fatal error during rule evaluation for {event_in.event_id}: {eval_err}")
             except (OperationalError, InterfaceError) as db_conn_err:
                 db.rollback()
                 logger.warning(
@@ -175,6 +222,9 @@ class EventService:
                     "confidence": event_in.confidence,
                     "track_id": event_in.track_id,
                     "bbox_normalized": [bbox_x, bbox_y, bbox_w, bbox_h] if bbox_x is not None else None,
+                    "rule_id": str(primary_rule_id) if primary_rule_id else None,
+                    "incident_id": str(persisted_event.incident_id) if (persisted_event and persisted_event.incident_id) else None,
+                    "should_notify": should_notify,
                     "details": details_payload,
                 },
                 "sent_at": datetime.now(timezone.utc).isoformat(),
@@ -188,6 +238,9 @@ class EventService:
             event_type=db_event_type.value,
             broadcast=broadcast_sent,
             persisted=persisted,
+            rule_id=primary_rule_id,
+            matched_rules_count=matched_count,
+            should_notify=should_notify,
         )
 
     @staticmethod

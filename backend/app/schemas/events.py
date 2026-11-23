@@ -131,6 +131,9 @@ class EventIngestResponse(BaseModel):
     event_type: str
     broadcast: bool = Field(True, description="Whether event was broadcast to active WebSockets")
     persisted: bool = Field(..., description="Whether event was persisted to PostgreSQL")
+    rule_id: Optional[uuid.UUID] = Field(None, description="Primary matched safety rule ID if any")
+    matched_rules_count: int = Field(0, description="Number of safety rules matched by this event")
+    should_notify: bool = Field(False, description="Whether any matched rule triggered notification")
 
 
 class EventBatchIngestResponse(BaseModel):

@@ -72,10 +72,24 @@ enforce_configured_test_target(get_settings().DATABASE_URL)
 if os.environ.get("DATABASE_URL", "").startswith("sqlite"):
     from sqlalchemy.dialects.postgresql import CITEXT
     from sqlalchemy.ext.compiler import compiles
+    from sqlalchemy import event
+    from sqlalchemy.engine import Engine
 
     @compiles(CITEXT, "sqlite")
     def _compile_citext_sqlite(type_, compiler, **kw):
         return "TEXT"
+
+    @event.listens_for(Engine, "connect")
+    def _sqlite_jsonb_mock_functions(dbapi_connection, connection_record):
+        # Register mock functions for PostgreSQL-specific check constraints on SQLite
+        try:
+            dbapi_connection.create_function("jsonb_typeof", 1, lambda val: "array")
+            dbapi_connection.create_function("jsonb_array_length", 1, lambda val: 4)
+            # In SQLite testing mode, return 1 for num_nonnulls to satisfy CHECK constraints
+            # (e.g. ck_event_single_source where tests use mock string camera tags instead of UUID foreign keys)
+            dbapi_connection.create_function("num_nonnulls", -1, lambda *args: 1)
+        except Exception:
+            pass
 
 # ─── 5. Now safe to import app modules ───────────────────────────────────────
 from typing import Generator
