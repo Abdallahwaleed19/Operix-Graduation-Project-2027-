@@ -11,6 +11,9 @@ from pathlib import Path
 from typing import Dict, List, Optional
 from uuid import UUID
 
+import sqlalchemy as sa
+from sqlalchemy.orm import Session
+
 from ..config import DEFAULT_FACTORY_ID, DEFAULT_REPORT_FORMAT, REPORTS_STORAGE_DIR
 from ..exceptions import (
     InvalidReportFormatError,
@@ -35,8 +38,10 @@ class ReportService:
         data_service: Optional[ReportDataService] = None,
         export_service: Optional[ReportExportService] = None,
         storage_dir: Optional[Path] = None,
+        engine: Optional[sa.Engine] = None,
+        session: Optional[Session] = None,
     ) -> None:
-        self.data_service = data_service or ReportDataService()
+        self.data_service = data_service or ReportDataService(engine=engine, session=session)
         self.export_service = export_service or ReportExportService(storage_dir=storage_dir)
         self.storage_dir = storage_dir or REPORTS_STORAGE_DIR
         self._registry: Dict[str, ReportMetadata] = {}

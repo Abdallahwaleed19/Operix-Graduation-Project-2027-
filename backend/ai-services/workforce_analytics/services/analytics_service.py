@@ -15,6 +15,8 @@ from datetime import datetime
 from typing import Any, Optional
 from uuid import UUID
 
+from sqlalchemy.orm import Session
+
 from ..analytics import (
     calculate_attendance_metrics,
     calculate_camera_coverage,
@@ -45,12 +47,17 @@ class WorkforceAnalyticsService:
     Exposes typed methods returning validated Pydantic models or JSON-compatible dicts.
     """
 
-    def __init__(self, default_factory_id: Optional[UUID | str] = None) -> None:
+    def __init__(
+        self,
+        default_factory_id: Optional[UUID | str] = None,
+        session: Optional[Session] = None,
+    ) -> None:
         self.default_factory_id = (
             UUID(str(default_factory_id))
             if default_factory_id is not None
             else UUID(str(DEFAULT_FACTORY_ID))
         )
+        self.session = session
 
     def _resolve_factory_id(self, factory_id: Optional[UUID | str]) -> UUID:
         """Resolve provided factory_id or fallback to configured default."""
@@ -73,6 +80,7 @@ class WorkforceAnalyticsService:
     def get_workforce_overview(
         self,
         factory_id: Optional[UUID | str] = None,
+        session: Optional[Session] = None,
         *,
         as_dict: bool = False,
     ) -> WorkforceOverview | dict[str, Any]:
@@ -81,7 +89,8 @@ class WorkforceAnalyticsService:
         and role breakdown.
         """
         fid = self._resolve_factory_id(factory_id)
-        result = get_workforce_overview(factory_id=fid)
+        active_session = session or self.session
+        result = get_workforce_overview(factory_id=fid, session=active_session)
         return result.model_dump(mode="json") if as_dict else result
 
     # -----------------------------------------------------------------------
@@ -92,6 +101,7 @@ class WorkforceAnalyticsService:
         factory_id: Optional[UUID | str] = None,
         start_date: Optional[datetime] = None,
         end_date: Optional[datetime] = None,
+        session: Optional[Session] = None,
         *,
         as_dict: bool = False,
     ) -> AttendanceMetrics | dict[str, Any]:
@@ -100,10 +110,12 @@ class WorkforceAnalyticsService:
         Supports date filtering over start_date and end_date.
         """
         fid = self._resolve_factory_id(factory_id)
+        active_session = session or self.session
         result = calculate_attendance_metrics(
             factory_id=fid,
             start=start_date,
             end=end_date,
+            session=active_session,
         )
         return result.model_dump(mode="json") if as_dict else result
 
@@ -115,6 +127,7 @@ class WorkforceAnalyticsService:
         factory_id: Optional[UUID | str] = None,
         start_date: Optional[datetime] = None,
         end_date: Optional[datetime] = None,
+        session: Optional[Session] = None,
         *,
         as_dict: bool = False,
     ) -> IncidentAnalytics | dict[str, Any]:
@@ -124,10 +137,12 @@ class WorkforceAnalyticsService:
         Supports date filtering over start_date and end_date.
         """
         fid = self._resolve_factory_id(factory_id)
+        active_session = session or self.session
         result = calculate_incident_analytics(
             factory_id=fid,
             start=start_date,
             end=end_date,
+            session=active_session,
         )
         return result.model_dump(mode="json") if as_dict else result
 
@@ -141,6 +156,7 @@ class WorkforceAnalyticsService:
         end_date: Optional[datetime] = None,
         low_threshold: Optional[int] = None,
         high_threshold: Optional[int] = None,
+        session: Optional[Session] = None,
         *,
         as_dict: bool = False,
     ) -> ProductivityMetrics | dict[str, Any]:
@@ -151,6 +167,7 @@ class WorkforceAnalyticsService:
         fid = self._resolve_factory_id(factory_id)
         low = low_threshold if low_threshold is not None else LOW_PRODUCTIVITY_THRESHOLD
         high = high_threshold if high_threshold is not None else HIGH_PRODUCTIVITY_THRESHOLD
+        active_session = session or self.session
 
         result = calculate_productivity_metrics(
             factory_id=fid,
@@ -158,6 +175,7 @@ class WorkforceAnalyticsService:
             end=end_date,
             low_threshold=low,
             high_threshold=high,
+            session=active_session,
         )
         return result.model_dump(mode="json") if as_dict else result
 
@@ -168,6 +186,7 @@ class WorkforceAnalyticsService:
         self,
         factory_id: Optional[UUID | str] = None,
         period_hours: float = 720.0,
+        session: Optional[Session] = None,
         *,
         as_dict: bool = False,
     ) -> CameraCoverage | dict[str, Any]:
@@ -175,9 +194,11 @@ class WorkforceAnalyticsService:
         Retrieve camera uptime and coverage percentages based on unobserved gaps.
         """
         fid = self._resolve_factory_id(factory_id)
+        active_session = session or self.session
         result = calculate_camera_coverage(
             factory_id=fid,
             period_hours=period_hours,
+            session=active_session,
         )
         return result.model_dump(mode="json") if as_dict else result
 
@@ -190,6 +211,7 @@ class WorkforceAnalyticsService:
         start_date: Optional[datetime] = None,
         end_date: Optional[datetime] = None,
         period_hours: float = 720.0,
+        session: Optional[Session] = None,
         *,
         as_dict: bool = False,
     ) -> WorkforceSummary | dict[str, Any]:
@@ -198,10 +220,12 @@ class WorkforceAnalyticsService:
         Ideal for main dashboard overview cards.
         """
         fid = self._resolve_factory_id(factory_id)
+        active_session = session or self.session
         result = generate_workforce_summary(
             factory_id=fid,
             start=start_date,
             end=end_date,
             period_hours=period_hours,
+            session=active_session,
         )
         return result.model_dump(mode="json") if as_dict else result

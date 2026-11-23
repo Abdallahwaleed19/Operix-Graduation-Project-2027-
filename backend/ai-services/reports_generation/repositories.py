@@ -54,7 +54,7 @@ class ReportRepository:
     def get_unobserved_gaps(self, factory_id: UUID) -> List[Dict[str, Any]]:
         """Fetch active unobserved monitoring gaps."""
         query = sa.text("""
-            SELECT id, reason, severity, started_at, resolved_at
+            SELECT id, reason, started_at, ended_at
             FROM unobserved_gaps
             WHERE factory_id = :factory_id
             ORDER BY started_at DESC
@@ -67,9 +67,8 @@ class ReportRepository:
                     {
                         "gap_id": str(r.id),
                         "reason": r.reason,
-                        "severity": r.severity,
                         "started_at": r.started_at.isoformat() if r.started_at else None,
-                        "resolved_at": r.resolved_at.isoformat() if r.resolved_at else None,
+                        "ended_at": r.ended_at.isoformat() if r.ended_at else None,
                     }
                     for r in rows
                 ]
@@ -81,7 +80,7 @@ class ReportRepository:
         """Fetch count of active safety rules."""
         query = sa.text("""
             SELECT count(*) FROM safety_rules
-            WHERE factory_id = :factory_id AND is_active = true
+            WHERE factory_id = :factory_id AND is_enabled = true
         """)
         try:
             with self.engine.connect() as conn:

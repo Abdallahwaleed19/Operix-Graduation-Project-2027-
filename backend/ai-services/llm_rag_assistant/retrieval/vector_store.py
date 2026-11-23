@@ -13,7 +13,7 @@ from uuid import UUID
 import numpy as np
 
 from ..config.settings import get_settings
-from ..schemas.contracts import DocumentChunk, RetrievalFilter, RetrievedChunk
+from ..schemas.contracts import DocumentChunk, DocumentSourceType, RetrievalFilter, RetrievedChunk
 
 
 class VectorStoreBase(ABC):
@@ -119,8 +119,8 @@ class NumPyVectorStore(VectorStoreBase):
             meta = chunk.metadata
 
             # 1. Factory scoping (tenant isolation)
-            if search_filter.factory_id and meta.factory_id:
-                if str(meta.factory_id) != str(search_filter.factory_id):
+            if search_filter.factory_id:
+                if meta.factory_id is not None and str(meta.factory_id) != str(search_filter.factory_id):
                     continue
 
             # 2. Department scoping

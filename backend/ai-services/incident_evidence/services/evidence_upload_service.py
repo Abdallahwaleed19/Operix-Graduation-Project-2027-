@@ -12,16 +12,20 @@ from typing import Optional
 from uuid import UUID
 
 from sqlalchemy.engine import Connection
+from sqlalchemy.orm import Session
 
 from ..config import (
     ALLOWED_MIME_TYPES,
     EVIDENCE_STORAGE_DIR,
+    MAGIC_BYTES,
     MAX_EVIDENCE_SIZE_BYTES,
     MIME_TO_KIND,
+    UNSUPPORTED_AUDIO_TYPES,
 )
 from ..exceptions import (
     EvidenceTransactionError,
     FileSizeLimitError,
+    InvalidEvidenceTypeError,
     InvalidMimeTypeError,
     StorageError,
 )
@@ -68,7 +72,7 @@ class EvidenceUploadService:
 
     def upload(
         self,
-        conn: Connection,
+        conn: Connection | Session,
         request: EvidenceUploadRequest,
         file_bytes: bytes,
         content_type: str,
@@ -91,15 +95,12 @@ class EvidenceUploadService:
             StorageError          if the filesystem write fails.
             EvidenceTransactionError if the DB INSERT fails.
         """
-        # 1. MIME type validation
-        if content_type not in ALLOWED_MIME_TYPES:
-            raise InvalidMimeTypeError(
-                f"MIME type '{content_type}' is not allowed. "
-                f"Allowed: {sorted(ALLOWED_MIME_TYPES)}"
-            )
-
-        # 2. Size validation
+        # 1. Size validation (strictly positive, matching PostgreSQL check constraint size_bytes > 0)
         size_bytes = len(file_bytes)
+        if size_bytes <= 0:
+            raise FileSizeLimitError(
+                "File is empty (0 bytes). Evidence files must have size_bytes > 0 to satisfy database constraints."
+            )
         if size_bytes > MAX_EVIDENCE_SIZE_BYTES:
             from ..config import MAX_EVIDENCE_SIZE_MB
             raise FileSizeLimitError(
@@ -107,11 +108,40 @@ class EvidenceUploadService:
                 f"maximum allowed {MAX_EVIDENCE_SIZE_MB} MB."
             )
 
-        # 3. Compute SHA-256
-        sha256 = hashlib.sha256(file_bytes).hexdigest()
+        # 2. MIME type & Audio validation
+        if content_type in UNSUPPORTED_AUDIO_TYPES:
+            raise InvalidMimeTypeError(
+                f"Audio MIME type '{content_type}' is unsupported. "
+                "The Operix database schema only supports visual evidence ('snapshot' and 'clip')."
+            )
+        if content_type not in ALLOWED_MIME_TYPES:
+            raise InvalidMimeTypeError(
+                f"MIME type '{content_type}' is not allowed. "
+                f"Allowed: {sorted(ALLOWED_MIME_TYPES)}"
+            )
 
-        # 4. Determine kind
+        # 3. Magic byte signature verification
+        expected_magic = MAGIC_BYTES.get(content_type)
+        if expected_magic:
+            if content_type == "video/mp4":
+                if len(file_bytes) < 8 or file_bytes[4:8] != b"ftyp":
+                    raise InvalidMimeTypeError("File signature does not match declared video/mp4 format (missing ftyp box).")
+            elif not file_bytes.startswith(expected_magic):
+                raise InvalidMimeTypeError(
+                    f"File signature does not match declared MIME type '{content_type}'."
+                )
+
+        # 4. Determine evidence kind and validate constraints
         kind = EvidenceKind(MIME_TO_KIND[content_type])
+        if kind == EvidenceKind.CLIP:
+            if request.duration_s is None or request.duration_s <= 0:
+                raise InvalidEvidenceTypeError(
+                    "Video clips require a positive duration_s (> 0) to satisfy the database check constraint "
+                    "(kind = 'snapshot' OR duration_s IS NOT NULL)."
+                )
+
+        # 5. Compute SHA-256
+        sha256 = hashlib.sha256(file_bytes).hexdigest()
 
         # 5. Generate IDs and storage key
         evidence_id = uuid.uuid4()

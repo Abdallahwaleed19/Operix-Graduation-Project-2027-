@@ -10,6 +10,7 @@ from typing import Iterator, List, Optional
 from uuid import UUID
 
 from sqlalchemy.engine import Connection
+from sqlalchemy.orm import Session
 
 from ..exceptions import EvidenceExpiredError, EvidenceNotFoundError, EvidencePurgedError
 from ..repositories import EvidenceRepository
@@ -36,7 +37,7 @@ class EvidenceRetrievalService:
 
     def get_metadata(
         self,
-        conn: Connection,
+        conn: Connection | Session,
         evidence_id: UUID,
         factory_id: UUID,
     ) -> EvidenceMetadataResponse:
@@ -51,7 +52,7 @@ class EvidenceRetrievalService:
 
     def list_by_event(
         self,
-        conn: Connection,
+        conn: Connection | Session,
         event_id: UUID,
         factory_id: UUID,
         kind: Optional[EvidenceKind] = None,
@@ -67,7 +68,7 @@ class EvidenceRetrievalService:
 
     def list_by_incident(
         self,
-        conn: Connection,
+        conn: Connection | Session,
         incident_id: UUID,
         factory_id: UUID,
         kind: Optional[EvidenceKind] = None,
@@ -88,7 +89,7 @@ class EvidenceRetrievalService:
 
     def list_by_factory(
         self,
-        conn: Connection,
+        conn: Connection | Session,
         factory_id: UUID,
         kind: Optional[EvidenceKind] = None,
         captured_after: Optional[datetime] = None,
@@ -130,7 +131,7 @@ class EvidenceRetrievalService:
 
     def download(
         self,
-        conn: Connection,
+        conn: Connection | Session,
         evidence_id: UUID,
         factory_id: UUID,
     ) -> tuple[bytes, EvidenceFileRecord]:
@@ -148,7 +149,7 @@ class EvidenceRetrievalService:
 
     def stream(
         self,
-        conn: Connection,
+        conn: Connection | Session,
         evidence_id: UUID,
         factory_id: UUID,
         chunk_size: int = 65536,
@@ -166,7 +167,7 @@ class EvidenceRetrievalService:
 
     def get_absolute_path(
         self,
-        conn: Connection,
+        conn: Connection | Session,
         evidence_id: UUID,
         factory_id: UUID,
     ) -> Optional[Path]:

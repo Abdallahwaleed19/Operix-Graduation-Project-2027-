@@ -37,8 +37,8 @@ def _make_meta() -> EvidenceMetadataResponse:
         id=EVIDENCE_ID,
         factory_id=FACTORY_ID,
         event_id=EVENT_ID,
-        kind=EvidenceKind.IMAGE,
-        storage_key="aaaa/bbbb/cccc.jpg",
+        kind=EvidenceKind.SNAPSHOT,
+        storage_key="f/aaaa/bbbb/cccc.jpg",
         content_type="image/jpeg",
         size_bytes=10240,
         sha256="a" * 64,
@@ -81,9 +81,9 @@ class TestIncidentEvidenceQueryParams(unittest.TestCase):
 
     def test_with_kind(self):
         params = IncidentEvidenceQueryParams(
-            factory_id=FACTORY_ID, kind=EvidenceKind.VIDEO
+            factory_id=FACTORY_ID, kind=EvidenceKind.CLIP
         )
-        self.assertEqual(params.kind, EvidenceKind.VIDEO)
+        self.assertEqual(params.kind, EvidenceKind.CLIP)
 
     def test_missing_factory_raises(self):
         from pydantic import ValidationError
@@ -96,7 +96,7 @@ class TestEvidenceSingleResponse(unittest.TestCase):
     def test_construction(self):
         resp = EvidenceSingleResponse(data=_make_meta())
         self.assertTrue(resp.success)
-        self.assertEqual(resp.data.kind, EvidenceKind.IMAGE)
+        self.assertEqual(resp.data.kind, EvidenceKind.SNAPSHOT)
 
     def test_json_roundtrip(self):
         resp = EvidenceSingleResponse(data=_make_meta())

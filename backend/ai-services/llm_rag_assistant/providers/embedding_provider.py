@@ -5,6 +5,7 @@ Embedding provider abstraction supporting OpenAI Cloud, Ollama Local, and Mock m
 from __future__ import annotations
 
 import hashlib
+import logging
 import math
 from abc import ABC, abstractmethod
 from typing import List, Optional
@@ -13,6 +14,8 @@ import httpx
 import numpy as np
 
 from ..config.settings import get_settings
+
+logger = logging.getLogger("EmbeddingProvider")
 
 
 class EmbeddingProviderBase(ABC):
@@ -258,7 +261,11 @@ def get_embedding_provider(name: Optional[str] = None) -> EmbeddingProviderBase:
     """Factory creating configured embedding provider instance."""
     provider_type = (name or get_settings().embedding_provider).lower()
     if provider_type == "openai":
-        return OpenAIEmbeddingProvider()
+        try:
+            return OpenAIEmbeddingProvider()
+        except ValueError:
+            logger.warning("OPENAI_API_KEY not configured. Falling back to MockEmbeddingProvider for offline/dev operation.")
+            return MockEmbeddingProvider()
     elif provider_type == "ollama":
         return OllamaEmbeddingProvider()
     elif provider_type == "mock":

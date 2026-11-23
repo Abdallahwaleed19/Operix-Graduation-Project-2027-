@@ -17,6 +17,7 @@ from uuid import UUID, uuid4
 from incident_evidence.exceptions import (
     EvidenceTransactionError,
     FileSizeLimitError,
+    InvalidEvidenceTypeError,
     InvalidMimeTypeError,
 )
 from incident_evidence.schemas import EvidenceKind, EvidenceUploadRequest
@@ -37,13 +38,13 @@ def _make_request(**kwargs) -> EvidenceUploadRequest:
     return EvidenceUploadRequest(**defaults)
 
 
-def _make_fake_record(storage_key: str):
+def _make_fake_record(storage_key: str, kind: EvidenceKind = EvidenceKind.SNAPSHOT):
     """Return a minimal mock EvidenceFileRecord."""
     record = MagicMock()
     record.id = uuid4()
     record.factory_id = FACTORY_ID
     record.event_id = EVENT_ID
-    record.kind = EvidenceKind.IMAGE
+    record.kind = kind
     record.storage_key = storage_key
     record.content_type = "image/jpeg"
     record.size_bytes = 100
@@ -79,6 +80,12 @@ class TestEvidenceUploadServiceValidation(unittest.TestCase):
         with self.assertRaises(FileSizeLimitError):
             self.svc.upload(conn, _make_request(), big_bytes, "image/jpeg")
 
+    def test_zero_byte_file_rejected(self):
+        """Zero-byte file must fail validation (PostgreSQL check constraint size_bytes > 0)."""
+        conn = MagicMock()
+        with self.assertRaises(FileSizeLimitError):
+            self.svc.upload(conn, _make_request(), b"", "image/jpeg")
+
     def test_valid_image_upload(self):
         """Happy path: image upload succeeds, DB record created."""
         image_bytes = b"\xff\xd8\xff" + b"\x00" * 100  # minimal JPEG magic
@@ -87,7 +94,7 @@ class TestEvidenceUploadServiceValidation(unittest.TestCase):
 
         def mock_create_record(**kwargs):
             storage_key_capture["key"] = kwargs["storage_key"]
-            return _make_fake_record(kwargs["storage_key"])
+            return _make_fake_record(kwargs["storage_key"], kind=EvidenceKind.SNAPSHOT)
 
         with patch(
             "incident_evidence.services.evidence_upload_service.EvidenceRepository"
@@ -96,9 +103,9 @@ class TestEvidenceUploadServiceValidation(unittest.TestCase):
             mock_repo.create_record.side_effect = mock_create_record
             record = self.svc.upload(conn, _make_request(), image_bytes, "image/jpeg")
 
-        self.assertEqual(record.kind, EvidenceKind.IMAGE)
-        # File should exist on disk
+        self.assertEqual(record.kind, EvidenceKind.SNAPSHOT)
         key = storage_key_capture["key"]
+        self.assertTrue(key.startswith(f"f/{FACTORY_ID}/"))
         self.assertTrue(self.storage.exists(key))
 
     def test_sha256_computed_correctly(self):
@@ -147,36 +154,34 @@ class TestEvidenceUploadServiceValidation(unittest.TestCase):
         if "key" in saved_key:
             self.assertFalse(self.storage.exists(saved_key["key"]))
 
-    def test_video_upload(self):
+    def test_video_upload_with_duration(self):
+        """Video clips with valid duration and ftyp magic succeed."""
         conn = MagicMock()
-        with patch(
-            "incident_evidence.services.evidence_upload_service.EvidenceRepository"
-        ) as MockRepo:
-            mock_repo = MockRepo.return_value
-            mock_repo.create_record.return_value = _make_fake_record("key/to/video.mp4")
-            record = self.svc.upload(conn, _make_request(), b"video_data", "video/mp4")
-        self.assertIsNotNone(record)
+        video_bytes = b"\x00\x00\x00\x18ftypisom" + b"\x00" * 50
+        req = _make_request(duration_s=12.5)
 
-    def test_audio_upload(self):
-        conn = MagicMock()
         with patch(
             "incident_evidence.services.evidence_upload_service.EvidenceRepository"
         ) as MockRepo:
             mock_repo = MockRepo.return_value
-            mock_repo.create_record.return_value = _make_fake_record("key/to/audio.mp3")
-            record = self.svc.upload(conn, _make_request(), b"audio_data", "audio/mpeg")
-        self.assertIsNotNone(record)
+            mock_repo.create_record.return_value = _make_fake_record("f/test/video.mp4", kind=EvidenceKind.CLIP)
+            record = self.svc.upload(conn, req, video_bytes, "video/mp4")
+        self.assertEqual(record.kind, EvidenceKind.CLIP)
 
-    def test_zero_byte_file(self):
-        """Zero-byte file should pass validation (size = 0 ≤ limit)."""
+    def test_video_missing_duration_rejected(self):
+        """Video clips without duration_s fail (DB check constraint kind = snapshot OR duration_s IS NOT NULL)."""
         conn = MagicMock()
-        with patch(
-            "incident_evidence.services.evidence_upload_service.EvidenceRepository"
-        ) as MockRepo:
-            mock_repo = MockRepo.return_value
-            mock_repo.create_record.return_value = _make_fake_record("key/zero.jpg")
-            record = self.svc.upload(conn, _make_request(), b"", "image/jpeg")
-        self.assertIsNotNone(record)
+        video_bytes = b"\x00\x00\x00\x18ftypisom" + b"\x00" * 50
+        req = _make_request(duration_s=None)
+
+        with self.assertRaises(InvalidEvidenceTypeError):
+            self.svc.upload(conn, req, video_bytes, "video/mp4")
+
+    def test_audio_upload_rejected(self):
+        """Audio evidence is rejected per database schema constraints."""
+        conn = MagicMock()
+        with self.assertRaises(InvalidMimeTypeError):
+            self.svc.upload(conn, _make_request(), b"\xff\xfb\x90\x44" + b"\x00" * 50, "audio/mpeg")
 
 
 if __name__ == "__main__":

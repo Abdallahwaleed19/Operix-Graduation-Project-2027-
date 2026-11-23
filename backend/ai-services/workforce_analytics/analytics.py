@@ -18,9 +18,12 @@ DOCUMENTED LIMITATIONS (missing tables in schema):
 """
 from __future__ import annotations
 
+from contextlib import contextmanager
 from datetime import datetime, timezone
 from typing import Optional
 from uuid import UUID
+
+from sqlalchemy.orm import Session
 
 from .config import (
     DEFAULT_FACTORY_ID,
@@ -61,12 +64,28 @@ def _uuid(factory_id: UUID | str) -> UUID:
     return factory_id if isinstance(factory_id, UUID) else UUID(str(factory_id))
 
 
+@contextmanager
+def _managed_session(session: Optional[Session] = None):
+    """
+    Context manager yielding either an externally-injected Session
+    or creating and managing a local Session from get_session().
+    When an external session is provided, commit/rollback/close is delegated
+    to the outer lifecycle (e.g., FastAPI dependency).
+    """
+    if session is not None:
+        yield session
+    else:
+        with get_session() as db:
+            yield db
+
+
 # ===========================================================================
 # A. WORKFORCE OVERVIEW
 # ===========================================================================
 
 def get_workforce_overview(
     factory_id: UUID | str = DEFAULT_FACTORY_ID,
+    session: Optional[Session] = None,
 ) -> WorkforceOverview:
     """
     Returns total / active / inactive worker counts and role distribution.
@@ -79,7 +98,7 @@ def get_workforce_overview(
       - working_hours: NOT AVAILABLE (no shift/timesheet table)
     """
     fid = _uuid(factory_id)
-    with get_session() as db:
+    with _managed_session(session) as db:
         counts = fetch_user_counts(db, fid)
         roles  = fetch_role_distribution(db, fid)
 
@@ -106,6 +125,7 @@ def calculate_attendance_metrics(
     factory_id: UUID | str = DEFAULT_FACTORY_ID,
     start: Optional[datetime] = None,
     end:   Optional[datetime] = None,
+    session: Optional[Session] = None,
 ) -> AttendanceMetrics:
     """
     Proxied attendance — based on incident review/resolve activity.
@@ -122,7 +142,7 @@ def calculate_attendance_metrics(
     ⚠ PROXY METRIC — no clock-in/out table in the schema.
     """
     fid = _uuid(factory_id)
-    with get_session() as db:
+    with _managed_session(session) as db:
         counts  = fetch_user_counts(db, fid)
         active  = fetch_active_members_in_period(db, fid, start, end)
         trend   = fetch_daily_activity_trend(db, fid, start, end)
@@ -153,6 +173,7 @@ def calculate_incident_analytics(
     factory_id: UUID | str = DEFAULT_FACTORY_ID,
     start: Optional[datetime] = None,
     end:   Optional[datetime] = None,
+    session: Optional[Session] = None,
 ) -> IncidentAnalytics:
     """
     Core incident analytics: counts, resolution rate, response times.
@@ -164,7 +185,7 @@ def calculate_incident_analytics(
     Output: IncidentAnalytics
     """
     fid = _uuid(factory_id)
-    with get_session() as db:
+    with _managed_session(session) as db:
         summary  = fetch_incident_summary(db, fid, start, end)
         by_type  = fetch_incident_by_type(db, fid, start, end)
         by_sev   = fetch_incident_by_severity(db, fid, start, end)
@@ -227,6 +248,7 @@ def calculate_productivity_metrics(
     end:   Optional[datetime] = None,
     low_threshold:  int = LOW_PRODUCTIVITY_THRESHOLD,
     high_threshold: int = HIGH_PRODUCTIVITY_THRESHOLD,
+    session: Optional[Session] = None,
 ) -> ProductivityMetrics:
     """
     Per-worker productivity: incidents reviewed + resolved + response times.
@@ -245,7 +267,7 @@ def calculate_productivity_metrics(
     ⚠ PROXY METRIC — based on incident handling, not direct performance data.
     """
     fid = _uuid(factory_id)
-    with get_session() as db:
+    with _managed_session(session) as db:
         rows = fetch_per_worker_productivity(db, fid, start, end)
 
     per_worker: list[WorkerProductivityRecord] = []
@@ -300,6 +322,7 @@ def calculate_productivity_metrics(
 def calculate_camera_coverage(
     factory_id:   UUID | str = DEFAULT_FACTORY_ID,
     period_hours: float = 720.0,          # default = 30 days
+    session: Optional[Session] = None,
 ) -> CameraCoverage:
     """
     Camera uptime analytics using unobserved_gaps.
@@ -313,7 +336,7 @@ def calculate_camera_coverage(
     Output: CameraCoverage
     """
     fid = _uuid(factory_id)
-    with get_session() as db:
+    with _managed_session(session) as db:
         rows = fetch_camera_coverage(db, fid, period_hours)
 
     cameras: list[CameraRecord] = []
@@ -358,6 +381,7 @@ def generate_workforce_summary(
     start: Optional[datetime] = None,
     end:   Optional[datetime] = None,
     period_hours: float = 720.0,
+    session: Optional[Session] = None,
 ) -> WorkforceSummary:
     """
     Combines all analytics modules into a single structured summary.
@@ -368,9 +392,9 @@ def generate_workforce_summary(
     """
     return WorkforceSummary(
         generated_at    = datetime.now(tz=timezone.utc),
-        overview        = get_workforce_overview(factory_id),
-        attendance      = calculate_attendance_metrics(factory_id, start, end),
-        incidents       = calculate_incident_analytics(factory_id, start, end),
-        productivity    = calculate_productivity_metrics(factory_id, start, end),
-        camera_coverage = calculate_camera_coverage(factory_id, period_hours),
+        overview        = get_workforce_overview(factory_id, session=session),
+        attendance      = calculate_attendance_metrics(factory_id, start, end, session=session),
+        incidents       = calculate_incident_analytics(factory_id, start, end, session=session),
+        productivity    = calculate_productivity_metrics(factory_id, start, end, session=session),
+        camera_coverage = calculate_camera_coverage(factory_id, period_hours, session=session),
     )

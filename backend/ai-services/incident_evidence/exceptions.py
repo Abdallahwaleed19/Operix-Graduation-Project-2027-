@@ -13,6 +13,10 @@ class EvidenceNotFoundError(EvidenceBaseException):
     """Raised when a requested evidence record or file does not exist."""
 
 
+class FactoryMismatchError(EvidenceBaseException):
+    """Raised when an evidence operation violates factory tenant isolation."""
+
+
 class InvalidEvidenceTypeError(EvidenceBaseException):
     """Raised when an unsupported evidence kind is provided."""
 

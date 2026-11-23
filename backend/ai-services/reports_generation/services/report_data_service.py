@@ -9,6 +9,9 @@ from datetime import date, datetime, timezone
 from typing import Any, Dict, Optional
 from uuid import UUID
 
+import sqlalchemy as sa
+from sqlalchemy.orm import Session
+
 from workforce_analytics.services.analytics_service import WorkforceAnalyticsService
 
 from ..exceptions import InvalidDateRangeError, ReportDataExtractionError
@@ -31,9 +34,12 @@ class ReportDataService:
         self,
         analytics_service: Optional[WorkforceAnalyticsService] = None,
         repository: Optional[ReportRepository] = None,
+        engine: Optional[sa.Engine] = None,
+        session: Optional[Session] = None,
     ) -> None:
-        self.analytics_service = analytics_service or WorkforceAnalyticsService()
-        self.repository = repository or ReportRepository()
+        self.session = session
+        self.analytics_service = analytics_service or WorkforceAnalyticsService(session=session)
+        self.repository = repository or ReportRepository(engine=engine)
 
     def _validate_date_range(self, date_from: Optional[date], date_to: Optional[date]) -> None:
         """Ensure date_from is not after date_to."""
@@ -152,8 +158,13 @@ class ReportDataService:
             ).model_dump()
             rules_count = self.repository.get_active_safety_rules_count(factory_id=factory_id)
 
-            # Compute composite safety health score
-            # 50% coverage + 30% incident resolution + 20% active ratio
+            # Composite Safety Health Score calculation:
+            # Deterministically derived from verifiable monitoring and resolution telemetry:
+            #   - 60% Camera Vision Coverage Ratio (monitoring health across active plant zones)
+            #   - 40% Incident Resolution Rate (timely mitigation of identified safety events)
+            # Note: Active worker ratio is deliberately excluded from the composite index because
+            # factory user accounts in operix_db represent static memberships rather than verified
+            # real-time physical badge-ins.
             cov_pct = summary.get("camera_coverage", {}).get("coverage_percentage", 0.0)
             res_rate = summary.get("incidents", {}).get("resolution_rate", 0.0) * 100.0
             health_score = round(min(100.0, max(0.0, (cov_pct * 0.6) + (res_rate * 0.4))), 1)

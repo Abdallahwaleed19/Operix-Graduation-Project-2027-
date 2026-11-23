@@ -17,6 +17,15 @@ Usage (PowerShell from backend/ai-services/):
 """
 from __future__ import annotations
 
+import os
+import sys
+from pathlib import Path
+
+# Ensure backend/ai-services is on sys.path
+_AI_SERVICES_DIR = Path(__file__).resolve().parent.parent
+if str(_AI_SERVICES_DIR) not in sys.path:
+    sys.path.insert(0, str(_AI_SERVICES_DIR))
+
 import hashlib
 import struct
 import tempfile
@@ -114,7 +123,7 @@ def demo_upload_service(tmp_dir: Path) -> str:
             id=uuid4(),
             factory_id=factory_id,
             event_id=event_id,
-            kind=EvidenceKind.IMAGE,
+            kind=EvidenceKind.SNAPSHOT,
             storage_key=kwargs["storage_key"],
             content_type="image/png",
             size_bytes=kwargs["size_bytes"],
@@ -160,7 +169,7 @@ def demo_integrity_service(tmp_dir: Path, storage_key: str) -> None:
         id=uuid4(),
         factory_id=UUID("aaaaaaaa-0001-0001-0001-000000000001"),
         event_id=UUID("bbbbbbbb-0001-0001-0001-000000000001"),
-        kind=EvidenceKind.IMAGE,
+        kind=EvidenceKind.SNAPSHOT,
         storage_key=storage_key,
         content_type="image/png",
         size_bytes=len(actual_bytes),

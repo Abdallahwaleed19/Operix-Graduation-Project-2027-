@@ -16,6 +16,7 @@ from typing import Optional
 from uuid import UUID
 
 from sqlalchemy.engine import Connection
+from sqlalchemy.orm import Session
 
 from ..config import EVIDENCE_STORAGE_DIR
 from ..schemas import (
@@ -59,7 +60,7 @@ class EvidenceService:
 
     def upload(
         self,
-        conn: Connection,
+        conn: Connection | Session,
         request: EvidenceUploadRequest,
         file_bytes: bytes,
         content_type: str,
@@ -73,7 +74,7 @@ class EvidenceService:
 
     def get_metadata(
         self,
-        conn: Connection,
+        conn: Connection | Session,
         evidence_id: UUID,
         factory_id: UUID,
     ) -> EvidenceMetadataResponse:
@@ -82,7 +83,7 @@ class EvidenceService:
 
     def list_by_event(
         self,
-        conn: Connection,
+        conn: Connection | Session,
         event_id: UUID,
         factory_id: UUID,
         kind: Optional[EvidenceKind] = None,
@@ -92,7 +93,7 @@ class EvidenceService:
 
     def list_by_incident(
         self,
-        conn: Connection,
+        conn: Connection | Session,
         incident_id: UUID,
         factory_id: UUID,
         kind: Optional[EvidenceKind] = None,
@@ -102,7 +103,7 @@ class EvidenceService:
 
     def list_by_factory(
         self,
-        conn: Connection,
+        conn: Connection | Session,
         factory_id: UUID,
         kind: Optional[EvidenceKind] = None,
         page: int = 1,
@@ -115,7 +116,7 @@ class EvidenceService:
 
     def download(
         self,
-        conn: Connection,
+        conn: Connection | Session,
         evidence_id: UUID,
         factory_id: UUID,
     ) -> tuple[bytes, EvidenceFileRecord]:
@@ -128,7 +129,7 @@ class EvidenceService:
 
     def verify_integrity(
         self,
-        conn: Connection,
+        conn: Connection | Session,
         evidence_id: UUID,
         factory_id: UUID,
     ) -> IntegrityVerificationResult:

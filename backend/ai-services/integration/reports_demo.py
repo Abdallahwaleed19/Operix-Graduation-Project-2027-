@@ -1,4 +1,4 @@
-"""
+r"""
 integration/reports_demo.py
 Live demonstration of the Reports Generation module.
 
@@ -8,7 +8,7 @@ Files are saved to storage/reports/.
 
 Usage (PowerShell from backend/ai-services/):
     $env:PYTHONPATH="."
-    C:\Users\AbdallahWaleed\AppData\Local\Programs\Python\Python314\python.exe integration/reports_demo.py
+    python integration/reports_demo.py
 
 Requirements:
   - PostgreSQL database operix_db must be running
@@ -56,7 +56,7 @@ def demo_generate_all_reports() -> None:
                 meta = svc.generate_report(
                     factory_id=FACTORY_ID,
                     report_type=report_type,
-                    export_format=fmt,
+                    format=fmt,
                     date_from=DATE_FROM,
                     date_to=DATE_TO,
                 )

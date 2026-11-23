@@ -9,6 +9,7 @@ from datetime import datetime, timezone
 from uuid import UUID
 
 from sqlalchemy.engine import Connection
+from sqlalchemy.orm import Session
 
 from ..exceptions import EvidenceNotFoundError, StorageError
 from ..repositories import EvidenceRepository
@@ -27,7 +28,7 @@ class EvidenceIntegrityService:
 
     def verify(
         self,
-        conn: Connection,
+        conn: Connection | Session,
         evidence_id: UUID,
         factory_id: UUID,
     ) -> IntegrityVerificationResult:

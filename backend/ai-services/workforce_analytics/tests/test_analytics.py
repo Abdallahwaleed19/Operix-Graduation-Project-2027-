@@ -16,7 +16,18 @@ from pathlib import Path
 from unittest.mock import MagicMock, patch
 from uuid import UUID
 
-import pytest
+try:
+    import pytest
+except ImportError:
+    import unittest
+    class _PytestShim:
+        @staticmethod
+        def fixture(*args, **kwargs):
+            return lambda fn: fn
+        @staticmethod
+        def skip(reason=""):
+            raise unittest.SkipTest(reason)
+    pytest = _PytestShim()
 
 # Make sure the ai-services root is on the path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))

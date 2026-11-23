@@ -109,10 +109,10 @@ def fetch_daily_activity_trend(
     date_filter = ""
     if start:
         date_filter += " AND activity_date >= :start"
-        params["start"] = start.date()
+        params["start"] = start.date() if hasattr(start, "date") else start
     if end:
         date_filter += " AND activity_date < :end"
-        params["end"] = end.date()
+        params["end"] = end.date() if hasattr(end, "date") else end
 
     rows = db.execute(text(f"""
         WITH daily AS (
@@ -239,12 +239,12 @@ def fetch_per_worker_productivity(
     date_filter_rev = ""
     date_filter_res = ""
     if start:
-        date_filter_rev += " AND rev.reviewed_at >= :start"
-        date_filter_res += " AND res.resolved_at >= :start"
+        date_filter_rev += " AND i.reviewed_at >= :start"
+        date_filter_res += " AND i.resolved_at >= :start"
         params["start"] = start
     if end:
-        date_filter_rev += " AND rev.reviewed_at < :end"
-        date_filter_res += " AND res.resolved_at < :end"
+        date_filter_rev += " AND i.reviewed_at < :end"
+        date_filter_res += " AND i.resolved_at < :end"
         params["end"] = end
 
     rows = db.execute(text(f"""

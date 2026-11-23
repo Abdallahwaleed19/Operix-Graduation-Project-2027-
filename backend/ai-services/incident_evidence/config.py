@@ -49,7 +49,7 @@ MAX_EVIDENCE_SIZE_MB: int = int(os.getenv("MAX_EVIDENCE_SIZE_MB", "100"))
 MAX_EVIDENCE_SIZE_BYTES: int = MAX_EVIDENCE_SIZE_MB * 1024 * 1024
 
 # ---------------------------------------------------------------------------
-# Allowed MIME types  (must map to kind VARCHAR(8) values)
+# Allowed MIME types (strictly mapped to PostgreSQL evidence_kind: snapshot, clip)
 # ---------------------------------------------------------------------------
 ALLOWED_IMAGE_TYPES: frozenset[str] = frozenset({
     "image/jpeg",
@@ -66,25 +66,22 @@ ALLOWED_VIDEO_TYPES: frozenset[str] = frozenset({
     "video/x-msvideo",  # AVI
 })
 
-ALLOWED_AUDIO_TYPES: frozenset[str] = frozenset({
+# Audio evidence is unsupported by the current database schema
+UNSUPPORTED_AUDIO_TYPES: frozenset[str] = frozenset({
     "audio/mpeg",       # MP3
     "audio/wav",
     "audio/ogg",
     "audio/webm",
 })
 
-ALLOWED_MIME_TYPES: frozenset[str] = (
-    ALLOWED_IMAGE_TYPES | ALLOWED_VIDEO_TYPES | ALLOWED_AUDIO_TYPES
-)
+ALLOWED_MIME_TYPES: frozenset[str] = ALLOWED_IMAGE_TYPES | ALLOWED_VIDEO_TYPES
 
-# MIME-type → kind (VARCHAR 8)
+# MIME-type → kind (must be "snapshot" or "clip" to satisfy DB enum and check constraints)
 MIME_TO_KIND: dict[str, str] = {}
 for _mime in ALLOWED_IMAGE_TYPES:
-    MIME_TO_KIND[_mime] = "image"
+    MIME_TO_KIND[_mime] = "snapshot"
 for _mime in ALLOWED_VIDEO_TYPES:
-    MIME_TO_KIND[_mime] = "video"
-for _mime in ALLOWED_AUDIO_TYPES:
-    MIME_TO_KIND[_mime] = "audio"
+    MIME_TO_KIND[_mime] = "clip"
 
 # File extension → MIME type (permissive lookup; real check uses magic bytes)
 EXTENSION_TO_MIME: dict[str, str] = {

@@ -14,12 +14,11 @@ from pydantic import BaseModel, Field, field_validator
 
 class EvidenceKind(str, Enum):
     """
-    Allowed values for evidence_files.kind (VARCHAR 8).
-    Each value must be ≤ 8 characters to fit the column constraint.
+    PostgreSQL native enum evidence_kind values ('snapshot', 'clip').
+    Strictly aligns with operix_db schema and Seif's models.
     """
-    IMAGE = "image"
-    VIDEO = "video"
-    AUDIO = "audio"
+    SNAPSHOT = "snapshot"
+    CLIP = "clip"
 
 
 # ---------------------------------------------------------------------------

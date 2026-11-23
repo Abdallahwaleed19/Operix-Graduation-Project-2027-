@@ -70,12 +70,13 @@ class LocalStorage(BaseStorage):
         extension: str,
     ) -> str:
         """
-        Return a relative key string.
+        Return a relative key string matching the PostgreSQL check constraint:
+        CHECK (storage_key LIKE 'f/' || factory_id::text || '/%')
 
-        Pattern: "{factory_id}/{event_id}/{evidence_id}{ext}"
+        Pattern: "f/{factory_id}/{event_id}/{evidence_id}{ext}"
         """
         ext = extension if extension.startswith(".") else f".{extension}"
-        return f"{factory_id}/{event_id}/{evidence_id}{ext}"
+        return f"f/{factory_id}/{event_id}/{evidence_id}{ext}"
 
     def save(self, key: str, data: bytes) -> int:
         """Write bytes atomically.  Returns bytes written."""

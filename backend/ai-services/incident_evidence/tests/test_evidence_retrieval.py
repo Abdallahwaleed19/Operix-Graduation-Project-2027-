@@ -29,7 +29,7 @@ INCIDENT_ID = UUID("dddddddd-0001-0001-0001-000000000001")
 def _make_record(
     purged: bool = False,
     expired: bool = False,
-    kind: EvidenceKind = EvidenceKind.IMAGE,
+    kind: EvidenceKind = EvidenceKind.SNAPSHOT,
 ) -> EvidenceFileRecord:
     from datetime import timedelta
     return EvidenceFileRecord(
@@ -104,7 +104,7 @@ class TestEvidenceRetrievalService(unittest.TestCase):
     # ------------------------------------------------------------------
 
     def test_list_by_incident_returns_items(self):
-        records = [_make_record(), _make_record(kind=EvidenceKind.VIDEO)]
+        records = [_make_record(), _make_record(kind=EvidenceKind.CLIP)]
         conn = MagicMock()
         with patch(
             "incident_evidence.services.evidence_retrieval_service.EvidenceRepository"

@@ -19,6 +19,7 @@ from uuid import UUID
 
 from sqlalchemy import text
 from sqlalchemy.engine import Connection
+from sqlalchemy.orm import Session
 
 from .exceptions import EvidenceNotFoundError, EvidenceTransactionError
 from .schemas import EvidenceFileRecord, EvidenceKind
@@ -51,7 +52,7 @@ class EvidenceRepository:
     Caller is responsible for transaction management.
     """
 
-    def __init__(self, conn: Connection) -> None:
+    def __init__(self, conn: Connection | Session) -> None:
         self._conn = conn
 
     # ------------------------------------------------------------------
