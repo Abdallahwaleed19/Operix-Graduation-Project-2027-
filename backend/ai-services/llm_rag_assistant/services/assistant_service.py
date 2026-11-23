@@ -152,3 +152,15 @@ class OperixAssistantService:
     def clear_conversation(self, conversation_id: str) -> bool:
         """Clear conversation history for specified session."""
         return self.conversation_manager.clear(conversation_id)
+
+
+_assistant_service_instance: Optional[OperixAssistantService] = None
+
+
+def get_assistant_service() -> OperixAssistantService:
+    """Return or create a singleton instance of OperixAssistantService."""
+    global _assistant_service_instance
+    if _assistant_service_instance is None:
+        _assistant_service_instance = OperixAssistantService()
+    return _assistant_service_instance
+

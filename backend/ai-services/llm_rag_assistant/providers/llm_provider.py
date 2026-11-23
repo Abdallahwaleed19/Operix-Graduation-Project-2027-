@@ -5,12 +5,15 @@ Unified LLM provider interface supporting OpenAI Cloud, Ollama Local, and Mock m
 from __future__ import annotations
 
 import json
+import logging
 from abc import ABC, abstractmethod
 from typing import Any, List, Optional
 
 import httpx
 
 from ..config.settings import get_settings
+
+logger = logging.getLogger("LLMProvider")
 
 
 class ChatMessage:
@@ -179,7 +182,11 @@ def get_llm_provider(name: Optional[str] = None) -> LLMProviderBase:
     """Factory creating configured LLM provider instance."""
     provider_type = (name or get_settings().llm_provider).lower()
     if provider_type == "openai":
-        return OpenAILLMProvider()
+        try:
+            return OpenAILLMProvider()
+        except ValueError:
+            logger.warning("OPENAI_API_KEY not configured. Falling back to MockLLMProvider for offline/dev operation.")
+            return MockLLMProvider()
     elif provider_type == "ollama":
         return OllamaLLMProvider()
     elif provider_type == "mock":

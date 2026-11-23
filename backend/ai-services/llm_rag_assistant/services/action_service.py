@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import logging
 from datetime import datetime, timezone
-from typing import Any, Dict
+from typing import Any, Callable, Dict, Optional
 from uuid import uuid4
 
 from ..schemas.contracts import ActionExecutionRequest, ActionExecutionResponse
@@ -17,21 +17,38 @@ logger = logging.getLogger("OperixActionService")
 
 class OperixActionService:
     """
-    Execution engine for confirmed remediation actions.
-    Maintains an audit trail and triggers downstream system workflows.
+    Execution staging and audit coordinator for confirmed remediation actions.
+    Supports idempotency keys, role checks, and downstream database audit hooks.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, audit_callback: Optional[Callable[[dict[str, Any]], None]] = None) -> None:
         self._execution_history: list[dict[str, Any]] = []
+        self._idempotency_cache: dict[str, ActionExecutionResponse] = {}
+        self.audit_callback = audit_callback
 
     def execute(self, request: ActionExecutionRequest) -> ActionExecutionResponse:
         """
-        Execute an authorized remediation action.
+        Execute an authorized remediation action with idempotency and role validation.
         """
-        audit_code = f"AUDIT-{datetime.now(timezone.utc).strftime('%Y%m%d')}-{uuid4().hex[:6].upper()}"
+        # 1. Idempotency protection
+        if request.idempotency_key and request.idempotency_key in self._idempotency_cache:
+            logger.info(f"Returning cached execution for idempotency key: {request.idempotency_key}")
+            return self._idempotency_cache[request.idempotency_key]
 
         action_type = request.action_type.lower()
         confirmed_by = request.confirmed_by or "authorized_supervisor"
+
+        # 2. Role-based privilege validation
+        if request.user_role == "operator" and action_type in ("escalation", "alert"):
+            return ActionExecutionResponse(
+                action_id=request.action_id,
+                status="rejected",
+                message=f"Action '{action_type}' rejected: requires supervisor or factory_manager privileges.",
+                audit_reference=f"REJ-{uuid4().hex[:6].upper()}",
+                details={"rejection_reason": "insufficient_role_privileges", "required_role": "supervisor"},
+            )
+
+        audit_code = f"AUDIT-{datetime.now(timezone.utc).strftime('%Y%m%d')}-{uuid4().hex[:6].upper()}"
 
         # Routing to specific execution handlers
         if action_type == "maintenance":
@@ -68,17 +85,31 @@ class OperixActionService:
             "confirmed_by": confirmed_by,
             "timestamp": datetime.now(timezone.utc).isoformat(),
             "details": details,
+            "factory_id": str(request.factory_id) if request.factory_id else None,
+            "user_id": str(request.user_id) if request.user_id else None,
         }
         self._execution_history.append(record)
         logger.info(f"[ACTION EXECUTED] {audit_code}: {msg}")
 
-        return ActionExecutionResponse(
+        # Trigger external durable audit callback if registered by main backend
+        if self.audit_callback:
+            try:
+                self.audit_callback(record)
+            except Exception as audit_err:
+                logger.warning(f"External audit callback failed: {audit_err}")
+
+        resp = ActionExecutionResponse(
             action_id=request.action_id,
             status="executed",
             message=msg,
             audit_reference=audit_code,
             details=details,
         )
+
+        if request.idempotency_key:
+            self._idempotency_cache[request.idempotency_key] = resp
+
+        return resp
 
     def get_audit_trail(self) -> list[dict[str, Any]]:
         """Return history of all executed actions."""

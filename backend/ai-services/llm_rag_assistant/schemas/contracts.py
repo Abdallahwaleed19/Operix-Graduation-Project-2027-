@@ -136,6 +136,9 @@ class ActionExecutionRequest(BaseModel):
     parameters: dict[str, Any] = Field(default_factory=dict)
     confirmed_by: Optional[str] = Field(default="user", description="Username or ID authorizing the action.")
     factory_id: Optional[UUID] = None
+    user_id: Optional[UUID] = Field(default=None, description="Authenticated user ID authorizing action.")
+    user_role: Optional[str] = Field(default=None, description="Verified role (e.g., supervisor, factory_manager).")
+    idempotency_key: Optional[str] = Field(default=None, description="Idempotency key to prevent duplicate action executions.")
 
 
 class ActionExecutionResponse(BaseModel):
