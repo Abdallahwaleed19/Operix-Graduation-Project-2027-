@@ -31,6 +31,15 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     setup_logging()
     logger.info(f"Starting {settings.APP_NAME} v{settings.APP_VERSION} [{settings.APP_ENV}]")
 
+    # Phase 4.1 — Propagate canonical storage paths into AI service environment.
+    # Must run before any AI service config.py is imported so they pick up the
+    # centrally-configured paths rather than their own os.getenv defaults.
+    try:
+        from .api.ai_deps import sync_ai_service_env
+        sync_ai_service_env()
+    except Exception as _ai_sync_exc:  # noqa: BLE001
+        logger.warning(f"AI service environment sync skipped: {_ai_sync_exc}")
+
     # Database connectivity check
     db_check = check_db_connection()
     if db_check["status"] == "connected":

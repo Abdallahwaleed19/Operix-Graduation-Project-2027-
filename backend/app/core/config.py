@@ -4,14 +4,21 @@ Pydantic v2 configuration settings for Operix Main Backend.
 """
 from functools import lru_cache
 from pathlib import Path
-from typing import List, Union
+from typing import List, Optional, Union
 from uuid import UUID
 
-from pydantic import Field, field_validator
+from pydantic import Field, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 _BACKEND_DIR = Path(__file__).resolve().parent.parent.parent
 _ENV_FILE = _BACKEND_DIR / ".env"
+
+# Default storage roots relative to the backend directory (never machine-absolute).
+# AI module consumers (Abdullah) should read these names from the environment:
+#   EVIDENCE_STORAGE_DIR   — overrides the evidence file storage directory.
+#   REPORTS_STORAGE_DIR    — overrides the generated reports storage directory.
+_DEFAULT_EVIDENCE_DIR = _BACKEND_DIR / "ai-services" / "storage" / "evidence"
+_DEFAULT_REPORTS_DIR  = _BACKEND_DIR / "ai-services" / "storage" / "reports"
 
 
 class Settings(BaseSettings):
@@ -79,6 +86,69 @@ class Settings(BaseSettings):
         ge=1,
         description="Seconds between membership revalidation checks on active WS connections.",
     )
+
+    # ---------------------------------------------------------------------------
+    # Phase 4 — AI Service Storage Configuration
+    # ---------------------------------------------------------------------------
+    # Both settings are intentionally expressed as strings (resolved to Path at
+    # runtime via the property below) so that pydantic_settings can read them
+    # from environment variables without requiring a custom validator.
+    #
+    # Coordinated setting names (must match what Abdullah's AI modules consume):
+    #   EVIDENCE_STORAGE_DIR  →  incident_evidence/config.py  EVIDENCE_STORAGE_DIR
+    #   REPORTS_STORAGE_DIR   →  reports_generation/config.py OPERIX_REPORTS_STORAGE_DIR
+    EVIDENCE_STORAGE_DIR: Optional[str] = Field(
+        default=None,
+        description=(
+            "Absolute or backend-relative path for evidence file storage. "
+            "Env var: EVIDENCE_STORAGE_DIR. "
+            "Defaults to <backend>/ai-services/storage/evidence."
+        ),
+    )
+    REPORTS_STORAGE_DIR: Optional[str] = Field(
+        default=None,
+        description=(
+            "Absolute or backend-relative path for generated reports storage. "
+            "Env var: REPORTS_STORAGE_DIR. "
+            "Defaults to <backend>/ai-services/storage/reports."
+        ),
+    )
+
+    @model_validator(mode="after")
+    def _resolve_storage_dirs(self) -> "Settings":
+        """
+        Resolve storage directory paths and ensure they exist.
+        Called once after all fields are populated.
+        Does NOT move or delete existing data.
+        """
+        def _resolve(raw: Optional[str], default: Path) -> Path:
+            p = Path(raw) if raw else default
+            if not p.is_absolute():
+                p = _BACKEND_DIR / p
+            try:
+                p.mkdir(parents=True, exist_ok=True)
+            except OSError:
+                # Non-fatal: directory may be a network mount not yet available.
+                pass
+            return p
+
+        self._evidence_storage_path: Path = _resolve(
+            self.EVIDENCE_STORAGE_DIR, _DEFAULT_EVIDENCE_DIR
+        )
+        self._reports_storage_path: Path = _resolve(
+            self.REPORTS_STORAGE_DIR, _DEFAULT_REPORTS_DIR
+        )
+        return self
+
+    @property
+    def evidence_storage_path(self) -> Path:
+        """Resolved, guaranteed-absolute evidence storage directory."""
+        return self._evidence_storage_path
+
+    @property
+    def reports_storage_path(self) -> Path:
+        """Resolved, guaranteed-absolute reports storage directory."""
+        return self._reports_storage_path
 
     # Logging
     LOG_LEVEL: str = "INFO"
