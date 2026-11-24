@@ -206,13 +206,100 @@ class TestAssistantRouter:
             test_app.dependency_overrides.clear()
 
     def test_clear_conversation(self, client, test_app):
+        user_id = UUID("11111111-1111-1111-1111-111111111111")
+        auth_user = AuthenticatedUser(
+            user_id=user_id,
+            factory_id=FACTORY_1,
+            role="factory_admin",
+            full_name="Test Admin",
+        )
         mock_svc = MagicMock()
         mock_svc.clear_conversation.return_value = True
+        test_app.dependency_overrides[get_current_user_context] = lambda: auth_user
         test_app.dependency_overrides[get_llm_assistant_service_dep] = lambda: mock_svc
         try:
             resp = client.delete("/api/v1/assistant/conversations/conv-123", headers={"X-Factory-Id": str(FACTORY_1)})
             assert resp.status_code == 200
             assert resp.json()["data"]["cleared"] is True
+            mock_svc.clear_conversation.assert_called_once_with(
+                "conv-123",
+                factory_id=FACTORY_1,
+                user_id=user_id,
+            )
+        finally:
+            test_app.dependency_overrides.clear()
+
+    def test_clear_conversation_cross_user_or_factory_rejected(self, client, test_app):
+        user_id = UUID("22222222-2222-2222-2222-222222222222")
+        auth_user = AuthenticatedUser(
+            user_id=user_id,
+            factory_id=FACTORY_2,
+            role="factory_admin",
+            full_name="Other Factory User",
+        )
+        mock_svc = MagicMock()
+        mock_svc.clear_conversation.side_effect = PermissionError(
+            "Access denied: conversation 'conv-123' belongs to another user or factory."
+        )
+        test_app.dependency_overrides[get_current_user_context] = lambda: auth_user
+        test_app.dependency_overrides[get_llm_assistant_service_dep] = lambda: mock_svc
+        try:
+            resp = client.delete("/api/v1/assistant/conversations/conv-123", headers={"X-Factory-Id": str(FACTORY_2)})
+            assert resp.status_code == 403
+            assert resp.json()["error_code"] == "TENANT_ACCESS_DENIED"
+            mock_svc.clear_conversation.assert_called_once_with(
+                "conv-123",
+                factory_id=FACTORY_2,
+                user_id=user_id,
+            )
+        finally:
+            test_app.dependency_overrides.clear()
+
+    def test_clear_conversation_strict_signature_contract(self, client, test_app):
+        """Ensure router matches OperixAssistantService.clear_conversation(conversation_id, factory_id, user_id) without permissive MagicMock."""
+        owner_uid = UUID("11111111-1111-1111-1111-111111111111")
+        other_uid = UUID("22222222-2222-2222-2222-222222222222")
+
+        class _StrictOwnershipError(PermissionError):
+            pass
+
+        class _StrictAssistantStub:
+            def __init__(self) -> None:
+                self.calls: list[tuple[str, UUID | str | None, UUID | str | None]] = []
+
+            def clear_conversation(
+                self,
+                conversation_id: str,
+                factory_id: UUID | str | None = None,
+                user_id: UUID | str | None = None,
+            ) -> bool:
+                if factory_id is None or user_id is None:
+                    raise _StrictOwnershipError("factory_id and user_id are required")
+                self.calls.append((conversation_id, factory_id, user_id))
+                if (factory_id, user_id) != (FACTORY_1, owner_uid):
+                    raise _StrictOwnershipError("Access denied: conversation belongs to another user or factory.")
+                return True
+
+        stub = _StrictAssistantStub()
+        owner_user = AuthenticatedUser(user_id=owner_uid, factory_id=FACTORY_1, role="factory_admin", full_name="Owner")
+        other_user = AuthenticatedUser(user_id=other_uid, factory_id=FACTORY_1, role="factory_admin", full_name="Other")
+
+        test_app.dependency_overrides[get_llm_assistant_service_dep] = lambda: stub
+        try:
+            test_app.dependency_overrides[get_current_user_context] = lambda: owner_user
+            resp_ok = client.delete("/api/v1/assistant/conversations/conv-strict", headers={"X-Factory-Id": str(FACTORY_1)})
+            assert resp_ok.status_code == 200
+            assert resp_ok.json()["data"]["cleared"] is True
+
+            test_app.dependency_overrides[get_current_user_context] = lambda: other_user
+            resp_denied = client.delete("/api/v1/assistant/conversations/conv-strict", headers={"X-Factory-Id": str(FACTORY_1)})
+            assert resp_denied.status_code == 403
+            assert resp_denied.json()["error_code"] == "TENANT_ACCESS_DENIED"
+
+            assert stub.calls == [
+                ("conv-strict", FACTORY_1, owner_uid),
+                ("conv-strict", FACTORY_1, other_uid),
+            ]
         finally:
             test_app.dependency_overrides.clear()
 
@@ -330,6 +417,65 @@ class TestReportsRouter:
         try:
             resp = client.get("/api/v1/reports/REP-EVIL/download", headers={"X-Factory-Id": str(FACTORY_1)})
             assert resp.status_code == 403
+        finally:
+            test_app.dependency_overrides.clear()
+
+    def test_get_and_download_report_strict_signature_contract(self, client, test_app, tmp_path):
+        """Ensure router matches ReportService.get_report(report_id, factory_id) and get_report_file_path(report_id, factory_id) without permissive MagicMock."""
+        report_dir = tmp_path / str(FACTORY_1)
+        report_dir.mkdir(parents=True, exist_ok=True)
+        report_file = report_dir / "comprehensive_safety_REP-STRICT.pdf"
+        report_file.write_bytes(b"%PDF-1.4\n%strict-contract-test\n")
+
+        class _StrictMeta:
+            factory_id = FACTORY_1
+            file_name = report_file.name
+            mime_type = "application/pdf"
+
+            def model_dump(self, mode: str = "json") -> dict:
+                return {
+                    "report_id": "REP-STRICT",
+                    "factory_id": str(self.factory_id),
+                    "file_name": self.file_name,
+                    "mime_type": self.mime_type,
+                }
+
+        class _StrictReportStub:
+            def __init__(self) -> None:
+                self.calls: list[tuple[str, str, UUID]] = []
+
+            def get_report(self, report_id: str, factory_id: UUID) -> _StrictMeta:
+                self.calls.append(("get_report", report_id, factory_id))
+                return _StrictMeta()
+
+            def get_report_file_path(self, report_id: str, factory_id: UUID) -> Path:
+                self.calls.append(("get_report_file_path", report_id, factory_id))
+                return report_file
+
+        stub = _StrictReportStub()
+        auth_user = AuthenticatedUser(
+            user_id=UUID("11111111-1111-1111-1111-111111111111"),
+            factory_id=FACTORY_1,
+            role="factory_admin",
+            full_name="Report Admin",
+        )
+        test_app.dependency_overrides[get_current_user_context] = lambda: auth_user
+        test_app.dependency_overrides[get_reports_service_dep] = lambda: stub
+        try:
+            with patch("app.api.v1.endpoints.reports.get_reports_storage_path", return_value=tmp_path):
+                resp_meta = client.get("/api/v1/reports/REP-STRICT", headers={"X-Factory-Id": str(FACTORY_1)})
+                assert resp_meta.status_code == 200
+                assert resp_meta.json()["data"]["report_id"] == "REP-STRICT"
+
+                resp_dl = client.get("/api/v1/reports/REP-STRICT/download", headers={"X-Factory-Id": str(FACTORY_1)})
+                assert resp_dl.status_code == 200
+                assert resp_dl.content.startswith(b"%PDF-1.4")
+
+            assert stub.calls == [
+                ("get_report", "REP-STRICT", FACTORY_1),
+                ("get_report", "REP-STRICT", FACTORY_1),
+                ("get_report_file_path", "REP-STRICT", FACTORY_1),
+            ]
         finally:
             test_app.dependency_overrides.clear()
 

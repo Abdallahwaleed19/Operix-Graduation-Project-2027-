@@ -60,7 +60,7 @@
 
 ## 3. Clear Conversation History
 - **Endpoint:** `DELETE /api/v1/assistant/conversations/{conversation_id}`
-- **Status:** **Registered, awaiting Seif's explicit approval** for `assistant.py` line 165 (`factory_id=user.factory_id, user_id=user.user_id` ownership passthrough).
+- **Status:** Implemented and registered (`200 OK`, returns `403 TENANT_ACCESS_DENIED` on cross-user/cross-factory access per Seif commit `cdda98c`).
 
 ---
 

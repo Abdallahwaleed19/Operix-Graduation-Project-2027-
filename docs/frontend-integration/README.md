@@ -33,7 +33,7 @@
 | **Incident Evidence** | `POST /api/v1/evidence/upload`, `GET /api/v1/evidence`, `GET /api/v1/evidence/{evidence_id}`, `GET /api/v1/evidence/{evidence_id}/download`, `POST /api/v1/evidence/{evidence_id}/verify-integrity` | Implemented & registered |
 | **Workforce Analytics** | `GET /api/v1/analytics/overview`, `/attendance`, `/incidents`, `/productivity`, `/camera-coverage`, `/summary` | Implemented & registered |
 | **RAG Assistant** | `POST /api/v1/assistant/ask`, `GET /api/v1/assistant/sources`, `GET /api/v1/assistant/health` | Implemented & registered |
-| **RAG Assistant** | `DELETE /api/v1/assistant/conversations/{conversation_id}` | Registered, **pending Seif approval** for `assistant.py` ownership args |
+| **RAG Assistant** | `DELETE /api/v1/assistant/conversations/{conversation_id}` | Implemented & registered (Seif `cdda98c` ownership & 403 handling) |
 | **AI Actions** | `POST /api/v1/assistant/actions/execute` | Implemented & registered |
 | **Reports** | `POST /api/v1/reports/generate`, `GET /api/v1/reports` | Implemented & registered |
-| **Reports** | `GET /api/v1/reports/{report_id}`, `GET /api/v1/reports/{report_id}/download` | Registered, **BLOCKED** until Seif passes `factory_id=user.factory_id` in `reports.py` |
+| **Reports** | `GET /api/v1/reports/{report_id}`, `GET /api/v1/reports/{report_id}/download` | Implemented & registered (Seif `cdda98c` passes `factory_id=user.factory_id`) |

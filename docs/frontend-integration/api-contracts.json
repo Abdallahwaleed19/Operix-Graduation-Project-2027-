@@ -17,12 +17,12 @@
     { "module": "analytics", "method": "GET", "path": "/api/v1/analytics/summary", "status": "registered", "auth": "Bearer" },
     { "module": "assistant", "method": "POST", "path": "/api/v1/assistant/ask", "status": "registered", "auth": "Bearer" },
     { "module": "assistant", "method": "GET", "path": "/api/v1/assistant/sources", "status": "registered", "auth": "Bearer" },
-    { "module": "assistant", "method": "DELETE", "path": "/api/v1/assistant/conversations/{conversation_id}", "status": "pending_approval", "auth": "Bearer" },
+    { "module": "assistant", "method": "DELETE", "path": "/api/v1/assistant/conversations/{conversation_id}", "status": "registered", "auth": "Bearer" },
     { "module": "assistant", "method": "GET", "path": "/api/v1/assistant/health", "status": "registered", "auth": "Bearer" },
     { "module": "ai_actions", "method": "POST", "path": "/api/v1/assistant/actions/execute", "status": "registered", "auth": "Bearer" },
     { "module": "reports", "method": "POST", "path": "/api/v1/reports/generate", "status": "registered", "auth": "Bearer" },
     { "module": "reports", "method": "GET", "path": "/api/v1/reports", "status": "registered", "auth": "Bearer" },
-    { "module": "reports", "method": "GET", "path": "/api/v1/reports/{report_id}", "status": "blocked_pending_seif_fix", "auth": "Bearer" },
-    { "module": "reports", "method": "GET", "path": "/api/v1/reports/{report_id}/download", "status": "blocked_pending_seif_fix", "auth": "Bearer" }
+    { "module": "reports", "method": "GET", "path": "/api/v1/reports/{report_id}", "status": "registered", "auth": "Bearer" },
+    { "module": "reports", "method": "GET", "path": "/api/v1/reports/{report_id}/download", "status": "registered", "auth": "Bearer" }
   ]
 }
