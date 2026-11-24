@@ -8,7 +8,7 @@ from __future__ import annotations
 import tempfile
 import unittest
 from pathlib import Path
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 from ..evaluation.evaluator import RAGEvaluator
 from ..ingestion.pipeline import KnowledgeIngestionPipeline
@@ -25,7 +25,7 @@ class TestEndToEndRAG(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.temp_dir = tempfile.mkdtemp()
-        cls.test_factory_id = uuid4()
+        cls.test_factory_id = UUID("aaaaaaaa-0001-0001-0001-000000000001")
         cls.test_user_id = uuid4()
         cls.test_user_context = UserContext(
             user_id=cls.test_user_id,

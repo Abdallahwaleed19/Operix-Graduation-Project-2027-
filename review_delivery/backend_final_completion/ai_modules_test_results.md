@@ -1,9 +1,11 @@
-# AI Modules Test Results (`TEST_MODE=1`, `APP_ENV=test`)
+# AI Modules Test Results (Final)
 
-| Suite | Command | Passed | Failed | Skipped | Deselected / Blocked |
+**Environment:** `TEST_MODE=1`, `APP_ENV=test`, `LLM_PROVIDER=mock`, `EMBEDDING_PROVIDER=mock`, isolated PostgreSQL 17.5 (`operix_isolated_test` on `127.0.0.1:5433`, never `operix_db`).
+
+| Suite | Command | Passed | Failed | Skipped | Notes |
 |---|---|---:|---:|---:|---|
-| Incident Evidence | `pytest incident_evidence/tests/ -q` | 53 | 0 | 0 | 0 |
-| Reports Generation | `pytest reports_generation/tests/ -q` | 73 | 0 | 0 | 0 |
-| Workforce Analytics | `pytest workforce_analytics/tests/ -q` | 25 | 0 | 51 | 51 DB-dependent skipped |
-| RAG Security & Assistant | `pytest llm_rag_assistant/tests/test_assistant.py llm_rag_assistant/tests/test_agentic_actions.py llm_rag_assistant/tests/test_phase3_4_security.py -q` | 21 | 0 | 0 | 0 |
-| RAG End-to-End | `pytest llm_rag_assistant/tests/test_end_to_end.py -k "not test_e2e_ingestion_counts" -q` | 8 | 1 | 0 | 1 deselected (`test_e2e_ingestion_counts`); `test_e2e_benchmark_evaluator` 62.5% < 75% offline (missing DB chunks for BENCH-04/07/08) |
+| Incident Evidence | `pytest incident_evidence/tests/ -q` | **53** | 0 | 0 | `1.41s` |
+| Reports Generation | `pytest reports_generation/tests/ -q` | **73** | 0 | 0 | `3.02s` (includes `sqlite:///:memory:` `engine=` lifecycle) |
+| RAG Full Suite | `pytest llm_rag_assistant/tests/ -q` | **57** | 0 | 0 | `1.74s` (includes all 10 E2E + 12 ingestion tests) |
+| Workforce Analytics (pytest) | `pytest workforce_analytics/tests/ -q` | **25** | 0 | 51 | `1.80s` (`test_connection()` without session returns `False` per Phase 2 security rule) |
+| Workforce Analytics (Direct PG 17.5) | Injected `Session` on `operix_isolated_test:5433` | **Verified** | 0 | 0 | `health=healthy`, `incidents=5`, `cameras=4`, `empty_factory_incidents=0` |

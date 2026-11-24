@@ -71,13 +71,17 @@ enforce_configured_test_target(get_settings().DATABASE_URL)
 # This MUST run before any app.* import that touches SQLAlchemy models,
 # so the dialect can render CITEXT as TEXT during create_all().
 if os.environ.get("DATABASE_URL", "").startswith("sqlite"):
-    from sqlalchemy.dialects.postgresql import CITEXT
+    from sqlalchemy.dialects.postgresql import CITEXT, JSONB
     from sqlalchemy.ext.compiler import compiles
     from sqlalchemy import event
     from sqlalchemy.engine import Engine
 
     @compiles(CITEXT, "sqlite")
     def _compile_citext_sqlite(type_, compiler, **kw):
+        return "TEXT"
+
+    @compiles(JSONB, "sqlite")
+    def _compile_jsonb_sqlite(type_, compiler, **kw):
         return "TEXT"
 
     @event.listens_for(Engine, "connect")
