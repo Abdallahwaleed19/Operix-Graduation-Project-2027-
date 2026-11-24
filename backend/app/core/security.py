@@ -8,8 +8,11 @@ import base64
 import hashlib
 import hmac
 import json
+import secrets
 from typing import Any, Dict, Optional, Tuple
 import uuid
+
+import bcrypt
 
 from .config import settings
 from .errors import OperixException
@@ -112,6 +115,47 @@ def create_access_token(
     })
 
     return _build_token(to_encode, settings.SECRET_KEY)
+
+
+# ---------------------------------------------------------------------------
+# Password Hashing (bcrypt) & Refresh Token Helpers
+# ---------------------------------------------------------------------------
+
+_BCRYPT_MAX_BYTES = 72
+
+
+def hash_password(plain_password: str) -> str:
+    """Hash a plaintext password using bcrypt ($2b$), rejecting inputs > 72 UTF-8 bytes."""
+    if not plain_password:
+        raise ValueError("Password cannot be empty.")
+    password_bytes = plain_password.encode("utf-8")
+    if len(password_bytes) > _BCRYPT_MAX_BYTES:
+        raise ValueError("Password exceeds bcrypt's 72-byte UTF-8 limit.")
+    hashed = bcrypt.hashpw(password_bytes, bcrypt.gensalt(rounds=12))
+    return hashed.decode("utf-8")
+
+
+def verify_password(plain_password: str, password_hash: str) -> bool:
+    """Verify a plaintext password against a stored bcrypt hash in constant time."""
+    if not plain_password or not password_hash:
+        return False
+    password_bytes = plain_password.encode("utf-8")
+    if len(password_bytes) > _BCRYPT_MAX_BYTES:
+        return False
+    try:
+        return bcrypt.checkpw(password_bytes, password_hash.encode("utf-8"))
+    except (ValueError, TypeError):
+        return False
+
+
+def generate_refresh_token() -> str:
+    """Generate a cryptographically secure random opaque refresh token."""
+    return secrets.token_urlsafe(48)
+
+
+def hash_refresh_token(token: str) -> str:
+    """Compute 64-char SHA-256 hex digest of a refresh token for DB storage."""
+    return hashlib.sha256(token.encode("utf-8")).hexdigest()
 
 
 def decode_access_token(token: str) -> Dict[str, Any]:

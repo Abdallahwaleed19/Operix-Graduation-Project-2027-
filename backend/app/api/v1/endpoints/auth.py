@@ -4,27 +4,43 @@ Authentication endpoints — WS ticket issuance.
 """
 import base64
 import json as _json
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
+from typing import Optional
 import uuid
 
-from fastapi import APIRouter, Header, Request, status
+from fastapi import APIRouter, Depends, Header, Request, status
 from pydantic import BaseModel, Field
-from sqlalchemy import select
+from sqlalchemy import func, select
+from sqlalchemy.orm import Session
 
 from ....core.config import settings
-from ....core.database import SessionLocal, set_tenant_context
+from ....core.database import SessionLocal, get_db, set_tenant_context
 from ....core.errors import OperixException
 from ....core.logging import logger
 from ....core.security import (
     AuthenticationException,
     AuthorizationException,
+    create_access_token,
     create_ws_ticket,
     decode_access_token,
+    generate_refresh_token,
     get_ws_ticket_redis_key,
+    hash_refresh_token,
+    verify_password,
 )
-from ....models.tenant import FactoryMembership, User
-from ....models.enums import UserStatus
+from ....models.enums import FactoryStatus, TokenPurpose, UserStatus
+from ....models.tenant import AuthToken, Factory, FactoryMembership, Role, User
+from ....schemas.auth import (
+    AuthUserSummary,
+    LoginData,
+    LoginRequest,
+    LogoutData,
+    LogoutRequest,
+    MeData,
+    RefreshRequest,
+)
 from ....schemas.common import APIResponse, APIResponseMeta
+from ...deps import AuthenticatedUser, get_current_user_context
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
@@ -64,6 +80,279 @@ def _extract_jti_from_ticket(ticket_token: str) -> str:
     if pad:
         raw += "=" * (4 - pad)
     return _json.loads(base64.urlsafe_b64decode(raw.encode()).decode())["jti"]
+
+
+_ACCESS_TOKEN_TTL_SECONDS = 12 * 3600
+_REFRESH_TOKEN_TTL_DAYS = 7
+_MAX_FAILED_LOGINS = 5
+_LOCKOUT_MINUTES = 15
+
+
+def _as_utc(dt: datetime) -> datetime:
+    return dt.replace(tzinfo=timezone.utc) if dt.tzinfo is None else dt
+
+
+def _resolve_active_membership(
+    db: Session,
+    user_id: uuid.UUID,
+    requested_factory_id: Optional[uuid.UUID],
+) -> tuple[FactoryMembership, Factory, Role]:
+    """Resolve an active FactoryMembership + active Factory + Role for the user."""
+    stmt = (
+        select(FactoryMembership, Factory, Role)
+        .join(Factory, Factory.id == FactoryMembership.factory_id)
+        .join(Role, Role.id == FactoryMembership.role_id)
+        .where(
+            FactoryMembership.user_id == user_id,
+            FactoryMembership.is_active.is_(True),
+            Factory.status == FactoryStatus.ACTIVE,
+        )
+        .order_by(FactoryMembership.created_at.asc())
+    )
+    if requested_factory_id is not None:
+        stmt = stmt.where(FactoryMembership.factory_id == requested_factory_id)
+        row = db.execute(stmt).first()
+        if row is None:
+            raise AuthorizationException(
+                "User does not have active membership in the requested factory.",
+                error_code="NOT_A_MEMBER",
+            )
+        return row[0], row[1], row[2]
+
+    rows = db.execute(stmt).all()
+    if not rows:
+        raise AuthorizationException(
+            "User does not have any active factory membership.",
+            error_code="NOT_A_MEMBER",
+        )
+    for row in rows:
+        if row[1].id == settings.DEFAULT_FACTORY_ID:
+            return row[0], row[1], row[2]
+    return rows[0][0], rows[0][1], rows[0][2]
+
+
+def _issue_session_tokens(
+    db: Session,
+    user: User,
+    factory: Factory,
+    role: Role,
+    now: datetime,
+) -> LoginData:
+    """Create access JWT + opaque refresh token (stored hashed in AuthToken)."""
+    access_token = create_access_token(
+        data={
+            "sub": str(user.id),
+            "factory_id": str(factory.id),
+            "role": role.code,
+            "name": user.full_name,
+            "email": user.email,
+        },
+        expires_delta=timedelta(seconds=_ACCESS_TOKEN_TTL_SECONDS),
+    )
+    refresh_token = generate_refresh_token()
+    db.add(
+        AuthToken(
+            user_id=user.id,
+            purpose=TokenPurpose.REFRESH,
+            token_hash=hash_refresh_token(refresh_token),
+            expires_at=now + timedelta(days=_REFRESH_TOKEN_TTL_DAYS),
+        )
+    )
+    return LoginData(
+        access_token=access_token,
+        refresh_token=refresh_token,
+        token_type="bearer",
+        expires_in=_ACCESS_TOKEN_TTL_SECONDS,
+        user=AuthUserSummary(
+            user_id=user.id,
+            email=user.email,
+            full_name=user.full_name,
+            role=role.code,
+            factory_id=factory.id,
+            factory_name=factory.name,
+        ),
+    )
+
+
+# ── POST /api/v1/auth/login ──────────────────────────────────────────────────
+
+@router.post(
+    "/login",
+    response_model=APIResponse[LoginData],
+    status_code=status.HTTP_200_OK,
+    summary="Authenticate user and issue JWT + refresh token",
+    description="Validates email/password, account status, lockout, and active FactoryMembership.",
+)
+def login(
+    body: LoginRequest,
+    db: Session = Depends(get_db),
+) -> APIResponse[LoginData]:
+    """Authenticate a human user and issue access + refresh tokens."""
+    now = datetime.now(timezone.utc)
+    normalized_email = body.email.strip().lower()
+
+    user = db.execute(
+        select(User).where(func.lower(User.email) == normalized_email)
+    ).scalar_one_or_none()
+
+    if user is None:
+        raise AuthenticationException("Invalid email or password.", error_code="INVALID_CREDENTIALS")
+
+    if user.status != UserStatus.ACTIVE:
+        raise AuthorizationException("User account is not active.", error_code="USER_INACTIVE")
+
+    if user.locked_until is not None and _as_utc(user.locked_until) > now:
+        raise AuthorizationException(
+            "Account is temporarily locked due to repeated failed logins.",
+            error_code="ACCOUNT_LOCKED",
+        )
+
+    if not verify_password(body.password, user.password_hash):
+        user.failed_login_count = (user.failed_login_count or 0) + 1
+        if user.failed_login_count >= _MAX_FAILED_LOGINS:
+            user.locked_until = now + timedelta(minutes=_LOCKOUT_MINUTES)
+        db.commit()
+        raise AuthenticationException("Invalid email or password.", error_code="INVALID_CREDENTIALS")
+
+    _, factory, role = _resolve_active_membership(db, user.id, body.factory_id)
+
+    user.failed_login_count = 0
+    user.locked_until = None
+    user.last_login_at = now
+
+    login_data = _issue_session_tokens(db, user, factory, role, now)
+    logger.info(f"User login succeeded: user={user.id} factory={factory.id} role={role.code}")
+    return APIResponse(
+        status="success",
+        data=login_data,
+        meta=APIResponseMeta(factory_id=factory.id),
+    )
+
+
+# ── GET /api/v1/auth/me ──────────────────────────────────────────────────────
+
+@router.get(
+    "/me",
+    response_model=APIResponse[MeData],
+    status_code=status.HTTP_200_OK,
+    summary="Get current authenticated user context",
+)
+def get_me(
+    user: AuthenticatedUser = Depends(get_current_user_context),
+) -> APIResponse[MeData]:
+    """Return the authenticated user, active factory context, and resolved role."""
+    return APIResponse(
+        status="success",
+        data=MeData(
+            user_id=user.user_id,
+            factory_id=user.factory_id,
+            role=user.role,
+            full_name=user.full_name,
+            email=user.email,
+        ),
+        meta=APIResponseMeta(factory_id=user.factory_id),
+    )
+
+
+# ── POST /api/v1/auth/refresh ────────────────────────────────────────────────
+
+@router.post(
+    "/refresh",
+    response_model=APIResponse[LoginData],
+    status_code=status.HTTP_200_OK,
+    summary="Rotate refresh token and issue new access token",
+)
+def refresh_session(
+    body: RefreshRequest,
+    db: Session = Depends(get_db),
+) -> APIResponse[LoginData]:
+    """Atomically rotate a refresh token and issue a fresh access + refresh pair."""
+    now = datetime.now(timezone.utc)
+    token_hash = hash_refresh_token(body.refresh_token.strip())
+
+    token_row = db.execute(
+        select(AuthToken)
+        .where(AuthToken.token_hash == token_hash)
+        .with_for_update()
+    ).scalar_one_or_none()
+
+    if token_row is None or token_row.purpose != TokenPurpose.REFRESH:
+        raise AuthenticationException("Invalid refresh token.", error_code="INVALID_REFRESH_TOKEN")
+
+    if token_row.used_at is not None:
+        # Potential replay attack: revoke all active refresh tokens for this user.
+        active_tokens = db.execute(
+            select(AuthToken).where(
+                AuthToken.user_id == token_row.user_id,
+                AuthToken.purpose == TokenPurpose.REFRESH,
+                AuthToken.revoked_at.is_(None),
+                AuthToken.used_at.is_(None),
+            )
+        ).scalars().all()
+        for active in active_tokens:
+            active.revoked_at = now
+        db.commit()
+        raise AuthenticationException("Refresh token has already been used.", error_code="TOKEN_REPLAYED")
+
+    if token_row.revoked_at is not None:
+        raise AuthenticationException("Refresh token has been revoked.", error_code="TOKEN_REVOKED")
+
+    if _as_utc(token_row.expires_at) <= now:
+        raise AuthenticationException("Refresh token has expired.", error_code="TOKEN_EXPIRED")
+
+    user = db.get(User, token_row.user_id)
+    if user is None or user.status != UserStatus.ACTIVE:
+        raise AuthorizationException("User account is not active.", error_code="USER_INACTIVE")
+
+    if user.locked_until is not None and _as_utc(user.locked_until) > now:
+        raise AuthorizationException("User account is locked.", error_code="ACCOUNT_LOCKED")
+
+    _, factory, role = _resolve_active_membership(db, user.id, body.factory_id)
+
+    token_row.used_at = now
+    db.flush()
+
+    login_data = _issue_session_tokens(db, user, factory, role, now)
+    logger.info(f"Refresh token rotated: user={user.id} factory={factory.id}")
+    return APIResponse(
+        status="success",
+        data=login_data,
+        meta=APIResponseMeta(factory_id=factory.id),
+    )
+
+
+# ── POST /api/v1/auth/logout ─────────────────────────────────────────────────
+
+@router.post(
+    "/logout",
+    response_model=APIResponse[LogoutData],
+    status_code=status.HTTP_200_OK,
+    summary="Revoke a refresh token on logout",
+)
+def logout(
+    body: LogoutRequest,
+    db: Session = Depends(get_db),
+) -> APIResponse[LogoutData]:
+    """Revoke the supplied refresh token if active."""
+    now = datetime.now(timezone.utc)
+    token_hash = hash_refresh_token(body.refresh_token.strip())
+    token_row = db.execute(
+        select(AuthToken).where(
+            AuthToken.token_hash == token_hash,
+            AuthToken.purpose == TokenPurpose.REFRESH,
+        )
+    ).scalar_one_or_none()
+
+    revoked = False
+    if token_row is not None and token_row.revoked_at is None and token_row.used_at is None:
+        token_row.revoked_at = now
+        revoked = True
+
+    return APIResponse(
+        status="success",
+        data=LogoutData(revoked=revoked),
+        meta=APIResponseMeta(),
+    )
 
 
 # ── POST /api/v1/auth/ws-ticket ───────────────────────────────────────────────

@@ -7,11 +7,16 @@ from .endpoints import (
     analytics,
     assistant,
     auth,
+    devices,
     events,
     evidence,
+    factories,
     health,
+    incidents,
     reports,
+    roles,
     rules,
+    users,
     websockets,
 )
 
@@ -21,6 +26,11 @@ api_router = APIRouter()
 api_router.include_router(health.router)
 api_router.include_router(auth.router)
 api_router.include_router(events.router)
+api_router.include_router(devices.router)
+api_router.include_router(incidents.router)
+api_router.include_router(users.router)
+api_router.include_router(roles.router)
+api_router.include_router(factories.router)
 api_router.include_router(rules.router)
 api_router.include_router(websockets.router)
 

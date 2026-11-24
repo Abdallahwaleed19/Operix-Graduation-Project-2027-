@@ -19,6 +19,7 @@ psycopg[binary]>=3.2.3
 
 # Utilities & Networking
 httpx>=0.28.0
+bcrypt>=4.2.0
 
 # Redis — async client (redis.asyncio). Exact stable release, not a range.
 # Isolated install from this file resolved redis==8.2.0.
