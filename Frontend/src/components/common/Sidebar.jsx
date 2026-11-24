@@ -7,7 +7,6 @@ import {
   Monitor,
   AlertTriangle,
   BarChart2,
-  Layers,
   Thermometer,
   Sliders,
   MessageSquare,
@@ -24,10 +23,9 @@ export default function Sidebar() {
     { name: 'Dashboard', path: '/', icon: LayoutGrid },
     { name: 'Live Monitoring', path: '/monitoring', icon: Monitor },
     { name: 'Incidents', path: '/incidents', icon: AlertTriangle },
-    // Only non-viewers see workforce, heatmaps, thermal by default in sidebar
+    // Only non-viewers see workforce, thermal by default in sidebar
     ...(!isViewer ? [
       { name: 'Workforce Analytics', path: '/analytics', icon: BarChart2 },
-      { name: 'Heatmaps & Tracking', path: '/heatmaps', icon: Layers },
       { name: 'Thermal Monitoring', path: '/thermal', icon: Thermometer },
     ] : [])
   ];

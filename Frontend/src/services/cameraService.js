@@ -1,4 +1,4 @@
-import apiClient, { API_CONFIG } from './apiClient';
+import apiClient, { isMockEnabled } from './apiClient';
 import { initialCameras } from '../data/mockData';
 
 /**
@@ -7,7 +7,7 @@ import { initialCameras } from '../data/mockData';
  */
 export const cameraService = {
   async getCameras(filters = {}) {
-    if (API_CONFIG.useMock) {
+    if (isMockEnabled('cameras')) {
       let result = [...initialCameras];
       if (filters.zone && filters.zone !== 'All') {
         result = result.filter(c => c.zone === filters.zone);
@@ -22,14 +22,14 @@ export const cameraService = {
   },
 
   async getCameraById(id) {
-    if (API_CONFIG.useMock) {
+    if (isMockEnabled('cameras')) {
       return initialCameras.find(c => c.id === id) || null;
     }
     return apiClient.get(`/devices/cameras/${id}`);
   },
 
   async toggleCamera(id) {
-    if (API_CONFIG.useMock) {
+    if (isMockEnabled('cameras')) {
       const cam = initialCameras.find(c => c.id === id);
       if (cam) {
         const isOnline = cam.status === 'Online';
@@ -42,7 +42,7 @@ export const cameraService = {
   },
 
   async updateCamera(id, updatedFields) {
-    if (API_CONFIG.useMock) {
+    if (isMockEnabled('cameras')) {
       const cam = initialCameras.find(c => c.id === id);
       if (cam) {
         Object.assign(cam, updatedFields);
@@ -53,7 +53,7 @@ export const cameraService = {
   },
 
   async addCamera(newCam) {
-    if (API_CONFIG.useMock) {
+    if (isMockEnabled('cameras')) {
       initialCameras.push(newCam);
       return { success: true, ...newCam };
     }

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Navbar from '../../components/common/Navbar';
+import PendingBackendBadge from '../../components/common/PendingBackendBadge';
 import { useData } from '../../context/DataContext';
 import { Plus, UserPlus } from 'lucide-react';
 
@@ -65,13 +66,16 @@ export default function UsersRolesPage() {
         backTo="/settings"
         backLabel="Back to Settings"
         rightActions={
-          <button
-            className="btn btn-primary"
-            onClick={() => document.getElementById('invite-email-input')?.focus()}
-          >
-            <Plus size={15} />
-            Invite user
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <PendingBackendBadge moduleCode="S-4" dependency="Users & Roles API" />
+            <button
+              className="btn btn-primary"
+              onClick={() => document.getElementById('invite-email-input')?.focus()}
+            >
+              <Plus size={15} />
+              Invite user
+            </button>
+          </div>
         }
       />
 

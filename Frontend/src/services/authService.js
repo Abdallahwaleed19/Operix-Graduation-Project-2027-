@@ -7,7 +7,7 @@
  * and FastAPI live backend endpoints.
  */
 
-import apiClient, { API_CONFIG } from './apiClient.js';
+import apiClient, { API_CONFIG, isMockEnabled } from './apiClient.js';
 
 const USERS_STORAGE_KEY = 'operix_users_db';
 const SESSION_STORAGE_KEY = 'operix_auth_session';
@@ -158,7 +158,7 @@ export const authService = {
   async register({ fullName, email, password, role = 'Safety Supervisor', factory = 'Plant 1' }) {
     const normalizedEmail = email.trim().toLowerCase();
 
-    if (API_CONFIG.useMock) {
+    if (isMockEnabled('auth')) {
       const users = await getMockUsers();
       const existing = users.find(u => u.email.toLowerCase() === normalizedEmail);
 
@@ -228,7 +228,7 @@ export const authService = {
     const normalizedEmail = email.trim().toLowerCase();
     const cleanCode = code.trim();
 
-    if (API_CONFIG.useMock) {
+    if (isMockEnabled('auth')) {
       const verifications = getPendingVerifications();
       const entry = verifications[normalizedEmail];
 
@@ -285,7 +285,7 @@ export const authService = {
   async resendVerificationCode(email) {
     const normalizedEmail = email.trim().toLowerCase();
 
-    if (API_CONFIG.useMock) {
+    if (isMockEnabled('auth')) {
       const users = await getMockUsers();
       const user = users.find(u => u.email.toLowerCase() === normalizedEmail);
 
@@ -326,7 +326,7 @@ export const authService = {
   async login({ email, password, keepSignedIn = true }) {
     const normalizedEmail = email.trim().toLowerCase();
 
-    if (API_CONFIG.useMock) {
+    if (isMockEnabled('auth')) {
       const users = await getMockUsers();
       const user = users.find(u => u.email.toLowerCase() === normalizedEmail);
 
@@ -435,7 +435,7 @@ export const authService = {
   async requestPasswordReset(email) {
     const normalizedEmail = email.trim().toLowerCase();
 
-    if (API_CONFIG.useMock) {
+    if (isMockEnabled('auth')) {
       const users = await getMockUsers();
       const user = users.find(u => u.email.toLowerCase() === normalizedEmail);
 
@@ -477,7 +477,7 @@ export const authService = {
   async validateResetToken(token) {
     if (!token) return { valid: false, message: 'Missing token' };
 
-    if (API_CONFIG.useMock) {
+    if (isMockEnabled('auth')) {
       const tokens = getResetTokens();
       const entry = tokens[token];
 
@@ -501,7 +501,7 @@ export const authService = {
    * Set new password with valid reset token
    */
   async resetPassword({ token, newPassword }) {
-    if (API_CONFIG.useMock) {
+    if (isMockEnabled('auth')) {
       const validation = await this.validateResetToken(token);
       if (!validation.valid) {
         throw new Error(validation.message || 'Invalid or expired reset token.');
@@ -535,6 +535,22 @@ export const authService = {
       token,
       new_password: newPassword
     });
+  },
+
+  /**
+   * POST /api/v1/auth/ws-ticket
+   * Request a signed, one-time WebSocket ticket
+   */
+  async getWsTicket(factoryId) {
+    if (isMockEnabled('websockets')) {
+      return {
+        ticket: `mock-ws-ticket-${Date.now()}`,
+        expires_at: Math.floor(Date.now() / 1000) + 30,
+        expires_in_seconds: 30,
+        factory_id: factoryId || 'aaaaaaaa-0001-0001-0001-000000000001'
+      };
+    }
+    return apiClient.post('/api/v1/auth/ws-ticket', { factory_id: factoryId });
   }
 };
 

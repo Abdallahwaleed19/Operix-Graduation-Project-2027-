@@ -1,12 +1,22 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import Sidebar from '../common/Sidebar';
 import { useAuth } from '../../context/AuthContext';
 import AccessDeniedPage from '../../pages/error/AccessDeniedPage';
+import { websocketService } from '../../services/websocketService';
 
 export default function AppLayout() {
-  const { isViewer } = useAuth();
+  const { isViewer, isAuthenticated } = useAuth();
   const location = useLocation();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      websocketService.connect();
+    }
+    return () => {
+      websocketService.disconnect();
+    };
+  }, [isAuthenticated]);
 
   // Screen 25: If a Viewer tries to navigate to Settings or Rule Builder, show Access Denied!
   const isRestrictedForViewer =

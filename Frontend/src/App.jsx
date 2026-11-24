@@ -8,7 +8,6 @@ import FactoryOverviewPage from './pages/dashboard/FactoryOverviewPage';
 import LiveMonitoringPage from './pages/monitoring/LiveMonitoringPage';
 import IncidentsPage from './pages/incidents/IncidentsPage';
 import WorkforceAnalyticsPage from './pages/analytics/WorkforceAnalyticsPage';
-import HeatmapsTrackingPage from './pages/heatmaps/HeatmapsTrackingPage';
 import ThermalMonitoringPage from './pages/thermal/ThermalMonitoringPage';
 import RuleBuilderPage from './pages/rules/RuleBuilderPage';
 import AIAssistantPage from './pages/assistant/AIAssistantPage';
@@ -60,8 +59,8 @@ export default function App() {
         {/* 04: Workforce Analytics */}
         <Route path="/analytics" element={<WorkforceAnalyticsPage />} />
 
-        {/* 05: Heatmaps & Tracking */}
-        <Route path="/heatmaps" element={<HeatmapsTrackingPage />} />
+        {/* 05: Heatmaps removed from project specification - redirect to analytics */}
+        <Route path="/heatmaps" element={<Navigate to="/analytics" replace />} />
 
         {/* 06: Thermal Monitoring */}
         <Route path="/thermal" element={<ThermalMonitoringPage />} />

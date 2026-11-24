@@ -5,7 +5,7 @@
  * Connecting to the FastAPI backend requires zero changes to UI components.
  */
 
-export { apiClient, API_CONFIG } from './apiClient';
+export { apiClient, API_CONFIG, isMockEnabled } from './apiClient';
 export { incidentService } from './incidentService';
 export { cameraService } from './cameraService';
 export { sensorService } from './sensorService';
@@ -16,3 +16,4 @@ export { reportService } from './reportService';
 export { assistantService } from './assistantService';
 export { factoryService } from './factoryService';
 export { authService } from './authService';
+export { websocketService, WS_STATUS } from './websocketService';

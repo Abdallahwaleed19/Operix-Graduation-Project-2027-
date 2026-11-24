@@ -1,0 +1,4777 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Operix Industrial AI Safety Platform",
+    "description": "Operix Industrial AI Safety Platform \u2014 Core Backend REST API & Real-Time Engine. Integrates Computer Vision events, deterministic safety rules, multi-channel alerts, and bilingual AI assistant services.",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": [
+          "Health & Diagnostics"
+        ],
+        "summary": "Health Check",
+        "description": "Comprehensive system health check.\nVerifies API readiness, database ping, and AI subsystem availability.",
+        "operationId": "health_check_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIResponse_HealthData_"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health/live": {
+      "get": {
+        "tags": [
+          "Health & Diagnostics"
+        ],
+        "summary": "Liveness",
+        "description": "Lightweight Kubernetes / Docker liveness probe.",
+        "operationId": "liveness_health_live_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object",
+                  "title": "Response Liveness Health Live Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/health": {
+      "get": {
+        "tags": [
+          "Health & Diagnostics"
+        ],
+        "summary": "Health Check",
+        "description": "Comprehensive system health check.\nVerifies API readiness, database ping, and AI subsystem availability.",
+        "operationId": "health_check_api_v1_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIResponse_HealthData_"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/health/live": {
+      "get": {
+        "tags": [
+          "Health & Diagnostics"
+        ],
+        "summary": "Liveness",
+        "description": "Lightweight Kubernetes / Docker liveness probe.",
+        "operationId": "liveness_api_v1_health_live_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object",
+                  "title": "Response Liveness Api V1 Health Live Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/ws-ticket": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Issue a one-time WebSocket authentication ticket",
+        "description": "Exchanges a valid human JWT for a short-lived (\u226430 s) signed WS ticket. The ticket is stored atomically in Redis and consumed on first use. Requires active factory membership. Fails closed if Redis is unavailable.",
+        "operationId": "issue_ws_ticket_api_v1_auth_ws_ticket_post",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WsTicketRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIResponse_WsTicketData_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/events/ingest": {
+      "post": {
+        "tags": [
+          "Events & CV Ingestion"
+        ],
+        "summary": "Ingest a single Computer Vision safety event",
+        "description": "Receives an event from authenticated CV detection modules and broadcasts to WebSockets.",
+        "operationId": "ingest_single_event_api_v1_events_ingest_post",
+        "parameters": [
+          {
+            "name": "X-Camera-Key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Camera / Producer API Secret Key",
+              "title": "X-Camera-Key"
+            },
+            "description": "Camera / Producer API Secret Key"
+          },
+          {
+            "name": "x-factory-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Tenant Factory UUID (optional, defaults to configured factory)",
+              "title": "X-Factory-Id"
+            },
+            "description": "Tenant Factory UUID (optional, defaults to configured factory)"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CVEventIngest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIResponse_EventIngestResponse_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/events/batch": {
+      "post": {
+        "tags": [
+          "Events & CV Ingestion"
+        ],
+        "summary": "Ingest batch of events from a single frame",
+        "description": "Receives a FrameResult container containing multiple detections and safety events from an authenticated camera.",
+        "operationId": "ingest_frame_result_api_v1_events_batch_post",
+        "parameters": [
+          {
+            "name": "X-Camera-Key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Camera / Producer API Secret Key",
+              "title": "X-Camera-Key"
+            },
+            "description": "Camera / Producer API Secret Key"
+          },
+          {
+            "name": "x-factory-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Tenant Factory UUID (optional, defaults to configured factory)",
+              "title": "X-Factory-Id"
+            },
+            "description": "Tenant Factory UUID (optional, defaults to configured factory)"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CVFrameResultIngest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIResponse_EventBatchIngestResponse_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/events": {
+      "get": {
+        "tags": [
+          "Events & CV Ingestion"
+        ],
+        "summary": "List historical safety events",
+        "description": "Query logged safety events for the current tenant factory with optional filters.",
+        "operationId": "list_events_api_v1_events_get",
+        "parameters": [
+          {
+            "name": "camera_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by camera UUID",
+              "title": "Camera Id"
+            },
+            "description": "Filter by camera UUID"
+          },
+          {
+            "name": "event_type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/EventType"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by event type",
+              "title": "Event Type"
+            },
+            "description": "Filter by event type"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "description": "Max records to return",
+              "default": 50,
+              "title": "Limit"
+            },
+            "description": "Max records to return"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Records offset",
+              "default": 0,
+              "title": "Offset"
+            },
+            "description": "Records offset"
+          },
+          {
+            "name": "x-factory-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Tenant Factory UUID (optional, defaults to configured factory)",
+              "title": "X-Factory-Id"
+            },
+            "description": "Tenant Factory UUID (optional, defaults to configured factory)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIResponse_List_EventResponse__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/events/{event_id}": {
+      "get": {
+        "tags": [
+          "Events & CV Ingestion"
+        ],
+        "summary": "Get single event by ID",
+        "description": "Retrieve single event details by UUID.",
+        "operationId": "get_event_api_v1_events__event_id__get",
+        "parameters": [
+          {
+            "name": "event_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Event Id"
+            }
+          },
+          {
+            "name": "x-factory-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Tenant Factory UUID (optional, defaults to configured factory)",
+              "title": "X-Factory-Id"
+            },
+            "description": "Tenant Factory UUID (optional, defaults to configured factory)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIResponse_EventResponse_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/rules": {
+      "post": {
+        "tags": [
+          "Safety Rule Builder"
+        ],
+        "summary": "Create a new Safety Rule",
+        "description": "Registers a safety rule scoped to factory, zone, department, or sensor.",
+        "operationId": "create_rule_api_v1_rules_post",
+        "parameters": [
+          {
+            "name": "x-factory-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Tenant Factory UUID (optional, defaults to configured factory)",
+              "title": "X-Factory-Id"
+            },
+            "description": "Tenant Factory UUID (optional, defaults to configured factory)"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SafetyRuleCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIResponse_SafetyRuleResponse_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Safety Rule Builder"
+        ],
+        "summary": "List Safety Rules",
+        "description": "Retrieve all configured safety rules for the tenant factory with optional filters.",
+        "operationId": "list_rules_api_v1_rules_get",
+        "parameters": [
+          {
+            "name": "is_enabled",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by active state",
+              "title": "Is Enabled"
+            },
+            "description": "Filter by active state"
+          },
+          {
+            "name": "event_type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by target event type",
+              "title": "Event Type"
+            },
+            "description": "Filter by target event type"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "description": "Max records to return",
+              "default": 50,
+              "title": "Limit"
+            },
+            "description": "Max records to return"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Offset for pagination",
+              "default": 0,
+              "title": "Offset"
+            },
+            "description": "Offset for pagination"
+          },
+          {
+            "name": "x-factory-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Tenant Factory UUID (optional, defaults to configured factory)",
+              "title": "X-Factory-Id"
+            },
+            "description": "Tenant Factory UUID (optional, defaults to configured factory)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIResponse_SafetyRuleListResponse_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/rules/{rule_id}": {
+      "get": {
+        "tags": [
+          "Safety Rule Builder"
+        ],
+        "summary": "Get Safety Rule by ID",
+        "description": "Retrieve details of a single safety rule.",
+        "operationId": "get_rule_api_v1_rules__rule_id__get",
+        "parameters": [
+          {
+            "name": "rule_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Rule Id"
+            }
+          },
+          {
+            "name": "x-factory-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Tenant Factory UUID (optional, defaults to configured factory)",
+              "title": "X-Factory-Id"
+            },
+            "description": "Tenant Factory UUID (optional, defaults to configured factory)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIResponse_SafetyRuleResponse_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Safety Rule Builder"
+        ],
+        "summary": "Update Safety Rule",
+        "description": "Updates safety rule configuration and increments rule version.",
+        "operationId": "update_rule_api_v1_rules__rule_id__put",
+        "parameters": [
+          {
+            "name": "rule_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Rule Id"
+            }
+          },
+          {
+            "name": "x-factory-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Tenant Factory UUID (optional, defaults to configured factory)",
+              "title": "X-Factory-Id"
+            },
+            "description": "Tenant Factory UUID (optional, defaults to configured factory)"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SafetyRuleUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIResponse_SafetyRuleResponse_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Safety Rule Builder"
+        ],
+        "summary": "Delete Safety Rule",
+        "description": "Delete a safety rule.",
+        "operationId": "delete_rule_api_v1_rules__rule_id__delete",
+        "parameters": [
+          {
+            "name": "rule_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Rule Id"
+            }
+          },
+          {
+            "name": "x-factory-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Tenant Factory UUID (optional, defaults to configured factory)",
+              "title": "X-Factory-Id"
+            },
+            "description": "Tenant Factory UUID (optional, defaults to configured factory)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIResponse_dict_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/rules/{rule_id}/status": {
+      "patch": {
+        "tags": [
+          "Safety Rule Builder"
+        ],
+        "summary": "Toggle Safety Rule status",
+        "description": "Enable or disable an existing safety rule.",
+        "operationId": "update_rule_status_api_v1_rules__rule_id__status_patch",
+        "parameters": [
+          {
+            "name": "rule_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Rule Id"
+            }
+          },
+          {
+            "name": "x-factory-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Tenant Factory UUID (optional, defaults to configured factory)",
+              "title": "X-Factory-Id"
+            },
+            "description": "Tenant Factory UUID (optional, defaults to configured factory)"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SafetyRuleStatusUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIResponse_SafetyRuleResponse_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/analytics/overview": {
+      "get": {
+        "tags": [
+          "Workforce Analytics"
+        ],
+        "summary": "Workforce Overview Metrics",
+        "description": "Retrieve overall workforce metrics: total workers, active/inactive split, and role distribution.",
+        "operationId": "get_workforce_overview_api_v1_analytics_overview_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-Factory-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Factory-Id"
+            }
+          },
+          {
+            "name": "x-factory-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Tenant Factory UUID (optional, defaults to configured factory)",
+              "title": "X-Factory-Id"
+            },
+            "description": "Tenant Factory UUID (optional, defaults to configured factory)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIResponse_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/analytics/attendance": {
+      "get": {
+        "tags": [
+          "Workforce Analytics"
+        ],
+        "summary": "Attendance & Activity Metrics",
+        "description": "Retrieve worker activity and attendance metrics based on incident review/resolve timestamps.",
+        "operationId": "get_attendance_metrics_api_v1_analytics_attendance_get",
+        "parameters": [
+          {
+            "name": "start_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Start timestamp (UTC)",
+              "title": "Start Date"
+            },
+            "description": "Start timestamp (UTC)"
+          },
+          {
+            "name": "end_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "End timestamp (UTC)",
+              "title": "End Date"
+            },
+            "description": "End timestamp (UTC)"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-Factory-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Factory-Id"
+            }
+          },
+          {
+            "name": "x-factory-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Tenant Factory UUID (optional, defaults to configured factory)",
+              "title": "X-Factory-Id"
+            },
+            "description": "Tenant Factory UUID (optional, defaults to configured factory)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIResponse_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/analytics/incidents": {
+      "get": {
+        "tags": [
+          "Workforce Analytics"
+        ],
+        "summary": "Safety Incident Analytics",
+        "description": "Retrieve incident distributions by type, severity, and resolution status.",
+        "operationId": "get_incident_analytics_api_v1_analytics_incidents_get",
+        "parameters": [
+          {
+            "name": "start_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Start timestamp (UTC)",
+              "title": "Start Date"
+            },
+            "description": "Start timestamp (UTC)"
+          },
+          {
+            "name": "end_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "End timestamp (UTC)",
+              "title": "End Date"
+            },
+            "description": "End timestamp (UTC)"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-Factory-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Factory-Id"
+            }
+          },
+          {
+            "name": "x-factory-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Tenant Factory UUID (optional, defaults to configured factory)",
+              "title": "X-Factory-Id"
+            },
+            "description": "Tenant Factory UUID (optional, defaults to configured factory)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIResponse_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/analytics/productivity": {
+      "get": {
+        "tags": [
+          "Workforce Analytics"
+        ],
+        "summary": "Worker Productivity Metrics",
+        "description": "Retrieve worker resolution performance and categorisation.",
+        "operationId": "get_productivity_metrics_api_v1_analytics_productivity_get",
+        "parameters": [
+          {
+            "name": "start_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Start timestamp (UTC)",
+              "title": "Start Date"
+            },
+            "description": "Start timestamp (UTC)"
+          },
+          {
+            "name": "end_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "End timestamp (UTC)",
+              "title": "End Date"
+            },
+            "description": "End timestamp (UTC)"
+          },
+          {
+            "name": "low_threshold",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Low productivity threshold count",
+              "title": "Low Threshold"
+            },
+            "description": "Low productivity threshold count"
+          },
+          {
+            "name": "high_threshold",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "High productivity threshold count",
+              "title": "High Threshold"
+            },
+            "description": "High productivity threshold count"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-Factory-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Factory-Id"
+            }
+          },
+          {
+            "name": "x-factory-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Tenant Factory UUID (optional, defaults to configured factory)",
+              "title": "X-Factory-Id"
+            },
+            "description": "Tenant Factory UUID (optional, defaults to configured factory)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIResponse_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/analytics/camera-coverage": {
+      "get": {
+        "tags": [
+          "Workforce Analytics"
+        ],
+        "summary": "Camera Coverage & Downtime",
+        "description": "Calculate camera uptime percentages and downtime gaps.",
+        "operationId": "get_camera_coverage_api_v1_analytics_camera_coverage_get",
+        "parameters": [
+          {
+            "name": "period_hours",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "maximum": 8760.0,
+              "minimum": 1.0,
+              "description": "Observation window in hours",
+              "default": 720.0,
+              "title": "Period Hours"
+            },
+            "description": "Observation window in hours"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-Factory-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Factory-Id"
+            }
+          },
+          {
+            "name": "x-factory-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Tenant Factory UUID (optional, defaults to configured factory)",
+              "title": "X-Factory-Id"
+            },
+            "description": "Tenant Factory UUID (optional, defaults to configured factory)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIResponse_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/analytics/summary": {
+      "get": {
+        "tags": [
+          "Workforce Analytics"
+        ],
+        "summary": "Consolidated Workforce Summary",
+        "description": "Consolidate workforce overview, attendance, incidents, and camera metrics into one dashboard view.",
+        "operationId": "get_workforce_summary_api_v1_analytics_summary_get",
+        "parameters": [
+          {
+            "name": "start_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Start timestamp (UTC)",
+              "title": "Start Date"
+            },
+            "description": "Start timestamp (UTC)"
+          },
+          {
+            "name": "end_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "End timestamp (UTC)",
+              "title": "End Date"
+            },
+            "description": "End timestamp (UTC)"
+          },
+          {
+            "name": "period_hours",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "maximum": 8760.0,
+              "minimum": 1.0,
+              "description": "Camera observation window in hours",
+              "default": 720.0,
+              "title": "Period Hours"
+            },
+            "description": "Camera observation window in hours"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-Factory-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Factory-Id"
+            }
+          },
+          {
+            "name": "x-factory-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Tenant Factory UUID (optional, defaults to configured factory)",
+              "title": "X-Factory-Id"
+            },
+            "description": "Tenant Factory UUID (optional, defaults to configured factory)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIResponse_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/assistant/ask": {
+      "post": {
+        "tags": [
+          "LLM RAG Assistant"
+        ],
+        "summary": "Ask Safety Assistant",
+        "description": "Query the RAG assistant with grounded safety knowledge retrieval in Arabic or English.",
+        "operationId": "ask_assistant_api_v1_assistant_ask_post",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-Factory-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Factory-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssistantQueryIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIResponse_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/assistant/actions/execute": {
+      "post": {
+        "tags": [
+          "LLM RAG Assistant"
+        ],
+        "summary": "Execute Agentic Remediation Action",
+        "description": "Execute an authorized remediation action against real canonical models with WebSocket broadcasting.",
+        "operationId": "execute_action_api_v1_assistant_actions_execute_post",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-Factory-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Factory-Id"
+            }
+          },
+          {
+            "name": "x-factory-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Tenant Factory UUID (optional, defaults to configured factory)",
+              "title": "X-Factory-Id"
+            },
+            "description": "Tenant Factory UUID (optional, defaults to configured factory)"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ActionExecutionIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIResponse_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/assistant/sources": {
+      "get": {
+        "tags": [
+          "LLM RAG Assistant"
+        ],
+        "summary": "Retrieve Source Citations",
+        "description": "Retrieve matching knowledge citations directly without running LLM text generation.",
+        "operationId": "get_sources_api_v1_assistant_sources_get",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 2,
+              "description": "Search term or topic",
+              "title": "Q"
+            },
+            "description": "Search term or topic"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-Factory-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Factory-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIResponse_List_Dict_str__Any___"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/assistant/conversations/{conversation_id}": {
+      "delete": {
+        "tags": [
+          "LLM RAG Assistant"
+        ],
+        "summary": "Clear Conversation History",
+        "description": "Clear saved dialogue turns for a specified session.",
+        "operationId": "clear_conversation_api_v1_assistant_conversations__conversation_id__delete",
+        "parameters": [
+          {
+            "name": "conversation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Conversation Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-Factory-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Factory-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIResponse_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/assistant/health": {
+      "get": {
+        "tags": [
+          "LLM RAG Assistant"
+        ],
+        "summary": "AI Assistant Health",
+        "description": "Diagnostic health check for the RAG retriever and LLM provider.",
+        "operationId": "assistant_health_api_v1_assistant_health_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-Factory-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Factory-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIResponse_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/reports/generate": {
+      "post": {
+        "tags": [
+          "Reports Generation"
+        ],
+        "summary": "Generate Safety Report",
+        "description": "Generate a PDF or Excel report artifact for the tenant factory.",
+        "operationId": "generate_report_api_v1_reports_generate_post",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-Factory-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Factory-Id"
+            }
+          },
+          {
+            "name": "x-factory-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Tenant Factory UUID (optional, defaults to configured factory)",
+              "title": "X-Factory-Id"
+            },
+            "description": "Tenant Factory UUID (optional, defaults to configured factory)"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReportGenerateIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIResponse_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/reports": {
+      "get": {
+        "tags": [
+          "Reports Generation"
+        ],
+        "summary": "List Generated Reports",
+        "description": "List all available generated report artifacts for the tenant factory.",
+        "operationId": "list_reports_api_v1_reports_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-Factory-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Factory-Id"
+            }
+          },
+          {
+            "name": "x-factory-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Tenant Factory UUID (optional, defaults to configured factory)",
+              "title": "X-Factory-Id"
+            },
+            "description": "Tenant Factory UUID (optional, defaults to configured factory)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIResponse_List_Dict_str__Any___"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/reports/{report_id}": {
+      "get": {
+        "tags": [
+          "Reports Generation"
+        ],
+        "summary": "Get Report Metadata",
+        "description": "Retrieve metadata for a specific generated report.",
+        "operationId": "get_report_api_v1_reports__report_id__get",
+        "parameters": [
+          {
+            "name": "report_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Report Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-Factory-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Factory-Id"
+            }
+          },
+          {
+            "name": "x-factory-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Tenant Factory UUID (optional, defaults to configured factory)",
+              "title": "X-Factory-Id"
+            },
+            "description": "Tenant Factory UUID (optional, defaults to configured factory)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIResponse_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/reports/{report_id}/download": {
+      "get": {
+        "tags": [
+          "Reports Generation"
+        ],
+        "summary": "Download Report Artifact",
+        "description": "Download the physical PDF or Excel report artifact.",
+        "operationId": "download_report_api_v1_reports__report_id__download_get",
+        "parameters": [
+          {
+            "name": "report_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Report Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-Factory-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Factory-Id"
+            }
+          },
+          {
+            "name": "x-factory-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Tenant Factory UUID (optional, defaults to configured factory)",
+              "title": "X-Factory-Id"
+            },
+            "description": "Tenant Factory UUID (optional, defaults to configured factory)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/evidence/upload": {
+      "post": {
+        "tags": [
+          "Incident Evidence"
+        ],
+        "summary": "Upload Incident Evidence",
+        "description": "Upload and cryptographically hash an evidence snapshot or video clip (JSON Base64 or binary).",
+        "operationId": "upload_evidence_api_v1_evidence_upload_post",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-Factory-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Factory-Id"
+            }
+          },
+          {
+            "name": "x-factory-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Tenant Factory UUID (optional, defaults to configured factory)",
+              "title": "X-Factory-Id"
+            },
+            "description": "Tenant Factory UUID (optional, defaults to configured factory)"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EvidenceUploadJsonIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIResponse_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/evidence": {
+      "get": {
+        "tags": [
+          "Incident Evidence"
+        ],
+        "summary": "List Evidence Records",
+        "description": "List evidence records filtered by event_id, incident_id, or paginated by factory.",
+        "operationId": "list_evidence_api_v1_evidence_get",
+        "parameters": [
+          {
+            "name": "event_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by event UUID",
+              "title": "Event Id"
+            },
+            "description": "Filter by event UUID"
+          },
+          {
+            "name": "incident_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by incident UUID",
+              "title": "Incident Id"
+            },
+            "description": "Filter by incident UUID"
+          },
+          {
+            "name": "kind",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by kind ('snapshot' or 'clip')",
+              "title": "Kind"
+            },
+            "description": "Filter by kind ('snapshot' or 'clip')"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Page number",
+              "default": 1,
+              "title": "Page"
+            },
+            "description": "Page number"
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "description": "Items per page",
+              "default": 20,
+              "title": "Page Size"
+            },
+            "description": "Items per page"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-Factory-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Factory-Id"
+            }
+          },
+          {
+            "name": "x-factory-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Tenant Factory UUID (optional, defaults to configured factory)",
+              "title": "X-Factory-Id"
+            },
+            "description": "Tenant Factory UUID (optional, defaults to configured factory)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIResponse_Any_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/evidence/{evidence_id}": {
+      "get": {
+        "tags": [
+          "Incident Evidence"
+        ],
+        "summary": "Get Evidence Metadata",
+        "description": "Retrieve metadata for a specific evidence record.",
+        "operationId": "get_evidence_metadata_api_v1_evidence__evidence_id__get",
+        "parameters": [
+          {
+            "name": "evidence_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Evidence Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-Factory-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Factory-Id"
+            }
+          },
+          {
+            "name": "x-factory-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Tenant Factory UUID (optional, defaults to configured factory)",
+              "title": "X-Factory-Id"
+            },
+            "description": "Tenant Factory UUID (optional, defaults to configured factory)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIResponse_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/evidence/{evidence_id}/download": {
+      "get": {
+        "tags": [
+          "Incident Evidence"
+        ],
+        "summary": "Download Evidence File",
+        "description": "Download raw bytes of an evidence snapshot or clip.",
+        "operationId": "download_evidence_api_v1_evidence__evidence_id__download_get",
+        "parameters": [
+          {
+            "name": "evidence_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Evidence Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-Factory-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Factory-Id"
+            }
+          },
+          {
+            "name": "x-factory-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Tenant Factory UUID (optional, defaults to configured factory)",
+              "title": "X-Factory-Id"
+            },
+            "description": "Tenant Factory UUID (optional, defaults to configured factory)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/evidence/{evidence_id}/verify-integrity": {
+      "post": {
+        "tags": [
+          "Incident Evidence"
+        ],
+        "summary": "Verify Evidence Integrity",
+        "description": "Re-calculate SHA-256 hash from physical disk file and compare against database checksum.",
+        "operationId": "verify_evidence_integrity_api_v1_evidence__evidence_id__verify_integrity_post",
+        "parameters": [
+          {
+            "name": "evidence_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Evidence Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "X-Factory-Id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Factory-Id"
+            }
+          },
+          {
+            "name": "x-factory-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Tenant Factory UUID (optional, defaults to configured factory)",
+              "title": "X-Factory-Id"
+            },
+            "description": "Tenant Factory UUID (optional, defaults to configured factory)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIResponse_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "APIResponseMeta": {
+        "properties": {
+          "request_timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Request Timestamp",
+            "description": "UTC timestamp when the response was generated."
+          },
+          "factory_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Factory Id",
+            "description": "Factory tenant scope of the query."
+          },
+          "api_version": {
+            "type": "string",
+            "title": "Api Version",
+            "description": "Operix API version.",
+            "default": "v1"
+          }
+        },
+        "type": "object",
+        "title": "APIResponseMeta",
+        "description": "Metadata included with every successful API response."
+      },
+      "APIResponse_Any_": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "'success' or 'error'",
+            "default": "success"
+          },
+          "data": {
+            "title": "Data",
+            "description": "Payload conforming to endpoint schema."
+          },
+          "meta": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/APIResponseMeta"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Standard request/response metadata."
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "APIResponse[Any]"
+      },
+      "APIResponse_Dict_str__Any__": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "'success' or 'error'",
+            "default": "success"
+          },
+          "data": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Data",
+            "description": "Payload conforming to endpoint schema."
+          },
+          "meta": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/APIResponseMeta"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Standard request/response metadata."
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "APIResponse[Dict[str, Any]]"
+      },
+      "APIResponse_EventBatchIngestResponse_": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "'success' or 'error'",
+            "default": "success"
+          },
+          "data": {
+            "$ref": "#/components/schemas/EventBatchIngestResponse",
+            "description": "Payload conforming to endpoint schema."
+          },
+          "meta": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/APIResponseMeta"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Standard request/response metadata."
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "APIResponse[EventBatchIngestResponse]"
+      },
+      "APIResponse_EventIngestResponse_": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "'success' or 'error'",
+            "default": "success"
+          },
+          "data": {
+            "$ref": "#/components/schemas/EventIngestResponse",
+            "description": "Payload conforming to endpoint schema."
+          },
+          "meta": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/APIResponseMeta"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Standard request/response metadata."
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "APIResponse[EventIngestResponse]"
+      },
+      "APIResponse_EventResponse_": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "'success' or 'error'",
+            "default": "success"
+          },
+          "data": {
+            "$ref": "#/components/schemas/EventResponse",
+            "description": "Payload conforming to endpoint schema."
+          },
+          "meta": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/APIResponseMeta"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Standard request/response metadata."
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "APIResponse[EventResponse]"
+      },
+      "APIResponse_HealthData_": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "'success' or 'error'",
+            "default": "success"
+          },
+          "data": {
+            "$ref": "#/components/schemas/HealthData",
+            "description": "Payload conforming to endpoint schema."
+          },
+          "meta": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/APIResponseMeta"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Standard request/response metadata."
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "APIResponse[HealthData]"
+      },
+      "APIResponse_List_Dict_str__Any___": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "'success' or 'error'",
+            "default": "success"
+          },
+          "data": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Data",
+            "description": "Payload conforming to endpoint schema."
+          },
+          "meta": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/APIResponseMeta"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Standard request/response metadata."
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "APIResponse[List[Dict[str, Any]]]"
+      },
+      "APIResponse_List_EventResponse__": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "'success' or 'error'",
+            "default": "success"
+          },
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/EventResponse"
+            },
+            "type": "array",
+            "title": "Data",
+            "description": "Payload conforming to endpoint schema."
+          },
+          "meta": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/APIResponseMeta"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Standard request/response metadata."
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "APIResponse[List[EventResponse]]"
+      },
+      "APIResponse_SafetyRuleListResponse_": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "'success' or 'error'",
+            "default": "success"
+          },
+          "data": {
+            "$ref": "#/components/schemas/SafetyRuleListResponse",
+            "description": "Payload conforming to endpoint schema."
+          },
+          "meta": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/APIResponseMeta"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Standard request/response metadata."
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "APIResponse[SafetyRuleListResponse]"
+      },
+      "APIResponse_SafetyRuleResponse_": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "'success' or 'error'",
+            "default": "success"
+          },
+          "data": {
+            "$ref": "#/components/schemas/SafetyRuleResponse",
+            "description": "Payload conforming to endpoint schema."
+          },
+          "meta": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/APIResponseMeta"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Standard request/response metadata."
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "APIResponse[SafetyRuleResponse]"
+      },
+      "APIResponse_WsTicketData_": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "'success' or 'error'",
+            "default": "success"
+          },
+          "data": {
+            "$ref": "#/components/schemas/WsTicketData",
+            "description": "Payload conforming to endpoint schema."
+          },
+          "meta": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/APIResponseMeta"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Standard request/response metadata."
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "APIResponse[WsTicketData]"
+      },
+      "APIResponse_dict_": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "'success' or 'error'",
+            "default": "success"
+          },
+          "data": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Data",
+            "description": "Payload conforming to endpoint schema."
+          },
+          "meta": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/APIResponseMeta"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Standard request/response metadata."
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "APIResponse[dict]"
+      },
+      "ActionExecutionIn": {
+        "properties": {
+          "action_id": {
+            "type": "string",
+            "title": "Action Id",
+            "description": "Unique proposal ID"
+          },
+          "action_type": {
+            "type": "string",
+            "title": "Action Type",
+            "description": "Action type (create_incident, acknowledge_incident, alert, mute_sensor, etc.)"
+          },
+          "parameters": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Parameters",
+            "description": "Action parameters"
+          },
+          "confirmed_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confirmed By",
+            "description": "Username or ID confirming action"
+          },
+          "idempotency_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Idempotency Key",
+            "description": "Idempotency key to prevent double execution"
+          }
+        },
+        "type": "object",
+        "required": [
+          "action_id",
+          "action_type"
+        ],
+        "title": "ActionExecutionIn"
+      },
+      "AssistantQueryIn": {
+        "properties": {
+          "question": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 2,
+            "title": "Question",
+            "description": "User query in Arabic or English"
+          },
+          "conversation_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Conversation Id",
+            "description": "Optional conversation tracking ID"
+          },
+          "language_preference": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "ar",
+              "en"
+            ],
+            "title": "Language Preference",
+            "default": "auto"
+          },
+          "user_context": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/UserContextDTO"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "question"
+        ],
+        "title": "AssistantQueryIn"
+      },
+      "CVDetection": {
+        "properties": {
+          "label": {
+            "type": "string",
+            "title": "Label",
+            "description": "Detected class label (e.g. person, helmet, safety_vest)"
+          },
+          "bbox": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array",
+            "maxItems": 4,
+            "minItems": 4,
+            "title": "Bbox",
+            "description": "[x1, y1, x2, y2] in pixels"
+          },
+          "confidence": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Confidence",
+            "description": "Detection confidence score"
+          },
+          "track_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Track Id",
+            "description": "Local tracker ID"
+          },
+          "attributes": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Attributes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "label",
+          "bbox",
+          "confidence"
+        ],
+        "title": "CVDetection",
+        "description": "Single per-frame detection item from CV model."
+      },
+      "CVEventIngest": {
+        "properties": {
+          "event_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Event Id",
+            "description": "UUIDv4 supplied by producer for idempotency"
+          },
+          "event_type": {
+            "type": "string",
+            "title": "Event Type",
+            "description": "CV event type (e.g. ppe_violation, potential_fall, restricted_zone_entry)"
+          },
+          "event_state": {
+            "type": "string",
+            "title": "Event State",
+            "description": "'started', 'ongoing', or 'ended'",
+            "default": "started"
+          },
+          "module": {
+            "type": "string",
+            "title": "Module",
+            "description": "Originating module (e.g. ppe_detection, fall_detection, person_tracking)"
+          },
+          "camera_id": {
+            "type": "string",
+            "title": "Camera Id",
+            "description": "Camera identifier (UUID or camera string tag)"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Timestamp",
+            "description": "Detection timestamp (ISO 8601 UTC)"
+          },
+          "frame_index": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Frame Index",
+            "description": "Video frame sequence index"
+          },
+          "frame_size": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "integer"
+                },
+                "type": "array",
+                "maxItems": 2,
+                "minItems": 2
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Frame Size",
+            "description": "Frame dimensions [width, height] for coordinate normalization"
+          },
+          "bbox": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "number"
+                },
+                "type": "array",
+                "maxItems": 4,
+                "minItems": 4
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bbox",
+            "description": "Bounding box [x1, y1, x2, y2] in original pixels"
+          },
+          "track_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Track Id",
+            "description": "Transient tracker reference ID"
+          },
+          "confidence": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence",
+            "description": "Rule/detector confidence"
+          },
+          "attributes": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Attributes",
+            "description": "Module-specific details"
+          }
+        },
+        "type": "object",
+        "required": [
+          "event_id",
+          "event_type",
+          "module",
+          "camera_id",
+          "timestamp"
+        ],
+        "title": "CVEventIngest",
+        "description": "Direct mapping to CV Guide \u00a76.1 / \u00a76.7 Event specification.\nSent by CV pipeline when a safety rule condition is confirmed."
+      },
+      "CVFrameResultIngest": {
+        "properties": {
+          "schema_version": {
+            "type": "string",
+            "title": "Schema Version",
+            "default": "1.0"
+          },
+          "module": {
+            "type": "string",
+            "title": "Module"
+          },
+          "camera_id": {
+            "type": "string",
+            "title": "Camera Id"
+          },
+          "frame_index": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Frame Index"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Timestamp"
+          },
+          "frame_size": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "maxItems": 2,
+            "minItems": 2,
+            "title": "Frame Size"
+          },
+          "detections": {
+            "items": {
+              "$ref": "#/components/schemas/CVDetection"
+            },
+            "type": "array",
+            "title": "Detections"
+          },
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/CVEventIngest"
+            },
+            "type": "array",
+            "title": "Events"
+          }
+        },
+        "type": "object",
+        "required": [
+          "module",
+          "camera_id",
+          "frame_index",
+          "timestamp",
+          "frame_size"
+        ],
+        "title": "CVFrameResultIngest",
+        "description": "Container representing FrameResult from CV pipeline (\u00a76.1).\nAllows ingestion of multi-event frame batches."
+      },
+      "DatabaseHealth": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "'connected' or 'disconnected'"
+          },
+          "latency_ms": {
+            "type": "number",
+            "title": "Latency Ms",
+            "description": "Database ping latency in milliseconds."
+          },
+          "database_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Database Url",
+            "description": "Sanitized connection target."
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error",
+            "description": "Error detail if disconnected."
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "latency_ms"
+        ],
+        "title": "DatabaseHealth"
+      },
+      "EventBatchIngestResponse": {
+        "properties": {
+          "total_received": {
+            "type": "integer",
+            "title": "Total Received"
+          },
+          "ingested_count": {
+            "type": "integer",
+            "title": "Ingested Count"
+          },
+          "duplicates_count": {
+            "type": "integer",
+            "title": "Duplicates Count"
+          },
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/EventIngestResponse"
+            },
+            "type": "array",
+            "title": "Events"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total_received",
+          "ingested_count",
+          "duplicates_count",
+          "events"
+        ],
+        "title": "EventBatchIngestResponse",
+        "description": "API response after ingesting a batch or FrameResult."
+      },
+      "EventIngestResponse": {
+        "properties": {
+          "event_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Event Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "'ingested' or 'duplicate_ignored'"
+          },
+          "event_type": {
+            "type": "string",
+            "title": "Event Type"
+          },
+          "broadcast": {
+            "type": "boolean",
+            "title": "Broadcast",
+            "description": "Whether event was broadcast to active WebSockets",
+            "default": true
+          },
+          "persisted": {
+            "type": "boolean",
+            "title": "Persisted",
+            "description": "Whether event was persisted to PostgreSQL"
+          },
+          "rule_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rule Id",
+            "description": "Primary matched safety rule ID if any"
+          },
+          "matched_rules_count": {
+            "type": "integer",
+            "title": "Matched Rules Count",
+            "description": "Number of safety rules matched by this event",
+            "default": 0
+          },
+          "should_notify": {
+            "type": "boolean",
+            "title": "Should Notify",
+            "description": "Whether any matched rule triggered notification",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "event_id",
+          "status",
+          "event_type",
+          "persisted"
+        ],
+        "title": "EventIngestResponse",
+        "description": "API response after ingesting a single CV event."
+      },
+      "EventResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "factory_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Factory Id"
+          },
+          "event_type": {
+            "$ref": "#/components/schemas/EventType"
+          },
+          "camera_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Camera Id"
+          },
+          "zone_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Zone Id"
+          },
+          "rule_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rule Id"
+          },
+          "sensor_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sensor Id"
+          },
+          "incident_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Incident Id"
+          },
+          "detected_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Detected At"
+          },
+          "ingested_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Ingested At"
+          },
+          "confidence": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence"
+          },
+          "track_ref": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Track Ref"
+          },
+          "bbox_x": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bbox X"
+          },
+          "bbox_y": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bbox Y"
+          },
+          "bbox_w": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bbox W"
+          },
+          "bbox_h": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bbox H"
+          },
+          "details": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Details"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "factory_id",
+          "event_type",
+          "detected_at",
+          "ingested_at"
+        ],
+        "title": "EventResponse",
+        "description": "Normalized event record representation."
+      },
+      "EventType": {
+        "type": "string",
+        "enum": [
+          "ppe_violation",
+          "fall",
+          "restricted_zone_intrusion",
+          "potential_fatigue",
+          "fire",
+          "smoke",
+          "temperature_anomaly",
+          "source_failure"
+        ],
+        "title": "EventType"
+      },
+      "EvidenceUploadJsonIn": {
+        "properties": {
+          "event_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Event Id",
+            "description": "Target Event UUID"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind",
+            "description": "'snapshot' or 'clip'",
+            "default": "snapshot"
+          },
+          "file_base64": {
+            "type": "string",
+            "title": "File Base64",
+            "description": "Base64-encoded file bytes"
+          },
+          "content_type": {
+            "type": "string",
+            "title": "Content Type",
+            "description": "MIME content type (image/jpeg, video/mp4, etc.)",
+            "default": "image/jpeg"
+          },
+          "duration_s": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Duration S",
+            "description": "Clip duration in seconds"
+          },
+          "captured_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Captured At",
+            "description": "Capture timestamp (UTC)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "event_id",
+          "file_base64"
+        ],
+        "title": "EvidenceUploadJsonIn"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "HealthData": {
+        "properties": {
+          "app_name": {
+            "type": "string",
+            "title": "App Name"
+          },
+          "version": {
+            "type": "string",
+            "title": "Version"
+          },
+          "environment": {
+            "type": "string",
+            "title": "Environment"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "default": "healthy"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Timestamp"
+          },
+          "database": {
+            "$ref": "#/components/schemas/DatabaseHealth"
+          },
+          "components": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Components"
+          }
+        },
+        "type": "object",
+        "required": [
+          "app_name",
+          "version",
+          "environment",
+          "database"
+        ],
+        "title": "HealthData"
+      },
+      "ReportGenerateIn": {
+        "properties": {
+          "report_type": {
+            "type": "string",
+            "title": "Report Type",
+            "description": "Type of report: 'workforce', 'incident', 'camera_coverage', 'comprehensive_safety'"
+          },
+          "format": {
+            "type": "string",
+            "title": "Format",
+            "description": "Artifact format: 'pdf' or 'excel'",
+            "default": "pdf"
+          },
+          "date_from": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Date From",
+            "description": "Start date for reporting window"
+          },
+          "date_to": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Date To",
+            "description": "End date for reporting window"
+          }
+        },
+        "type": "object",
+        "required": [
+          "report_type"
+        ],
+        "title": "ReportGenerateIn"
+      },
+      "SafetyRuleCreate": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Name",
+            "description": "Descriptive rule title"
+          },
+          "event_type": {
+            "$ref": "#/components/schemas/EventType",
+            "description": "Target event type to monitor"
+          },
+          "severity": {
+            "$ref": "#/components/schemas/SeverityLevel",
+            "description": "Severity level assigned when rule triggers"
+          },
+          "zone_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Zone Id",
+            "description": "Scope to a specific monitoring zone"
+          },
+          "department_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Department Id",
+            "description": "Scope to a specific department"
+          },
+          "sensor_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sensor Id",
+            "description": "Scope to a specific sensor"
+          },
+          "min_confidence": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min Confidence",
+            "description": "Minimum detection confidence required"
+          },
+          "min_duration_s": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min Duration S",
+            "description": "Minimum event duration in seconds before triggering"
+          },
+          "threshold_value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string",
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Threshold Value",
+            "description": "Numeric threshold for sensor or metric evaluation"
+          },
+          "notify": {
+            "type": "boolean",
+            "title": "Notify",
+            "description": "Whether to dispatch alerts when triggered",
+            "default": true
+          },
+          "is_enabled": {
+            "type": "boolean",
+            "title": "Is Enabled",
+            "description": "Whether rule is currently evaluated",
+            "default": true
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "event_type",
+          "severity"
+        ],
+        "title": "SafetyRuleCreate",
+        "description": "Payload for creating a new Safety Rule."
+      },
+      "SafetyRuleListResponse": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/SafetyRuleResponse"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "total"
+        ],
+        "title": "SafetyRuleListResponse",
+        "description": "List response envelope for safety rules."
+      },
+      "SafetyRuleResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "factory_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Factory Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "event_type": {
+            "$ref": "#/components/schemas/EventType"
+          },
+          "severity": {
+            "$ref": "#/components/schemas/SeverityLevel"
+          },
+          "zone_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Zone Id"
+          },
+          "department_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Department Id"
+          },
+          "sensor_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sensor Id"
+          },
+          "min_confidence": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min Confidence"
+          },
+          "min_duration_s": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min Duration S"
+          },
+          "threshold_value": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Threshold Value"
+          },
+          "notify": {
+            "type": "boolean",
+            "title": "Notify"
+          },
+          "is_enabled": {
+            "type": "boolean",
+            "title": "Is Enabled"
+          },
+          "version": {
+            "type": "integer",
+            "title": "Version"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "factory_id",
+          "name",
+          "event_type",
+          "severity",
+          "notify",
+          "is_enabled",
+          "version",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "SafetyRuleResponse",
+        "description": "Standard serialized representation of a Safety Rule."
+      },
+      "SafetyRuleStatusUpdate": {
+        "properties": {
+          "is_enabled": {
+            "type": "boolean",
+            "title": "Is Enabled",
+            "description": "Desired operational state of the rule"
+          }
+        },
+        "type": "object",
+        "required": [
+          "is_enabled"
+        ],
+        "title": "SafetyRuleStatusUpdate",
+        "description": "Payload for toggling the active state of a Safety Rule."
+      },
+      "SafetyRuleUpdate": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 120,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "event_type": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EventType"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "severity": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SeverityLevel"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "zone_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Zone Id"
+          },
+          "department_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Department Id"
+          },
+          "sensor_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sensor Id"
+          },
+          "clear_scope": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Clear Scope",
+            "description": "If true and all scope fields are None, resets rule scope to factory-global",
+            "default": false
+          },
+          "min_confidence": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min Confidence"
+          },
+          "min_duration_s": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min Duration S"
+          },
+          "threshold_value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string",
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Threshold Value"
+          },
+          "notify": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notify"
+          },
+          "is_enabled": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Enabled"
+          }
+        },
+        "type": "object",
+        "title": "SafetyRuleUpdate",
+        "description": "Payload for updating an existing Safety Rule (partial or full)."
+      },
+      "SeverityLevel": {
+        "type": "string",
+        "enum": [
+          "low",
+          "medium",
+          "high",
+          "critical"
+        ],
+        "title": "SeverityLevel"
+      },
+      "UserContextDTO": {
+        "properties": {
+          "user_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "User Id"
+          },
+          "full_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Full Name"
+          },
+          "role_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Role Code"
+          },
+          "factory_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Factory Id"
+          }
+        },
+        "type": "object",
+        "title": "UserContextDTO"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "WsTicketData": {
+        "properties": {
+          "ticket": {
+            "type": "string",
+            "title": "Ticket",
+            "description": "Short-lived signed WS ticket. Use within exp seconds."
+          },
+          "expires_at": {
+            "type": "integer",
+            "title": "Expires At",
+            "description": "Unix timestamp after which the ticket is invalid."
+          },
+          "expires_in_seconds": {
+            "type": "integer",
+            "title": "Expires In Seconds",
+            "description": "Seconds until ticket expiry."
+          },
+          "factory_id": {
+            "type": "string",
+            "title": "Factory Id",
+            "description": "Factory the ticket is bound to."
+          }
+        },
+        "type": "object",
+        "required": [
+          "ticket",
+          "expires_at",
+          "expires_in_seconds",
+          "factory_id"
+        ],
+        "title": "WsTicketData"
+      },
+      "WsTicketRequest": {
+        "properties": {
+          "factory_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Factory Id",
+            "description": "Factory UUID the client wants to connect to."
+          }
+        },
+        "type": "object",
+        "required": [
+          "factory_id"
+        ],
+        "title": "WsTicketRequest"
+      }
+    }
+  }
+}
