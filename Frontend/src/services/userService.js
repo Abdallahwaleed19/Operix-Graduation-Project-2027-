@@ -1,4 +1,4 @@
-import apiClient, { API_CONFIG } from './apiClient';
+import apiClient, { isMockEnabled } from './apiClient';
 import { initialUsers, roleMatrixData } from '../data/mockData';
 
 /**
@@ -7,7 +7,7 @@ import { initialUsers, roleMatrixData } from '../data/mockData';
  */
 export const userService = {
   async getUsers(filters = {}) {
-    if (API_CONFIG.useMock) {
+    if (isMockEnabled('users')) {
       let result = [...initialUsers];
       if (filters.role && filters.role !== 'All') {
         result = result.filter(u => u.role.toLowerCase() === filters.role.toLowerCase());
@@ -19,14 +19,14 @@ export const userService = {
   },
 
   async getUserById(id) {
-    if (API_CONFIG.useMock) {
+    if (isMockEnabled('users')) {
       return initialUsers.find(u => u.id === id) || null;
     }
     return apiClient.get(`/users/${id}`);
   },
 
   async toggleUserAccess(id) {
-    if (API_CONFIG.useMock) {
+    if (isMockEnabled('users')) {
       const user = initialUsers.find(u => u.id === id);
       if (user) {
         const isActive = user.access === 'Active';
@@ -39,7 +39,7 @@ export const userService = {
   },
 
   async inviteUser(userPayload) {
-    if (API_CONFIG.useMock) {
+    if (isMockEnabled('users')) {
       const newUser = {
         id: `usr-${Date.now()}`,
         status: 'Invited',
@@ -53,7 +53,7 @@ export const userService = {
   },
 
   async updateUserRole(id, newRole) {
-    if (API_CONFIG.useMock) {
+    if (isMockEnabled('users')) {
       const user = initialUsers.find(u => u.id === id);
       if (user) {
         user.role = newRole;
@@ -64,7 +64,7 @@ export const userService = {
   },
 
   async getRoleMatrix() {
-    if (API_CONFIG.useMock) {
+    if (isMockEnabled('users')) {
       return roleMatrixData;
     }
     return apiClient.get('/roles/matrix');

@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { roleMatrixData } from '../data/mockData';
 import { authService } from '../services/authService';
+import { websocketService } from '../services/websocketService';
 
 const AuthContext = createContext();
 
@@ -84,6 +85,7 @@ export function AuthProvider({ children }) {
   };
 
   const logout = () => {
+    websocketService.disconnect();
     authService.logout();
     setCurrentUser(null);
     setIsAuthenticated(false);

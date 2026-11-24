@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Navbar from '../../components/common/Navbar';
+import PendingBackendBadge from '../../components/common/PendingBackendBadge';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Check, Shield, Building, Edit2 } from 'lucide-react';
@@ -57,10 +58,13 @@ export default function ProfilePage() {
         title="Profile"
         subtitle="Account, factory membership and notifications"
         rightActions={
-          <button className="btn btn-secondary" onClick={() => navigate('/')}>
-            <ArrowLeft size={14} />
-            Back to dashboard
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <PendingBackendBadge moduleCode="S-1" dependency="Core Auth API" />
+            <button className="btn btn-secondary" onClick={() => navigate('/')}>
+              <ArrowLeft size={14} />
+              Back to dashboard
+            </button>
+          </div>
         }
       />
 

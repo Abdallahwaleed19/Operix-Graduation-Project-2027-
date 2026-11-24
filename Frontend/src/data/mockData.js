@@ -438,7 +438,7 @@ export const roleMatrixData = [
   { code: "incident.view", description: "View incidents", admin: true, manager: true, supervisor: true, viewer: true },
   { code: "incident.resolve", description: "Review and resolve", admin: true, manager: true, supervisor: true, viewer: false },
   { code: "evidence.view", description: "Open evidence files", admin: true, manager: true, supervisor: true, viewer: false },
-  { code: "analytics.view", description: "Workforce, heatmaps, thermal", admin: true, manager: true, supervisor: true, viewer: false },
+  { code: "analytics.view", description: "Workforce and thermal analytics", admin: true, manager: true, supervisor: true, viewer: false },
   { code: "report.view", description: "Reports", admin: true, manager: true, supervisor: true, viewer: true },
   { code: "rule.manage", description: "Safety rules and zones", admin: true, manager: true, supervisor: false, viewer: false },
   { code: "device.manage", description: "Cameras and sensors", admin: true, manager: true, supervisor: false, viewer: false },

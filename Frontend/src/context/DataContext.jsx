@@ -163,9 +163,11 @@ export function DataProvider({ children }) {
 
   // Rule methods
   const toggleRule = async (id) => {
-    await ruleService.toggleRule(id);
+    const current = rules.find(r => r.id === id);
+    const currentStatus = current ? (current.enabled ?? current.is_enabled) : false;
+    await ruleService.toggleRule(id, currentStatus);
     setRules(prev =>
-      prev.map(r => (r.id === id ? { ...r, enabled: !r.enabled } : r))
+      prev.map(r => (r.id === id ? { ...r, enabled: !currentStatus, is_enabled: !currentStatus } : r))
     );
   };
 

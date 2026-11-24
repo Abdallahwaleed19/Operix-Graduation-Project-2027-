@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Navbar from '../../components/common/Navbar';
+import PendingBackendBadge from '../../components/common/PendingBackendBadge';
 import { useData } from '../../context/DataContext';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Search, Edit2 } from 'lucide-react';
@@ -23,13 +24,16 @@ export default function CamerasPage() {
         backTo="/settings"
         backLabel="Back to Settings"
         rightActions={
-          <button
-            className="btn btn-primary"
-            onClick={() => navigate('/settings/cameras/edit/new')}
-          >
-            <Plus size={15} />
-            Add camera
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <PendingBackendBadge moduleCode="S-3" dependency="Cameras API" />
+            <button
+              className="btn btn-primary"
+              onClick={() => navigate('/settings/cameras/edit/new')}
+            >
+              <Plus size={15} />
+              Add camera
+            </button>
+          </div>
         }
       />
 

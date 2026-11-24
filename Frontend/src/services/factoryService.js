@@ -1,4 +1,4 @@
-import apiClient, { API_CONFIG } from './apiClient';
+import apiClient, { isMockEnabled } from './apiClient';
 import { initialFactory, initialNotificationTargets } from '../data/mockData';
 
 /**
@@ -7,14 +7,14 @@ import { initialFactory, initialNotificationTargets } from '../data/mockData';
  */
 export const factoryService = {
   async getFactorySettings() {
-    if (API_CONFIG.useMock) {
+    if (isMockEnabled('factory')) {
       return { ...initialFactory };
     }
     return apiClient.get('/factory/settings');
   },
 
   async updateFactorySettings(settings) {
-    if (API_CONFIG.useMock) {
+    if (isMockEnabled('factory')) {
       Object.assign(initialFactory, settings);
       return { success: true, ...initialFactory };
     }
@@ -22,14 +22,14 @@ export const factoryService = {
   },
 
   async getNotificationTargets() {
-    if (API_CONFIG.useMock) {
+    if (isMockEnabled('factory')) {
       return [...initialNotificationTargets];
     }
     return apiClient.get('/factory/notifications');
   },
 
   async toggleNotificationTarget(id) {
-    if (API_CONFIG.useMock) {
+    if (isMockEnabled('factory')) {
       const target = initialNotificationTargets.find(t => t.id === id);
       if (target) {
         target.enabled = !target.enabled;
@@ -40,7 +40,7 @@ export const factoryService = {
   },
 
   async addNotificationTarget(targetPayload) {
-    if (API_CONFIG.useMock) {
+    if (isMockEnabled('factory')) {
       const newTarget = {
         id: `notif-${Date.now()}`,
         ...targetPayload
@@ -52,7 +52,7 @@ export const factoryService = {
   },
 
   async removeNotificationTarget(id) {
-    if (API_CONFIG.useMock) {
+    if (isMockEnabled('factory')) {
       const idx = initialNotificationTargets.findIndex(t => t.id === id);
       if (idx !== -1) initialNotificationTargets.splice(idx, 1);
       return { success: true, id };
