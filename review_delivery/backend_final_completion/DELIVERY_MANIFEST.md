@@ -5,21 +5,22 @@
 
 | File | Size (bytes) | SHA-256 |
 |---|---:|---|
-| `actual_api_inventory.md` | 977 | `65b456dd2ddbe4c915912bc63b9465e300bd96f05674179f8196de661645953e` |
-| `ai_modules_integration_report.md` | 898 | `54ea42ddd1c7d14e84fe560fd993ae36a3102f969e82292df00637a95e930bb8` |
-| `ai_modules_test_results.md` | 881 | `b06093ebeef69929b6216bca7e6aac8a4ac8deb7a21cb787d3db843d45f0c70e` |
-| `backend_architecture.md` | 999 | `3bdd797838d5bfbf6dd8d5aba937b08c05769f859fd6d461c1c7472f5ee3f33c` |
-| `backend_test_results.md` | 576 | `d67feea4d6703961e6c7969294d4503d71a43ac318b69f987095b702f5a40fa5` |
-| `changed_files.md` | 556 | `3b2c471c802bbee07f43512f1e759611f5606a0377fbf3753058bce1e051cf1a` |
-| `final_backend_completion_report.md` | 803 | `f1446db1e87cda568575c017c9cd096f5b7a4b491f30d54f2d14a4991651b5eb` |
-| `frontend_handover.md` | 890 | `b64f0479fa5a4ca6244322d52bafb99257b225cd70825e31ab16e52f8fa2635f` |
-| `git_push_report.md` | 426 | `2e6dc2c9c8a498199c2e2a1a5c7ba07f6bcb1c0d5f58a8e4f0c3e256c84a4c2d` |
-| `git_sync_report.md` | 572 | `8760fffedfa27116de6c073eec42152e7c548c4485ef70d120373178b003768a` |
-| `integration_contract_matrix.md` | 1227 | `d9895d08085510cd9c9c6e34815cbca0b20c93288a579776d349f5206f66dd27` |
-| `main_merge_report.md` | 473 | `09f2954ef3e4a1fe7a62dd684052422890a771ed35554f09b8e777415f94434b` |
-| `numpy_compatibility_report.md` | 793 | `b12b2a61e3b7b7b46c359afc7a3c0f7013f59597be410874ce32c67a159b23bd` |
-| `rag_e2e_validation.md` | 1028 | `2c09df04b30b760e2e8e8f94d2acbb479073494ce62f02db9039eea3cd23d3c1` |
-| `remaining_blockers.md` | 719 | `519dcf8b21478a96818f6226132cb6f2b64e725874c348f05353b1754f323017` |
-| `security_audit.md` | 926 | `b3a8c2a4b1967d08ed6ec429fd2ce7c73399f0d45e02cd945705c278c3a9542c` |
-| `seif_changes_review.md` | 899 | `4024189f5da1cc982fd8a0c1aaae82edf0c077c103aef46e674dc29168fcd0b8` |
-| `SHA256SUMS.txt` | 1549 | `4831b082f6d1a7adea1184fbb1ab9f7258d8cf14bbe71cedc1f613ecfa88472f` |
+| `actual_api_inventory.md` | 987 | `e0ecc99d32048d19e11af22533773ced9e3ac55a31c91d1db88a1f7a212d7c3e` |
+| `ai_modules_integration_report.md` | 907 | `a81e46d91daf0d56e3a70acb8d5199f9aa15e9647270789f72eebb54934e9707` |
+| `ai_modules_test_results.md` | 890 | `76e982fd6315164f124b54d26c609e0b40d0b59a831c6d701719b5316e7f8cae` |
+| `backend_architecture.md` | 1006 | `8dcda486469bf90c0521255197f3d41d017a49bf2f49d6126f75ea62944aa323` |
+| `backend_test_results.md` | 1232 | `5f6e4144570d6330d2ce62d211cd9e8047f4a224baa3ee5acc35a62f78ff4464` |
+| `changed_files.md` | 562 | `62cb9f7a1870fcc127d46e0ac6000e9abd5a7f41e9909baed91078ab098e62e8` |
+| `final_backend_completion_report.md` | 673 | `cda9973d8f09728f28909f1dd0b5ccb589d78bdbc131a659b2cf220c6f68eedf` |
+| `frontend_handover.md` | 899 | `e1b52ba302ae4787613d17b6bd71211146953aabe0aa3cfae87909eff999ae0a` |
+| `git_push_report.md` | 433 | `df3fecf44a79261991708753a99598a4e15475e336344488c160f9b8039d6288` |
+| `git_sync_report.md` | 579 | `33b904c08f5b75e3f194a7116b2c1ac387724aef0929ed7d27be477f78607236` |
+| `integration_contract_matrix.md` | 1238 | `d5bfbb200dceda58464ed9b17af4bd67080c1c3d11a18cff8a654c36b042b9b1` |
+| `main_merge_report.md` | 478 | `d1bf4814fe3b2ac03af2e9878fe44cf9d54975b2f432067e2562c4173998b22e` |
+| `numpy_compatibility_report.md` | 563 | `c089cf55c47bdbcc6fc94007996c2de129b27ab7a5ae8e2836b12270434f91f9` |
+| `openapi.json` | 135470 | `706a25631048408e54d9a1bfcc272bb9a39d594b6dbe638ded69c5b3caf4e376` |
+| `rag_e2e_validation.md` | 1036 | `94169d5cddd0daac67f9ebc4f0676df2b06bfd3bf5e27793fc650616e12e9db2` |
+| `remaining_blockers.md` | 897 | `d573ada949f02d0a69b2f78e299ed7254c4bd94455579c043a1e0f750f5bc639` |
+| `security_audit.md` | 933 | `20b2db8b60e3f501f9361fcda2e8ee26d1ea4cf70aed330335aa544fee9e4e35` |
+| `seif_changes_review.md` | 911 | `a4deaf6d59a755c246aac26348529310fc10e3336cf7e7ca3c5586de918de87d` |
+| `SHA256SUMS.txt` | 1629 | `d95d315d871b0834a6d6d31e99d231c4bfee78c1f6dab0feeb6125a0a4fc79da` |

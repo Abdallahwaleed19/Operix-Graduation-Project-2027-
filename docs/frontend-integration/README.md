@@ -3,7 +3,7 @@
 **Platform:** Operix Industrial AI Safety Platform  
 **API Base Prefix:** `/api/v1` (configured via `settings.API_V1_STR`)  
 **Default Local Base URL:** `http://localhost:8000`  
-**OpenAPI Note:** Automatic `/openapi.json` export from `backend/app/main.py` is currently blocked in the offline Python 3.14 audit environment because `redis` is not installed (`ModuleNotFoundError: No module named 'redis'`). All contracts in `docs/frontend-integration/` are verified directly from the actual FastAPI router files and Pydantic schemas in `backend/app/`.
+**OpenAPI Specification:** Exported directly from `app.main.create_application().openapi()` (`32` paths, all `21` expected Frontend endpoints verified) in [`openapi.json`](./openapi.json).
 
 ---
 
