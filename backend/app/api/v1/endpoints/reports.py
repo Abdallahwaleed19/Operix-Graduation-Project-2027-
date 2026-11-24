@@ -107,7 +107,7 @@ def get_report(
     reports_svc: Any = Depends(get_reports_service_dep),
 ) -> APIResponse[Dict[str, Any]]:
     """Get metadata for a generated report."""
-    meta = reports_svc.get_report(report_id)
+    meta = reports_svc.get_report(report_id, factory_id=user.factory_id)
 
     # Multi-tenant boundary verification
     if meta.factory_id and meta.factory_id != user.factory_id:
@@ -133,13 +133,13 @@ def download_report(
     reports_svc: Any = Depends(get_reports_service_dep),
 ):
     """Download physical report file with path traversal verification."""
-    meta = reports_svc.get_report(report_id)
+    meta = reports_svc.get_report(report_id, factory_id=user.factory_id)
 
     # Multi-tenant boundary check
     if meta.factory_id and meta.factory_id != user.factory_id:
         raise TenantAccessDeniedException("Access denied: Report belongs to another factory.")
 
-    file_path = reports_svc.get_report_file_path(report_id)
+    file_path = reports_svc.get_report_file_path(report_id, factory_id=user.factory_id)
     resolved_path = Path(file_path).resolve()
     base_storage = get_reports_storage_path().resolve()
 

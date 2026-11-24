@@ -12,6 +12,7 @@ from fastapi import APIRouter, BackgroundTasks, Depends, Query, status
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
+from ....core.errors import TenantAccessDeniedException
 from ....schemas.common import APIResponse, APIResponseMeta
 from ....services.ai_action_service import AIActionService, get_ai_action_service
 from ...ai_deps import get_llm_assistant_service_dep
@@ -162,7 +163,14 @@ def clear_conversation(
     assistant_svc: Any = Depends(get_llm_assistant_service_dep),
 ) -> APIResponse[Dict[str, Any]]:
     """Clear conversation history."""
-    cleared = assistant_svc.clear_conversation(conversation_id)
+    try:
+        cleared = assistant_svc.clear_conversation(
+            conversation_id,
+            factory_id=user.factory_id,
+            user_id=user.user_id,
+        )
+    except PermissionError as exc:
+        raise TenantAccessDeniedException(str(exc)) from exc
     return APIResponse(
         status="success",
         data={"conversation_id": conversation_id, "cleared": cleared},
