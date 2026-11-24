@@ -33,17 +33,15 @@
 
 ---
 
-## 3. Get Report Metadata (**BLOCKED**)
+## 3. Get Report Metadata
 - **Endpoint:** `GET /api/v1/reports/{report_id}`
-- **Status:** **BLOCKED — Pending Seif Backend Fix**
-- **Blocker:** `reports.py:110` calls `reports_svc.get_report(report_id)` without `factory_id=user.factory_id`, which will raise `TypeError` at runtime against the hardened `ReportService` signature.
+- **Status:** Implemented and registered (`200 OK`, `reports.py:110` passes `factory_id=user.factory_id` per Seif commit `cdda98c`).
 
 ---
 
-## 4. Download Report Artifact (**BLOCKED**)
+## 4. Download Report Artifact
 - **Endpoint:** `GET /api/v1/reports/{report_id}/download`
-- **Status:** **BLOCKED — Pending Seif Backend Fix**
-- **Blocker:** `reports.py:136` and `reports.py:142` omit `factory_id=user.factory_id` when calling `get_report()` and `get_report_file_path()`.
+- **Status:** Implemented and registered (`200 OK`, `reports.py:136,142` pass `factory_id=user.factory_id` per Seif commit `cdda98c`; returns PDF/Excel binary stream).
 
 ---
 
