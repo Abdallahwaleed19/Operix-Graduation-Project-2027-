@@ -18,7 +18,7 @@ import json
 import unittest
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 from uuid import UUID
 
 from pydantic import ValidationError
@@ -213,14 +213,16 @@ class TestServiceEdgeCases(unittest.TestCase):
     """Test error handling, mocked DB disconnects, and empty datasets."""
 
     def test_database_connection_failure_handling(self):
-        service = WorkforceAnalyticsService()
-        with patch("workforce_analytics.services.analytics_service.test_connection", return_value=False):
-            health = service.check_health()
-            self.assertEqual(health["status"], "unhealthy")
-            self.assertFalse(health["database_connected"])
+        mock_session = MagicMock()
+        mock_session.execute.side_effect = RuntimeError("DB down")
+        service = WorkforceAnalyticsService(session=mock_session)
+        health = service.check_health()
+        self.assertEqual(health["status"], "unhealthy")
+        self.assertFalse(health["database_connected"])
 
     def test_empty_dataset_in_service(self):
-        service = WorkforceAnalyticsService()
+        mock_session = MagicMock()
+        service = WorkforceAnalyticsService(session=mock_session)
         with patch("workforce_analytics.analytics.fetch_per_worker_productivity", return_value=[]):
             res = service.get_productivity_metrics()
             self.assertEqual(res.workers_analysed, 0)

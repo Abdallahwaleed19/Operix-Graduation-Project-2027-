@@ -1,0 +1,28 @@
+{
+  "api_version": "v1",
+  "base_prefix": "/api/v1",
+  "openapi_note": "Runtime OpenAPI export blocked in offline Python 3.14 audit env due to missing redis package; contracts extracted directly from FastAPI routers.",
+  "endpoints": [
+    { "module": "auth", "method": "POST", "path": "/api/v1/auth/ws-ticket", "status": "registered", "auth": "Bearer" },
+    { "module": "evidence", "method": "POST", "path": "/api/v1/evidence/upload", "status": "registered", "auth": "Bearer" },
+    { "module": "evidence", "method": "GET", "path": "/api/v1/evidence", "status": "registered", "auth": "Bearer" },
+    { "module": "evidence", "method": "GET", "path": "/api/v1/evidence/{evidence_id}", "status": "registered", "auth": "Bearer" },
+    { "module": "evidence", "method": "GET", "path": "/api/v1/evidence/{evidence_id}/download", "status": "registered", "auth": "Bearer" },
+    { "module": "evidence", "method": "POST", "path": "/api/v1/evidence/{evidence_id}/verify-integrity", "status": "registered", "auth": "Bearer" },
+    { "module": "analytics", "method": "GET", "path": "/api/v1/analytics/overview", "status": "registered", "auth": "Bearer" },
+    { "module": "analytics", "method": "GET", "path": "/api/v1/analytics/attendance", "status": "registered", "auth": "Bearer" },
+    { "module": "analytics", "method": "GET", "path": "/api/v1/analytics/incidents", "status": "registered", "auth": "Bearer" },
+    { "module": "analytics", "method": "GET", "path": "/api/v1/analytics/productivity", "status": "registered", "auth": "Bearer" },
+    { "module": "analytics", "method": "GET", "path": "/api/v1/analytics/camera-coverage", "status": "registered", "auth": "Bearer" },
+    { "module": "analytics", "method": "GET", "path": "/api/v1/analytics/summary", "status": "registered", "auth": "Bearer" },
+    { "module": "assistant", "method": "POST", "path": "/api/v1/assistant/ask", "status": "registered", "auth": "Bearer" },
+    { "module": "assistant", "method": "GET", "path": "/api/v1/assistant/sources", "status": "registered", "auth": "Bearer" },
+    { "module": "assistant", "method": "DELETE", "path": "/api/v1/assistant/conversations/{conversation_id}", "status": "pending_approval", "auth": "Bearer" },
+    { "module": "assistant", "method": "GET", "path": "/api/v1/assistant/health", "status": "registered", "auth": "Bearer" },
+    { "module": "ai_actions", "method": "POST", "path": "/api/v1/assistant/actions/execute", "status": "registered", "auth": "Bearer" },
+    { "module": "reports", "method": "POST", "path": "/api/v1/reports/generate", "status": "registered", "auth": "Bearer" },
+    { "module": "reports", "method": "GET", "path": "/api/v1/reports", "status": "registered", "auth": "Bearer" },
+    { "module": "reports", "method": "GET", "path": "/api/v1/reports/{report_id}", "status": "blocked_pending_seif_fix", "auth": "Bearer" },
+    { "module": "reports", "method": "GET", "path": "/api/v1/reports/{report_id}/download", "status": "blocked_pending_seif_fix", "auth": "Bearer" }
+  ]
+}

@@ -64,19 +64,23 @@ class OperixAssistantService:
         start_time = time.perf_counter()
         settings = get_settings()
 
-        # 1. Determine conversation ID
-        conv_id = self.conversation_manager.get_or_create_id(request.conversation_id)
+        # 1. Require authenticated tenant & user context
+        if request.user_context is None:
+            raise ValueError("Authenticated user_context (factory_id and user_id) is required.")
 
-        # 2. Determine language
+        factory_scope = request.user_context.factory_id
+        user_scope = request.user_context.user_id
+
+        # 2. Validate ownership and determine conversation ID
+        conv_id = self.conversation_manager.get_or_create_id(
+            request.conversation_id,
+            factory_id=factory_scope,
+            user_id=user_scope,
+        )
+
+        # 3. Determine language
         detected_lang = detect_language(request.question)
         target_lang = detected_lang if request.language_preference == "auto" else request.language_preference
-
-        # 3. Determine tenant scope (factory_id)
-        factory_scope = (
-            request.user_context.factory_id
-            if request.user_context
-            else settings.default_factory_id
-        )
 
         # 4. Retrieve verified knowledge chunks
         search_filter = RetrievalFilter(
@@ -96,8 +100,14 @@ class OperixAssistantService:
 
         # 6. Assemble conversational message chain
         messages: List[ChatMessage] = [ChatMessage(role="system", content=system_prompt)]
-        # Append prior conversation turns if present
-        messages.extend(self.conversation_manager.get_history(conv_id))
+        # Append prior conversation turns if present (ownership-verified)
+        messages.extend(
+            self.conversation_manager.get_history(
+                conv_id,
+                factory_id=factory_scope,
+                user_id=user_scope,
+            )
+        )
         # Append current grounded user turn
         messages.append(ChatMessage(role="user", content=grounded_prompt))
 
@@ -117,8 +127,14 @@ class OperixAssistantService:
                 language=target_lang,
             )
 
-        # 10. Update conversation history
-        self.conversation_manager.add_turn(conv_id, request.question, generated_answer)
+        # 10. Update conversation history (ownership-verified)
+        self.conversation_manager.add_turn(
+            conv_id,
+            request.question,
+            generated_answer,
+            factory_id=factory_scope,
+            user_id=user_scope,
+        )
 
         duration = round(time.perf_counter() - start_time, 3)
 
@@ -149,9 +165,18 @@ class OperixAssistantService:
         res = self.retriever.retrieve(query, search_filter)
         return extract_citations(res.chunks, "")
 
-    def clear_conversation(self, conversation_id: str) -> bool:
-        """Clear conversation history for specified session."""
-        return self.conversation_manager.clear(conversation_id)
+    def clear_conversation(
+        self,
+        conversation_id: str,
+        factory_id: Optional[UUID | str] = None,
+        user_id: Optional[UUID | str] = None,
+    ) -> bool:
+        """Clear conversation history after validating (factory_id, user_id) ownership."""
+        return self.conversation_manager.clear(
+            conversation_id,
+            factory_id=factory_id,
+            user_id=user_id,
+        )
 
 
 _assistant_service_instance: Optional[OperixAssistantService] = None

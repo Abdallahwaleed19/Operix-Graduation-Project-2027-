@@ -16,11 +16,11 @@ from sqlalchemy.orm import Session
 
 from ..config import (
     ALLOWED_MIME_TYPES,
-    EVIDENCE_STORAGE_DIR,
     MAGIC_BYTES,
     MAX_EVIDENCE_SIZE_BYTES,
     MIME_TO_KIND,
     UNSUPPORTED_AUDIO_TYPES,
+    get_evidence_storage_dir,
 )
 from ..exceptions import (
     EvidenceTransactionError,
@@ -67,7 +67,7 @@ class EvidenceUploadService:
         storage: Optional[LocalStorage] = None,
         storage_dir: Optional[Path] = None,
     ) -> None:
-        root = storage_dir or EVIDENCE_STORAGE_DIR
+        root = storage_dir or get_evidence_storage_dir()
         self._storage = storage or LocalStorage(root)
 
     def upload(

@@ -39,7 +39,7 @@ class ReportDataService:
     ) -> None:
         self.session = session
         self.analytics_service = analytics_service or WorkforceAnalyticsService(session=session)
-        self.repository = repository or ReportRepository(engine=engine)
+        self.repository = repository or ReportRepository(engine=engine, session=session)
 
     def _validate_date_range(self, date_from: Optional[date], date_to: Optional[date]) -> None:
         """Ensure date_from is not after date_to."""

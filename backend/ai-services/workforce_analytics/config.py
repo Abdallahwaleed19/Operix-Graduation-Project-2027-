@@ -16,25 +16,29 @@ _ENV_PATH = Path(__file__).resolve().parent.parent / ".env"
 load_dotenv(dotenv_path=_ENV_PATH)
 
 
-def _require(key: str) -> str:
-    value = os.getenv(key)
-    if not value:
-        raise RuntimeError(
-            f"Missing required environment variable: {key}. "
-            f"Copy .env.example → .env and fill in the value."
-        )
-    return value
-
-
-# ---------------------------------------------------------------------------
-# Database
-# ---------------------------------------------------------------------------
-DATABASE_URL: str = _require("DATABASE_URL")
-
 # ---------------------------------------------------------------------------
 # Default factory scope (can be overridden per-call)
 # ---------------------------------------------------------------------------
-DEFAULT_FACTORY_ID: str = _require("OPERIX_FACTORY_ID")
+_APP_ENV: str = os.getenv("APP_ENV", "production").lower()
+_TEST_MODE: bool = os.getenv("TEST_MODE", "").lower() in ("1", "true", "yes")
+
+# Hardcoded dev-only sentinel UUID — NEVER used in production paths.
+_DEV_SENTINEL_FACTORY_ID = "aaaaaaaa-0001-0001-0001-000000000001"
+
+_env_factory_id: str = os.getenv("OPERIX_FACTORY_ID", "") or os.getenv("DEFAULT_FACTORY_ID", "")
+
+if _env_factory_id:
+    DEFAULT_FACTORY_ID: str = _env_factory_id
+elif _APP_ENV in ("development", "dev", "test", "testing") or _TEST_MODE:
+    # Dev/test environments may use the sentinel to allow offline testing
+    DEFAULT_FACTORY_ID = _DEV_SENTINEL_FACTORY_ID
+else:
+    # Production: no env var set → raise immediately so the misconfiguration is caught at startup
+    raise EnvironmentError(
+        "OPERIX_FACTORY_ID or DEFAULT_FACTORY_ID must be set in production. "
+        "Refusing to start with a hardcoded factory sentinel. "
+        "Set APP_ENV=development for local development."
+    )
 
 # ---------------------------------------------------------------------------
 # Analytics thresholds (configurable — no magic numbers buried in code)

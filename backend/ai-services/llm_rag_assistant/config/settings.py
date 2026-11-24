@@ -46,13 +46,10 @@ class AssistantSettings(BaseModel):
     )
 
     # -----------------------------------------------------------------------
-    # Database Settings (Read-Only Operational Access)
+    # Database Settings (Read-Only Operational Access — optional)
     # -----------------------------------------------------------------------
-    database_url: str = Field(
-        default_factory=lambda: os.getenv(
-            "DATABASE_URL",
-            "postgresql+psycopg2://postgres:abdallah@localhost:5432/operix_db"
-        )
+    database_url: Optional[str] = Field(
+        default_factory=lambda: os.getenv("DATABASE_URL")
     )
 
     # -----------------------------------------------------------------------

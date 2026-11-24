@@ -17,14 +17,6 @@ if _ENV_FILE.exists():
     load_dotenv(_ENV_FILE)
 
 # ---------------------------------------------------------------------------
-# Database
-# ---------------------------------------------------------------------------
-DATABASE_URL: str = os.getenv(
-    "DATABASE_URL",
-    "postgresql+psycopg2://postgres:abdallah@localhost:5432/operix_db",
-)
-
-# ---------------------------------------------------------------------------
 # Default factory (matches existing seed data)
 # ---------------------------------------------------------------------------
 DEFAULT_FACTORY_ID: str = os.getenv(
@@ -37,10 +29,15 @@ DEFAULT_FACTORY_ID: str = os.getenv(
 # ---------------------------------------------------------------------------
 _BASE_DIR = Path(__file__).parent.parent  # backend/ai-services/
 
-EVIDENCE_STORAGE_DIR: Path = Path(
-    os.getenv("EVIDENCE_STORAGE_DIR", str(_BASE_DIR / "storage" / "evidence"))
-)
-EVIDENCE_STORAGE_DIR.mkdir(parents=True, exist_ok=True)
+
+def get_evidence_storage_dir() -> Path:
+    """Resolve evidence storage directory dynamically from environment."""
+    path = Path(os.getenv("EVIDENCE_STORAGE_DIR", str(_BASE_DIR / "storage" / "evidence")))
+    path.mkdir(parents=True, exist_ok=True)
+    return path
+
+
+EVIDENCE_STORAGE_DIR: Path = get_evidence_storage_dir()
 
 # ---------------------------------------------------------------------------
 # Upload limits

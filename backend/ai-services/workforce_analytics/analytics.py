@@ -31,7 +31,6 @@ from .config import (
     LOW_PRODUCTIVITY_THRESHOLD,
     RESOLUTION_RATE_TARGET,
 )
-from .database import get_session
 from .repositories import (
     fetch_active_members_in_period,
     fetch_camera_coverage,
@@ -67,16 +66,16 @@ def _uuid(factory_id: UUID | str) -> UUID:
 @contextmanager
 def _managed_session(session: Optional[Session] = None):
     """
-    Context manager yielding either an externally-injected Session
-    or creating and managing a local Session from get_session().
-    When an external session is provided, commit/rollback/close is delegated
-    to the outer lifecycle (e.g., FastAPI dependency).
+    Context manager yielding the externally-injected canonical Backend Session.
+    Commit/rollback/close is strictly owned by the caller.
+    Raises RuntimeError if no session is provided (local fallback is disabled).
     """
-    if session is not None:
-        yield session
-    else:
-        with get_session() as db:
-            yield db
+    if session is None:
+        raise RuntimeError(
+            "Workforce Analytics requires an injected SQLAlchemy Session from the canonical Backend. "
+            "Local database session fallback is disabled."
+        )
+    yield session
 
 
 # ===========================================================================

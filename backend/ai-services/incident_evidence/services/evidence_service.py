@@ -18,7 +18,7 @@ from uuid import UUID
 from sqlalchemy.engine import Connection
 from sqlalchemy.orm import Session
 
-from ..config import EVIDENCE_STORAGE_DIR
+from ..config import get_evidence_storage_dir
 from ..schemas import (
     EvidenceKind,
     EvidenceListResponse,
@@ -48,8 +48,9 @@ class EvidenceService:
         storage: Optional[LocalStorage] = None,
         storage_dir: Optional[Path] = None,
     ) -> None:
-        root = storage_dir or EVIDENCE_STORAGE_DIR
+        root = storage_dir or get_evidence_storage_dir()
         _storage = storage or LocalStorage(root)
+        self._storage = _storage
         self._upload_svc = EvidenceUploadService(storage=_storage)
         self._retrieval_svc = EvidenceRetrievalService(storage=_storage)
         self._integrity_svc = EvidenceIntegrityService(storage=_storage)
@@ -146,8 +147,10 @@ _instance: Optional[EvidenceService] = None
 def get_evidence_service(
     storage_dir: Optional[Path] = None,
 ) -> EvidenceService:
-    """Return a module-level singleton EvidenceService."""
+    """Return a module-level singleton EvidenceService, updating if storage_dir changes."""
     global _instance
     if _instance is None:
+        _instance = EvidenceService(storage_dir=storage_dir)
+    elif storage_dir is not None and _instance._storage._root != Path(storage_dir).resolve():
         _instance = EvidenceService(storage_dir=storage_dir)
     return _instance

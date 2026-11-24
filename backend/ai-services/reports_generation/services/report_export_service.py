@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any, Optional, Union
 from uuid import UUID, uuid4
 
-from ..config import REPORTS_STORAGE_DIR
+from ..config import get_reports_storage_dir
 from ..exceptions import InvalidReportFormatError, ReportExportError
 from ..generators.excel_generator import ExcelReportGenerator
 from ..generators.pdf_generator import PDFReportGenerator
@@ -41,7 +41,7 @@ class ReportExportService:
         pdf_generator: Optional[PDFReportGenerator] = None,
         excel_generator: Optional[ExcelReportGenerator] = None,
     ) -> None:
-        self.storage_dir = storage_dir or REPORTS_STORAGE_DIR
+        self.storage_dir = (storage_dir or get_reports_storage_dir()).resolve()
         self.storage_dir.mkdir(parents=True, exist_ok=True)
         self.pdf_generator = pdf_generator or PDFReportGenerator()
         self.excel_generator = excel_generator or ExcelReportGenerator()
@@ -53,11 +53,17 @@ class ReportExportService:
         data: ReportDataUnion,
         factory_id: UUID,
     ) -> ReportMetadata:
-        """Render data to requested format and return ReportMetadata."""
+        """Render data to requested format under factory-scoped directory and return ReportMetadata."""
         report_id = f"REP-{datetime.now(timezone.utc).strftime('%Y%m%d')}-{uuid4().hex[:6].upper()}"
         file_ext = export_format.value
         filename = f"{report_type.value}_{report_id}.{file_ext}"
-        target_path = self.storage_dir / filename
+        factory_dir = (self.storage_dir / str(factory_id)).resolve()
+        if not factory_dir.is_relative_to(self.storage_dir):
+            raise ReportExportError("Invalid factory storage path.")
+        factory_dir.mkdir(parents=True, exist_ok=True)
+        target_path = (factory_dir / filename).resolve()
+        if not target_path.is_relative_to(factory_dir):
+            raise ReportExportError("Path traversal detected in report export target.")
 
         mime_types = {
             ReportFormat.PDF: "application/pdf",

@@ -15,6 +15,7 @@ from datetime import datetime
 from typing import Any, Optional
 from uuid import UUID
 
+from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from ..analytics import (
@@ -30,7 +31,6 @@ from ..config import (
     HIGH_PRODUCTIVITY_THRESHOLD,
     LOW_PRODUCTIVITY_THRESHOLD,
 )
-from ..database import test_connection
 from ..schemas import (
     AttendanceMetrics,
     CameraCoverage,
@@ -65,9 +65,21 @@ class WorkforceAnalyticsService:
             return factory_id if isinstance(factory_id, UUID) else UUID(str(factory_id))
         return self.default_factory_id
 
-    def check_health(self) -> dict[str, Any]:
-        """Verify database connectivity."""
-        healthy = test_connection()
+    def check_health(self, session: Optional[Session] = None) -> dict[str, Any]:
+        """Verify database connectivity using the injected Session (never opens a local engine)."""
+        active_session = session or self.session
+        if active_session is None:
+            return {
+                "status": "unhealthy",
+                "database_connected": False,
+                "error": "No injected database session provided.",
+                "default_factory_id": str(self.default_factory_id),
+            }
+        try:
+            active_session.execute(text("SELECT 1"))
+            healthy = True
+        except Exception:
+            healthy = False
         return {
             "status": "healthy" if healthy else "unhealthy",
             "database_connected": healthy,

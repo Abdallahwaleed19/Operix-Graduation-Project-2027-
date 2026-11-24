@@ -14,7 +14,7 @@ from uuid import UUID
 import sqlalchemy as sa
 from sqlalchemy.orm import Session
 
-from ..config import DEFAULT_FACTORY_ID, DEFAULT_REPORT_FORMAT, REPORTS_STORAGE_DIR
+from ..config import DEFAULT_FACTORY_ID, DEFAULT_REPORT_FORMAT, get_reports_storage_dir
 from ..exceptions import (
     InvalidReportFormatError,
     InvalidReportTypeError,
@@ -43,7 +43,7 @@ class ReportService:
     ) -> None:
         self.data_service = data_service or ReportDataService(engine=engine, session=session)
         self.export_service = export_service or ReportExportService(storage_dir=storage_dir)
-        self.storage_dir = storage_dir or REPORTS_STORAGE_DIR
+        self.storage_dir = (storage_dir or get_reports_storage_dir()).resolve()
         self._registry: Dict[str, ReportMetadata] = {}
 
     def generate_report(
@@ -115,57 +115,102 @@ class ReportService:
         logger.info(f"Report generated successfully: {metadata.report_id} ({metadata.file_size_bytes} bytes)")
         return metadata
 
-    def get_report(self, report_id: str) -> ReportMetadata:
-        """Lookup report metadata by ID."""
+    @staticmethod
+    def _validate_report_id(report_id: str) -> str:
+        if not report_id or "\x00" in report_id or "/" in report_id or "\\" in report_id or ".." in report_id:
+            raise ReportNotFoundError(f"Invalid report identifier '{report_id}'.")
+        return report_id
+
+    def _safe_contain_path(self, candidate: Path, factory_id: Optional[UUID] = None) -> Path:
+        resolved = candidate.resolve()
+        base = (self.storage_dir / str(factory_id)).resolve() if factory_id else self.storage_dir.resolve()
+        if not resolved.is_relative_to(base):
+            raise ReportNotFoundError("Report path escapes authorized storage boundary.")
+        return resolved
+
+    def get_report(self, report_id: str, factory_id: UUID) -> ReportMetadata:
+        """Lookup report metadata by ID with strict factory isolation.
+
+        Args:
+            report_id: The unique report identifier.
+            factory_id: Required — the authenticated tenant factory UUID.
+                        Raises ValueError if None or falsy.
+        """
+        if not factory_id:
+            raise ValueError("factory_id is required and cannot be None or empty.")
+        self._validate_report_id(report_id)
         if report_id in self._registry:
-            return self._registry[report_id]
-
-        # Check if matching file exists in storage dir
-        for p in self.storage_dir.glob(f"*_{report_id}.*"):
-            ext = p.suffix.lstrip(".").lower()
-            try:
-                fmt = ReportFormat(ext)
-            except ValueError:
-                fmt = ReportFormat.PDF
-
-            rtype_str = p.name.split("_REP-")[0]
-            try:
-                rtype = ReportType(rtype_str)
-            except ValueError:
-                rtype = ReportType.COMPREHENSIVE_SAFETY
-
-            meta = ReportMetadata(
-                report_id=report_id,
-                report_type=rtype,
-                format=fmt,
-                factory_id=UUID(str(DEFAULT_FACTORY_ID)),
-                title=f"{rtype.value.title()} Report",
-                file_path=str(p),
-                file_name=p.name,
-                file_size_bytes=p.stat().st_size,
-                mime_type="application/pdf" if fmt == ReportFormat.PDF else "application/octet-stream",
-            )
-            self._registry[report_id] = meta
+            meta = self._registry[report_id]
+            if meta.factory_id != factory_id:
+                raise ReportNotFoundError(f"Report '{report_id}' not found.")
             return meta
+
+        search_dirs = [self.storage_dir / str(factory_id)]
+        for d in search_dirs:
+            try:
+                owner_fid = UUID(d.name)
+            except ValueError:
+                continue
+            if factory_id is not None and owner_fid != factory_id:
+                continue
+            for p in d.glob(f"*_{report_id}.*"):
+                self._safe_contain_path(p, factory_id=owner_fid)
+                ext = p.suffix.lstrip(".").lower()
+                try:
+                    fmt = ReportFormat(ext)
+                except ValueError:
+                    fmt = ReportFormat.PDF
+
+                rtype_str = p.name.split("_REP-")[0]
+                try:
+                    rtype = ReportType(rtype_str)
+                except ValueError:
+                    rtype = ReportType.COMPREHENSIVE_SAFETY
+
+                meta = ReportMetadata(
+                    report_id=report_id,
+                    report_type=rtype,
+                    format=fmt,
+                    factory_id=owner_fid,
+                    title=f"{rtype.value.title()} Report",
+                    file_path=str(p),
+                    file_name=p.name,
+                    file_size_bytes=p.stat().st_size,
+                    mime_type="application/pdf" if fmt == ReportFormat.PDF else "application/octet-stream",
+                )
+                self._registry[report_id] = meta
+                return meta
 
         raise ReportNotFoundError(f"Report '{report_id}' not found.")
 
-    def get_report_file_path(self, report_id: str) -> Path:
-        """Resolve and verify existence of physical report artifact."""
-        meta = self.get_report(report_id)
+    def get_report_file_path(self, report_id: str, factory_id: UUID) -> Path:
+        """Resolve and verify existence and containment of physical report artifact.
+
+        Args:
+            report_id: The unique report identifier.
+            factory_id: Required — the authenticated tenant factory UUID.
+                        Raises ValueError if None or falsy.
+        """
+        if not factory_id:
+            raise ValueError("factory_id is required and cannot be None or empty.")
+        meta = self.get_report(report_id, factory_id=factory_id)
         if not meta.file_path:
             raise ReportNotFoundError(f"Report artifact path for '{report_id}' is empty.")
-        p = Path(meta.file_path)
+        p = self._safe_contain_path(Path(meta.file_path), factory_id=meta.factory_id)
         if not p.exists():
             raise ReportNotFoundError(f"Report file on disk '{p}' is missing.")
         return p
 
-    def list_reports(self, factory_id: Optional[UUID] = None) -> List[ReportMetadata]:
-        """List currently available generated reports."""
-        reports = list(self._registry.values())
-        if factory_id:
-            reports = [r for r in reports if r.factory_id == factory_id]
-        return reports
+    def list_reports(self, factory_id: UUID) -> List[ReportMetadata]:
+        """List currently available generated reports strictly scoped to factory_id.
+
+        Args:
+            factory_id: Required — the authenticated tenant factory UUID.
+                        Returns empty list if None or falsy (fail-closed).
+        """
+        if not factory_id:
+            return []
+        return [r for r in self._registry.values() if r.factory_id == factory_id]
 
 
 # Singleton instance helper
