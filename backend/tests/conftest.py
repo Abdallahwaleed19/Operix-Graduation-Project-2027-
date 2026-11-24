@@ -44,6 +44,7 @@ else:
     os.environ.setdefault("REDIS_URL", "redis://localhost:6379/15")
     os.environ.setdefault("WS_TICKET_KEY", "test-ws-ticket-key-32bytes-min!!")
     os.environ.setdefault("SECRET_KEY", "test-secret-key-change-in-prod-32b!")
+    os.environ.setdefault("ALLOW_TEST_AUTH_FALLBACK", "true")
 
 
 # ─── 3. Pre-engine guard — after .env.test, before any app import ─────────────

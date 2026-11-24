@@ -1,9 +1,9 @@
 # OPERIX — AI BACKEND INTEGRATION CONTRACTS
 ## Integration Specification for Abdullah's Four AI Services
 
-**Target Audience:** AI Engineering Team (Abdullah Waleed)  
-**Status:** APPROVED & TESTED  
-**Version:** 1.0.0 (Phase 3.6 Final)  
+**Target Audience:** AI Engineering Team (Abdullah Waleed) & Backend Engineering Team (Seif)
+**Status:** IMPLEMENTED & VERIFIED (Phase 4 Complete)
+**Version:** 2.0.0 (Phase 4 Final Acceptance)
 
 ---
 
@@ -177,3 +177,32 @@ class RuleViolation(BaseModel):
 | **`Event.details["rule_evaluation"]`** | ✅ | — | Summary of matched rules, count, highest severity, notify flag. |
 | **`RuleExecutionRecord` (Full History)** | ❌ | ✅ | In-memory return & WebSocket. Permanent storage requires future table approval. |
 | **`RuleViolation` Entities** | ❌ | ✅ | In-memory return & WebSocket. Standalone table requires future approval. |
+
+---
+
+## 6. Phase 4 Implemented Backend Architecture
+
+### 6.1 Dependency Injection Layer (`app/api/ai_deps.py`)
+Provides production-safe DI for all AI services with caller-owned request sessions (`get_tenant_db`) and background sessions (`get_background_session`):
+- `get_workforce_analytics_service_dep`: Injects configured `WorkforceAnalyticsService`.
+- `get_llm_assistant_service_dep`: Injects configured `LLMAssistantService`.
+- `get_reports_service_dep`: Injects `ReportsService` configured with `settings.reports_storage_path`.
+- `get_evidence_service_dep`: Injects `EvidenceService` configured with `settings.evidence_storage_path`.
+- `get_background_session`: Factory for autonomous background task sessions with automatic commit/rollback/close.
+- `sync_ai_service_env`: Ensures AI process environment variables match application settings.
+
+### 6.2 REST Routers (`app/api/v1/endpoints/`)
+All 4 AI routers mounted in `app/api/v1/router.py`:
+1. `/api/v1/analytics`: Overview, attendance, incidents, productivity, camera coverage, summary.
+2. `/api/v1/assistant`: LLM Q&A (`/ask`), action execution (`/actions/execute`), document sources (`/sources`), conversations, health.
+3. `/api/v1/reports`: On-demand report generation (`/generate`), report listing, metadata, and binary download (`/{id}/download`).
+4. `/api/v1/evidence`: Multipart/Base64 JSON evidence upload (`/upload`), listing, metadata, binary download (`/{id}/download`), SHA-256 integrity verification (`/{id}/verify-integrity`).
+
+### 6.3 Real Action Execution Engine (`app/services/ai_action_service.py`)
+`AIActionService` executes assistant-recommended actions directly against canonical SQLAlchemy models:
+- `create_incident`: Creates real `Incident` row (`IncidentState.DETECTED`), dispatches `incident_created` and `ai_action_completed` WebSocket events.
+- `acknowledge_incident`: Verifies tenant ownership, transitions state to `IncidentState.UNDER_REVIEW` with reviewer assignment.
+- `request_alert`: Creates real `Alert` row linked to tenant incident (`AlertStatus.PENDING`).
+- `sensor_toggle`: Updates `Sensor.status` to `SourceStatus.AVAILABLE` / `SourceStatus.UNAVAILABLE`.
+- `maintenance` / `dispatch` / `escalation`: Registers audit trail and emits WebSocket broadcast.
+- Includes role-based security validation and idempotency cache.

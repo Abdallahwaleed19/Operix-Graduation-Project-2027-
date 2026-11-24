@@ -29,17 +29,8 @@ if str(_AI_SERVICES_ROOT) not in sys.path:
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import Session
 
-# Import AI Services
-from workforce_analytics.services.analytics_service import WorkforceAnalyticsService
-from llm_rag_assistant.services.assistant_service import (
-    OperixAssistantService,
-    get_assistant_service as _get_assistant_singleton,
-)
-from reports_generation.services.report_service import ReportService
-from incident_evidence.services.evidence_service import (
-    EvidenceService,
-    get_evidence_service as _get_evidence_singleton,
-)
+# AI Services are imported lazily within each factory function
+# to avoid mandatory hard dependencies (e.g. numpy, openpyxl) at module import time.
 
 logger = logging.getLogger("OperixPhase1Adapter")
 
@@ -72,24 +63,26 @@ def sync_main_settings_to_ai_services(main_settings: Any) -> None:
 def get_workforce_analytics_service(
     session: Optional[Session] = None,
     factory_id: Optional[UUID | str] = None,
-) -> WorkforceAnalyticsService:
+) -> Any:
     """
     Produce a WorkforceAnalyticsService instance.
     If a database session (e.g. from get_db or get_tenant_db) is supplied,
     it is bound to the service and reused across read-only queries without
     creating additional connection pools or altering outer transactions.
     """
+    from workforce_analytics.services.analytics_service import WorkforceAnalyticsService
     return WorkforceAnalyticsService(
         default_factory_id=factory_id,
         session=session,
     )
 
 
-def get_llm_rag_assistant_service() -> OperixAssistantService:
+def get_llm_rag_assistant_service() -> Any:
     """
     Produce or return the singleton OperixAssistantService instance.
     Ready for RAG Q&A and agentic remediation proposals.
     """
+    from llm_rag_assistant.services.assistant_service import get_assistant_service as _get_assistant_singleton
     return _get_assistant_singleton()
 
 
@@ -97,11 +90,12 @@ def get_reports_generation_service(
     session: Optional[Session] = None,
     engine: Optional[Engine] = None,
     storage_dir: Optional[Path] = None,
-) -> ReportService:
+) -> Any:
     """
     Produce a ReportService instance.
     Injects the active database engine/session for data gathering.
     """
+    from reports_generation.services.report_service import ReportService
     return ReportService(
         engine=engine,
         session=session,
@@ -111,11 +105,12 @@ def get_reports_generation_service(
 
 def get_incident_evidence_service(
     storage_dir: Optional[Path] = None,
-) -> EvidenceService:
+) -> Any:
     """
     Produce or return the singleton EvidenceService instance.
     Exposes upload, retrieval, and cryptographic SHA-256 integrity verification.
     """
+    from incident_evidence.services.evidence_service import get_evidence_service as _get_evidence_singleton
     return _get_evidence_singleton(storage_dir=storage_dir)
 
 

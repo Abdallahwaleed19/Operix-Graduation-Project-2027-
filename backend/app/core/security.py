@@ -128,6 +128,40 @@ def decode_access_token(token: str) -> Dict[str, Any]:
     return payload
 
 
+def verify_user_factory_membership(
+    db: Any,
+    user_id: uuid.UUID,
+    factory_id: uuid.UUID,
+) -> Any:
+    """
+    Canonical validation asserting that user exists, is active,
+    and holds an active FactoryMembership in the targeted factory.
+    Raises AuthorizationException if inactive or membership missing.
+    """
+    from ..models.tenant import FactoryMembership, User
+    from ..models.enums import UserStatus
+    from sqlalchemy import select
+
+    user = db.get(User, user_id)
+    if user is not None and user.status != UserStatus.ACTIVE:
+        raise AuthorizationException("User account is not active.", error_code="USER_INACTIVE")
+
+    membership = db.execute(
+        select(FactoryMembership).where(
+            FactoryMembership.factory_id == factory_id,
+            FactoryMembership.user_id == user_id,
+            FactoryMembership.is_active.is_(True),
+        )
+    ).scalar_one_or_none()
+
+    if membership is None:
+        raise AuthorizationException(
+            f"User does not have active membership in factory '{factory_id}'.",
+            error_code="FORBIDDEN_FACTORY",
+        )
+    return membership
+
+
 # ---------------------------------------------------------------------------
 # WebSocket Ticket (signed with WS_TICKET_KEY — separate from SECRET_KEY)
 # ---------------------------------------------------------------------------

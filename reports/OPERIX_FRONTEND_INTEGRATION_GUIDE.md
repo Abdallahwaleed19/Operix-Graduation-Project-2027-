@@ -3,7 +3,7 @@
 
 **Target Audience:** Frontend Engineering Team (Toka)  
 **Status:** APPROVED & TESTED  
-**Version:** 1.0.0 (Phase 3.6 Final)  
+**Version:** 2.0.0 (Phase 4 Final Acceptance)
 
 ---
 
@@ -181,3 +181,98 @@ All backend errors follow a uniform JSON structure:
 - `FORBIDDEN` (403): User lacks membership in the requested factory.
 - `RESOURCE_NOT_FOUND` (404): Rule, zone, or department does not exist in the tenant.
 - `INTERNAL_SERVER_ERROR` (500): Unhandled exception.
+
+---
+
+## 5. Phase 4 AI Services & Copilot Integration
+
+### 5.1 Workforce Analytics Endpoints
+- **Base Path:** `/api/v1/analytics`
+- **Headers:** `Authorization: Bearer <token>`, `X-Factory-Id: <factory_uuid>`
+- **Endpoints:**
+  - `GET /overview` — High-level workforce & safety KPI summary (total workers, attendance rate, total incidents, average compliance score).
+  - `GET /attendance` — Daily/hourly attendance trends (`?start_date=YYYY-MM-DD&end_date=YYYY-MM-DD`).
+  - `GET /incidents` — Incident breakdown by severity, zone, and time series.
+  - `GET /productivity` — Department productivity and compliance correlations.
+  - `GET /camera-coverage` — Camera uptime and monitoring coverage health.
+  - `GET /summary` — Executive multi-dimensional safety summary.
+
+### 5.2 Copilot / LLM Assistant Endpoints
+- **Base Path:** `/api/v1/assistant`
+- **Headers:** `Authorization: Bearer <token>`, `X-Factory-Id: <factory_uuid>`
+- **Endpoints:**
+  - `POST /ask` — Ask natural-language safety questions. Returns answers with grounded sources and recommended actions.
+    ```json
+    {
+      "question": "What are the hardhat violation procedures for Zone B?",
+      "conversation_id": "optional-uuid"
+    }
+    ```
+    Response includes `answer`, `confidence`, `sources`, `suggested_actions`, and `conversation_id`.
+  - `POST /actions/execute` — Execute Copilot-recommended actions with role authorization.
+    ```json
+    {
+      "action_type": "acknowledge_incident",
+      "target_id": "11111111-1111-1111-1111-111111111111",
+      "parameters": { "reason": "Operator cleared zone" },
+      "idempotency_key": "unique-client-uuid"
+    }
+    ```
+    Supported `action_type`: `create_incident`, `acknowledge_incident`, `request_alert`, `sensor_toggle`, `maintenance`, `dispatch`, `escalation`.
+  - `GET /sources` — List indexed safety policies and standard operating procedures.
+  - `GET /conversations/{id}` — Retrieve assistant chat history.
+  - `GET /health` — Assistant and vector store health check.
+
+### 5.3 Reports Generation Endpoints
+- **Base Path:** `/api/v1/reports`
+- **Headers:** `Authorization: Bearer <token>`, `X-Factory-Id: <factory_uuid>`
+- **Endpoints:**
+  - `POST /generate` — Generate report on demand (PDF, Excel, HTML, JSON).
+    ```json
+    {
+      "report_type": "safety_compliance",
+      "format": "pdf",
+      "start_date": "2026-11-01T00:00:00Z",
+      "end_date": "2026-11-24T00:00:00Z"
+    }
+    ```
+  - `GET ""` — List generated reports for the factory with pagination.
+  - `GET /{id}` — Retrieve report status and metadata.
+  - `GET /{id}/download` — Secure binary download with `Content-Disposition`.
+
+### 5.4 Incident Evidence Endpoints
+- **Base Path:** `/api/v1/evidence`
+- **Headers:** `Authorization: Bearer <token>`, `X-Factory-Id: <factory_uuid>`
+- **Endpoints:**
+  - `POST /upload` — Upload evidence file (image/video/log) via Base64 JSON:
+    ```json
+    {
+      "incident_id": "11111111-1111-1111-1111-111111111111",
+      "filename": "camera_zone_b_violation.jpg",
+      "file_base64": "<base64_encoded_content>",
+      "content_type": "image/jpeg"
+    }
+    ```
+  - `GET ""` — List evidence files for authorized incidents (`?incident_id=<uuid>`).
+  - `GET /{id}` — Retrieve evidence metadata, SHA-256 hash, and byte size.
+  - `GET /{id}/download` — Download evidence binary.
+  - `GET /{id}/verify-integrity` — Verify SHA-256 integrity hash against file on disk.
+
+### 5.5 AI Action WebSocket Events
+When an action is executed via `/api/v1/assistant/actions/execute`, events are broadcast in real-time over the existing WebSocket connection (`/ws/events?ticket=...`):
+- `incident_created`: When `create_incident` is called.
+- `alert_created`: When `request_alert` is called.
+- `ai_action_completed`: Broadcast for all successful action executions:
+  ```json
+  {
+    "event_type": "ai_action_completed",
+    "factory_id": "9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d",
+    "payload": {
+      "action_type": "acknowledge_incident",
+      "target_id": "11111111-1111-1111-1111-111111111111",
+      "status": "success",
+      "executed_by": "user-uuid"
+    },
+    "sent_at": "2026-11-24T16:00:00Z"
+  }
+  ```

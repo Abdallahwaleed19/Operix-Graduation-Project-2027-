@@ -47,6 +47,7 @@ class Settings(BaseSettings):
     CV_API_KEY_HEADER: str = "X-Camera-Key"
     DEFAULT_CV_API_KEY: str = "operix-cv-cam-default-secret-key-2026"
     JWT_ALGORITHM: str = "HS256"
+    ALLOW_TEST_AUTH_FALLBACK: bool = False
 
     # PostgreSQL Database Configuration
     DATABASE_URL: str = "postgresql+psycopg://postgres:postgres@localhost:5432/operix_db"
