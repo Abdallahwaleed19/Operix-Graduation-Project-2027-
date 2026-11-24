@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import os
 import tempfile
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import Iterator, Optional
 from uuid import UUID
 
@@ -45,14 +45,18 @@ class LocalStorage(BaseStorage):
         """
         Resolve key to an absolute path and verify it stays under _root.
 
-        Raises StorageError if the resolved path escapes the root (path traversal).
+        Raises StorageError if the key is invalid or escapes the root (path traversal).
         """
-        # key is a relative POSIX-style path, e.g.
-        # "aaaaaaaa-0001-0001-0001-000000000001/event_id/evidence_id.jpg"
+        if not key or "\x00" in key or "\\" in key or key.startswith("/"):
+            raise StorageError(f"Invalid or unsafe storage key: '{key}'.")
+        if Path(key).is_absolute():
+            raise StorageError(f"Absolute storage key rejected: '{key}'.")
+        parts = PurePosixPath(key).parts
+        if any(part in ("..", "") for part in parts):
+            raise StorageError(f"Path traversal component rejected in key: '{key}'.")
+
         candidate = (self._root / key).resolve()
-        try:
-            candidate.relative_to(self._root)
-        except ValueError:
+        if not candidate.is_relative_to(self._root):
             raise StorageError(
                 f"Path traversal detected: key '{key}' resolves outside storage root."
             )

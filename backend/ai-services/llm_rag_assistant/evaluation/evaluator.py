@@ -7,7 +7,7 @@ from __future__ import annotations
 import time
 from typing import Any, List, Optional
 
-from ..schemas.contracts import AssistantQueryRequest
+from ..schemas.contracts import AssistantQueryRequest, UserContext
 from ..services.assistant_service import OperixAssistantService
 from .benchmark_dataset import OPERIX_BENCHMARK_CASES, BenchmarkTestCase
 
@@ -15,10 +15,26 @@ from .benchmark_dataset import OPERIX_BENCHMARK_CASES, BenchmarkTestCase
 class RAGEvaluator:
     """Evaluates RAG assistant accuracy and safety against standardized benchmarks."""
 
-    def __init__(self, service: OperixAssistantService) -> None:
+    def __init__(
+        self,
+        service: OperixAssistantService,
+        user_context: Optional[UserContext] = None,
+    ) -> None:
         self.service = service
+        self.user_context = user_context
 
-    def evaluate(self, cases: Optional[List[BenchmarkTestCase]] = None) -> dict[str, Any]:
+    def evaluate(
+        self,
+        cases: Optional[List[BenchmarkTestCase]] = None,
+        user_context: Optional[UserContext] = None,
+    ) -> dict[str, Any]:
+        active_context = user_context or self.user_context
+        if active_context is None:
+            raise ValueError(
+                "RAGEvaluator requires an explicit UserContext (user_id and factory_id). "
+                "Refusing to invent a fallback identity."
+            )
+
         test_cases = cases or OPERIX_BENCHMARK_CASES
         total = len(test_cases)
         correct_evidence_judgments = 0
@@ -31,6 +47,7 @@ class RAGEvaluator:
         for case in test_cases:
             req = AssistantQueryRequest(
                 question=case.question,
+                user_context=active_context,
                 language_preference=case.language,  # type: ignore
             )
             t0 = time.perf_counter()

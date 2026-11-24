@@ -11,7 +11,8 @@ from dotenv import load_dotenv
 
 # Load .env relative to ai-services/ root
 _ENV_PATH = Path(__file__).resolve().parent.parent / ".env"
-load_dotenv(dotenv_path=_ENV_PATH)
+if _ENV_PATH.exists():
+    load_dotenv(dotenv_path=_ENV_PATH)
 
 
 def _get_path(env_key: str, default: str) -> Path:
@@ -23,20 +24,20 @@ def _get_path(env_key: str, default: str) -> Path:
     return p
 
 
-# Database
-DATABASE_URL: str = os.getenv(
-    "DATABASE_URL",
-    "postgresql+psycopg2://postgres:abdallah@localhost:5432/operix_db",
-)
+def get_reports_storage_dir() -> Path:
+    """Resolve reports storage directory dynamically from environment."""
+    return _get_path("OPERIX_REPORTS_STORAGE_DIR", "storage/reports")
+
 
 # Factory Scope
-DEFAULT_FACTORY_ID: str = os.getenv(
-    "OPERIX_FACTORY_ID",
-    "aaaaaaaa-0001-0001-0001-000000000001",
+DEFAULT_FACTORY_ID: str = (
+    os.getenv("OPERIX_FACTORY_ID")
+    or os.getenv("DEFAULT_FACTORY_ID")
+    or "aaaaaaaa-0001-0001-0001-000000000001"
 )
 
 # Storage
-REPORTS_STORAGE_DIR: Path = _get_path("OPERIX_REPORTS_STORAGE_DIR", "storage/reports")
+REPORTS_STORAGE_DIR: Path = get_reports_storage_dir()
 
 # Defaults
 DEFAULT_REPORT_FORMAT: str = os.getenv("OPERIX_REPORT_DEFAULT_FORMAT", "pdf").lower()

@@ -290,10 +290,12 @@ class TestProductivityMetricsIntegration:
         assert result.thresholds_used == {"low": 0, "high": 1}
 
     def test_empty_dataset_returns_zero(self):
-        """Unit test: no DB needed — mock returns empty list."""
+        """Unit test: no DB needed — mock returns empty list and injected session."""
+        from unittest.mock import MagicMock
+        mock_session = MagicMock()
         with patch("workforce_analytics.analytics.fetch_per_worker_productivity",
                    return_value=[]):
-            result = calculate_productivity_metrics(FACTORY_ID)
+            result = calculate_productivity_metrics(FACTORY_ID, session=mock_session)
         assert result.workers_analysed == 0
         assert result.avg_handled_per_worker == 0.0
         assert result.low_performers == []

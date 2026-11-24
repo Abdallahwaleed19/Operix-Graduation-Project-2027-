@@ -81,23 +81,19 @@ class TestAgenticActions(unittest.TestCase):
         self.assertEqual(len(resp.suggested_actions), 0)
 
     def test_action_execution_audit(self) -> None:
-        """Executing an authorized action produces an audit record."""
+        """Direct mock execution is disabled; valid requests pass validation and delegate to backend."""
         exec_req = ActionExecutionRequest(
             action_id="act-test-01",
             action_type="maintenance",
             parameters={"camera_name": "Maint-CAM-01", "department": "Maintenance"},
             confirmed_by="Supervisor_Abdallah",
         )
-        res = self.action_service.execute(exec_req)
-
-        self.assertEqual(res.status, "executed")
-        self.assertTrue(res.audit_reference.startswith("AUDIT-"))
-        self.assertIn("Maint-CAM-01", res.message)
-
-        # Verify audit history
-        audit = self.action_service.get_audit_trail()
-        self.assertEqual(len(audit), 1)
-        self.assertEqual(audit[0]["confirmed_by"], "Supervisor_Abdallah")
+        with self.assertRaises(RuntimeError):
+            self.action_service.execute(exec_req)
+        self.assertEqual(
+            self.action_service.validate_request(exec_req, authenticated_role="safety_supervisor"),
+            "maintenance",
+        )
 
 
 if __name__ == "__main__":
