@@ -40,7 +40,12 @@ class Settings(BaseSettings):
     SECRET_KEY: str = "operix-super-secret-key-change-in-production-32bytes"
     HOST: str = "0.0.0.0"
     PORT: int = 8000
-    ALLOWED_ORIGINS: List[str] = Field(default_factory=lambda: ["*"])
+    ALLOWED_ORIGINS: List[str] = Field(
+        default_factory=lambda: [
+            "http://localhost:5173",
+            "http://127.0.0.1:5173",
+        ]
+    )
 
     # Multi-Tenancy & Security
     DEFAULT_FACTORY_ID: UUID = UUID("aaaaaaaa-0001-0001-0001-000000000001")
@@ -166,11 +171,20 @@ class Settings(BaseSettings):
     @field_validator("ALLOWED_ORIGINS", mode="before")
     @classmethod
     def assemble_cors_origins(cls, v: Union[str, List[str]]) -> List[str]:
-        if isinstance(v, str) and not v.startswith("["):
-            return [i.strip() for i in v.split(",") if i.strip()]
+        if isinstance(v, str):
+            raw = v.strip()
+            if raw.startswith("["):
+                import json
+                try:
+                    parsed = json.loads(raw)
+                    if isinstance(parsed, list):
+                        return [str(i).strip() for i in parsed if str(i).strip()]
+                except Exception:
+                    pass
+            return [i.strip() for i in raw.split(",") if i.strip()]
         elif isinstance(v, list):
-            return v
-        return ["*"]
+            return [str(i).strip() for i in v if str(i).strip()]
+        return ["http://localhost:5173", "http://127.0.0.1:5173"]
 
 
 @lru_cache()

@@ -35,6 +35,17 @@ router = APIRouter(tags=["Real-Time WebSockets"])
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
+def _is_ws_origin_allowed(origin: Optional[str]) -> bool:
+    """Validate WebSocket Origin header against configured ALLOWED_ORIGINS."""
+    if not origin:
+        return settings.APP_ENV.lower() != "production"
+    normalized_origin = origin.strip().rstrip("/")
+    allowed = [o.strip().rstrip("/") for o in settings.ALLOWED_ORIGINS if o and o.strip()]
+    if "*" in allowed:
+        return True
+    return normalized_origin in allowed
+
+
 async def _deny_ws(websocket: WebSocket, status_code: int, reason: str) -> None:
     """
     Reject a WebSocket BEFORE accept() using the HTTP denial extension
@@ -125,6 +136,12 @@ async def websocket_events_endpoint(
     Enforces cryptographic authentication and strict multi-tenant authorization.
     Rejects missing/invalid tokens with 4401 and cross-tenant attempts with 4403.
     """
+    # 0. Validate WebSocket Origin header before any auth/accept
+    if not _is_ws_origin_allowed(websocket.headers.get("origin")):
+        logger.warning("Legacy WebSocket rejected: unauthorized Origin.")
+        await websocket.close(code=4403, reason="WebSocket origin not allowed.")
+        return
+
     # 1. Parse requested factory_id if provided
     requested_uuid: Optional[uuid.UUID] = None
     if factory_id:
@@ -209,6 +226,12 @@ async def websocket_ticket_events_endpoint(
       403 — membership inactive
       503 — Redis or database unavailable
     """
+    # ── 0. Validate Origin before ticket verification or accept ──────────────
+    if not _is_ws_origin_allowed(websocket.headers.get("origin")):
+        logger.warning("WS v2 rejected: unauthorized Origin.")
+        await _deny_ws(websocket, 403, "WebSocket origin not allowed.")
+        return
+
     # ── 1. Require ticket parameter ──────────────────────────────────────────
     if not ticket:
         await _deny_ws(websocket, 400, "WS ticket is required.")

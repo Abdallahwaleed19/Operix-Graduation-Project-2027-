@@ -58,17 +58,20 @@ cd d:\VS_Works\project_MNU\Operix-Graduation-Project-2027-\backend
 .\.venv\Scripts\Activate.ps1
 ```
 
-### Step 2 — Environment Variables Configuration
+### Step 2 — Environment Variables & Required Services
 Copy `.env.example` to create your local `.env`:
 ```powershell
 Copy-Item .env.example .env
 ```
-Ensure your local PostgreSQL connection string is set in `.env`:
-```env
-DATABASE_URL=postgresql+psycopg://postgres:postgres@localhost:5432/operix_db
-DEFAULT_FACTORY_ID=00000000-0000-0000-0000-000000000001
-DEBUG=True
-```
+**Runtime Prerequisites:**
+- **Redis (Required):** The FastAPI lifespan verifies Redis connectivity on startup (`REDIS_URL`, default `redis://localhost:6379/0`) and fails closed if Redis is unreachable (required for `/api/v1/auth/ws-ticket` and `/ws/v2/events`).
+- **PostgreSQL:** Set `DATABASE_URL` in `.env` (never use production `operix_db` for automated tests).
+- **Required Security & CORS Variables:**
+  - `SECRET_KEY` (32+ bytes) — signs human access JWTs.
+  - `WS_TICKET_KEY` (32+ bytes, **must differ** from `SECRET_KEY`) — signs short-lived WebSocket tickets.
+  - `ALLOWED_ORIGINS` — defaults to `http://localhost:5173,http://127.0.0.1:5173` for the Vite React frontend (applied to both REST CORS and WebSocket `Origin` checks).
+  - `EVIDENCE_STORAGE_DIR` / `REPORTS_STORAGE_DIR` — storage roots for evidence and report artifacts.
+  - `ALLOW_TEST_AUTH_FALLBACK` — keep `false` outside automated offline tests.
 
 ### Step 3 — Run Automated Tests
 Execute the full automated test suite:
@@ -83,14 +86,16 @@ pytest tests -v
 ```
 
 ### Step 4 — Launch the FastAPI Development Server
+Ensure Redis is running locally, then start Uvicorn from `backend/`:
 ```powershell
 python run.py
 ```
 Or directly with Uvicorn:
 ```powershell
-$env:PYTHONPATH="backend;backend/ai-services"
+$env:PYTHONPATH=".;ai-services"
 uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
 ```
+The Vite frontend (`http://localhost:5173` / `http://127.0.0.1:5173`) can then call `/api/v1/*` and connect to `ws://127.0.0.1:8000/ws/v2/events?ticket=<ws_ticket>`.
 
 ---
 
