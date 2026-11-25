@@ -8,6 +8,15 @@ import uuid
 from pydantic import BaseModel, Field
 
 
+class ForgotPasswordRequest(BaseModel):
+    email: str = Field(..., min_length=3, max_length=254)
+
+
+class ResetPasswordRequest(BaseModel):
+    token: str = Field(..., min_length=16)
+    new_password: str = Field(..., min_length=6, max_length=256)
+
+
 class LoginRequest(BaseModel):
     email: str = Field(..., min_length=3, max_length=254, description="User email address.")
     password: str = Field(..., min_length=1, max_length=256, description="Plaintext password.")

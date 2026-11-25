@@ -188,6 +188,40 @@ class EmailService:
         return EmailService.send_email(admin_emails, subject, text_body, html_body)
 
     @staticmethod
+    def send_password_reset_email(
+        *,
+        to_email: str,
+        full_name: str,
+        reset_token: str,
+    ) -> bool:
+        base_url = settings.FRONTEND_APP_URL.rstrip("/")
+        reset_url = f"{base_url}/reset-password?token={reset_token}"
+        subject = "Reset your Operix password"
+        text_body = (
+            f"Hello {full_name},\n\n"
+            f"You requested a password reset for your Operix account.\n"
+            f"Click the link below to set a new password:\n"
+            f"{reset_url}\n\n"
+            f"This link expires in 1 hour and can only be used once.\n"
+            f"If you did not request this, you can safely ignore this email.\n\n"
+            f"Operix Industrial AI Safety Platform"
+        )
+        html_body = f"""
+        <div style="font-family: Arial, sans-serif; max-width: 560px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 10px;">
+          <h2 style="color: #1e3a5f; margin-top: 0;">Reset Your Password</h2>
+          <p>Hello <strong>{full_name}</strong>,</p>
+          <p>We received a request to reset the password for your Operix account.</p>
+          <p style="margin: 24px 0;">
+            <a href="{reset_url}" style="background: #1e3a5f; color: #fff; padding: 10px 18px; border-radius: 6px; text-decoration: none; font-weight: 600;">
+              Reset Password
+            </a>
+          </p>
+          <p style="color: #64748b; font-size: 12px;">This link expires in 1 hour. If you didn't request a password reset, you can safely ignore this email — your password won't change.</p>
+        </div>
+        """
+        return EmailService.send_email(to_email, subject, text_body, html_body)
+
+    @staticmethod
     def send_account_approved_email(
         *,
         to_email: str,

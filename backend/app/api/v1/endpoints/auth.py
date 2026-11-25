@@ -35,6 +35,7 @@ from ....schemas.auth import (
     AcceptInviteData,
     AcceptInviteRequest,
     AuthUserSummary,
+    ForgotPasswordRequest,
     LoginData,
     LoginRequest,
     LogoutData,
@@ -43,6 +44,7 @@ from ....schemas.auth import (
     RefreshRequest,
     RegisterData,
     RegisterRequest,
+    ResetPasswordRequest,
 )
 from ....schemas.common import APIResponse, APIResponseMeta
 from ....services.email_service import EmailService
@@ -604,9 +606,148 @@ def register(
     )
 
 
+_PASSWORD_RESET_TTL_HOURS = 1
+
+
 @router.post(
-    "/accept-invite",
-    response_model=APIResponse[AcceptInviteData],
+    "/forgot-password",
+    response_model=APIResponse[dict],
+    status_code=status.HTTP_200_OK,
+    summary="Request a password reset link",
+    description="Sends a one-time reset link to the user's email. Always returns success for security.",
+)
+def forgot_password(
+    body: ForgotPasswordRequest,
+    db: Session = Depends(get_db),
+) -> APIResponse[dict]:
+    now = datetime.now(timezone.utc)
+    normalized_email = body.email.strip().lower()
+
+    user = db.execute(
+        select(User).where(func.lower(User.email) == normalized_email)
+    ).scalar_one_or_none()
+
+    # Always return success (don't reveal whether email exists)
+    if user is not None and user.status == UserStatus.ACTIVE:
+        raw_token = generate_refresh_token()
+        db.add(
+            AuthToken(
+                user_id=user.id,
+                purpose=TokenPurpose.PASSWORD_RESET,
+                token_hash=hash_refresh_token(raw_token),
+                expires_at=now + timedelta(hours=_PASSWORD_RESET_TTL_HOURS),
+            )
+        )
+        db.flush()
+        EmailService.send_password_reset_email(
+            to_email=user.email,
+            full_name=user.full_name,
+            reset_token=raw_token,
+        )
+        logger.info(f"Password reset requested for user={user.id}")
+
+    return APIResponse(
+        status="success",
+        data={"message": "If an account exists with this email, a password reset link has been sent."},
+        meta=APIResponseMeta(),
+    )
+
+
+@router.get(
+    "/validate-reset-token",
+    response_model=APIResponse[dict],
+    status_code=status.HTTP_200_OK,
+    summary="Validate a password reset token",
+)
+def validate_reset_token(
+    token: str,
+    db: Session = Depends(get_db),
+) -> APIResponse[dict]:
+    now = datetime.now(timezone.utc)
+    token_hash = hash_refresh_token(token.strip())
+
+    auth_token = db.execute(
+        select(AuthToken).where(
+            AuthToken.token_hash == token_hash,
+            AuthToken.purpose == TokenPurpose.PASSWORD_RESET,
+        )
+    ).scalar_one_or_none()
+
+    if auth_token is None or auth_token.used_at is not None or auth_token.revoked_at is not None:
+        return APIResponse(
+            status="success",
+            data={"valid": False, "message": "Invalid or already used reset token."},
+            meta=APIResponseMeta(),
+        )
+    if _as_utc(auth_token.expires_at) <= now:
+        return APIResponse(
+            status="success",
+            data={"valid": False, "message": "This reset link has expired. Please request a new one."},
+            meta=APIResponseMeta(),
+        )
+
+    user = db.get(User, auth_token.user_id)
+    return APIResponse(
+        status="success",
+        data={"valid": True, "email": user.email if user else ""},
+        meta=APIResponseMeta(),
+    )
+
+
+@router.post(
+    "/reset-password",
+    response_model=APIResponse[dict],
+    status_code=status.HTTP_200_OK,
+    summary="Reset password using a valid token",
+)
+def reset_password(
+    body: ResetPasswordRequest,
+    db: Session = Depends(get_db),
+) -> APIResponse[dict]:
+    now = datetime.now(timezone.utc)
+    token_hash = hash_refresh_token(body.token.strip())
+
+    auth_token = db.execute(
+        select(AuthToken).where(
+            AuthToken.token_hash == token_hash,
+            AuthToken.purpose == TokenPurpose.PASSWORD_RESET,
+        )
+    ).scalar_one_or_none()
+
+    if auth_token is None or auth_token.used_at is not None or auth_token.revoked_at is not None:
+        raise AuthenticationException(
+            "Invalid or already used reset token.", error_code="INVALID_RESET_TOKEN"
+        )
+    if _as_utc(auth_token.expires_at) <= now:
+        raise AuthenticationException(
+            "Reset token has expired.", error_code="TOKEN_EXPIRED"
+        )
+
+    user = db.get(User, auth_token.user_id)
+    if user is None or user.status != UserStatus.ACTIVE:
+        raise AuthenticationException(
+            "User account not found or inactive.", error_code="USER_INACTIVE"
+        )
+
+    user.password_hash = hash_password(body.new_password)
+    user.password_changed_at = now
+    user.failed_login_count = 0
+    user.locked_until = None
+
+    # Consume token (single-use)
+    auth_token.used_at = now
+    db.flush()
+
+    logger.info(f"Password reset completed for user={user.id}")
+    return APIResponse(
+        status="success",
+        data={"message": "Password updated successfully. You can now sign in with your new password."},
+        meta=APIResponseMeta(),
+    )
+
+
+@router.post(
+    "/accept-invite",    response_model=APIResponse[AcceptInviteData],
     status_code=status.HTTP_200_OK,
     summary="Accept Invitation & Set Password",
     description="Validates a single-use activation token, sets password, and activates the invited user account.",
