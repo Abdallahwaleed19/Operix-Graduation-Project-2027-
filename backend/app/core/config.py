@@ -84,7 +84,9 @@ class Settings(BaseSettings):
         ),
     )
 
-    # SMTP Email Configuration (for invitations & registration approval notifications)
+    # Email Configuration (Resend HTTPS API preferred in production; SMTP fallback)
+    RESEND_API_KEY: Optional[str] = None
+    RESEND_FROM_EMAIL: Optional[str] = None
     SMTP_HOST: str = "smtp.gmail.com"
     SMTP_PORT: int = 587
     SMTP_USER: Optional[str] = None

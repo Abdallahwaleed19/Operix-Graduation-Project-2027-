@@ -75,3 +75,16 @@ class RegisterData(BaseModel):
     status: str
     admin_notified: bool
     message: str
+
+
+class AcceptInviteRequest(BaseModel):
+    token: str = Field(..., min_length=16, description="Single-use invitation token.")
+    password: str = Field(..., min_length=6, max_length=72, description="New account password.")
+
+
+class AcceptInviteData(BaseModel):
+    user_id: uuid.UUID
+    email: str
+    full_name: str
+    status: str
+    message: str

@@ -165,6 +165,7 @@ class AdminService:
         existing_user = db.execute(
             select(User).where(func.lower(User.email) == normalized_email)
         ).scalar_one_or_none()
+        raw_invite_token: Optional[str] = None
         if existing_user is not None:
             existing_membership = db.execute(
                 select(FactoryMembership).where(
@@ -179,6 +180,16 @@ class AdminService:
                     error_code="USER_ALREADY_EXISTS",
                 )
             user = existing_user
+            if user.status == UserStatus.INVITED:
+                raw_invite_token = generate_refresh_token()
+                db.add(
+                    AuthToken(
+                        user_id=user.id,
+                        purpose=TokenPurpose.ACTIVATION,
+                        token_hash=hash_refresh_token(raw_invite_token),
+                        expires_at=datetime.now(timezone.utc) + timedelta(days=7),
+                    )
+                )
         else:
             user = User(
                 email=normalized_email,
@@ -188,11 +199,12 @@ class AdminService:
             )
             db.add(user)
             db.flush()
+            raw_invite_token = generate_refresh_token()
             db.add(
                 AuthToken(
                     user_id=user.id,
                     purpose=TokenPurpose.ACTIVATION,
-                    token_hash=hash_refresh_token(generate_refresh_token()),
+                    token_hash=hash_refresh_token(raw_invite_token),
                     expires_at=datetime.now(timezone.utc) + timedelta(days=7),
                 )
             )
@@ -214,6 +226,7 @@ class AdminService:
             full_name=user.full_name,
             role_name=role.name,
             factory_name=factory.name if factory else "Operix Factory",
+            invite_token=raw_invite_token,
         )
         return AdminService._to_user_response(user, membership, role)
 

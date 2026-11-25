@@ -620,6 +620,23 @@ export const authService = {
   },
 
   /**
+   * POST /api/v1/auth/accept-invite
+   * Accept an invitation token, set password, and activate account
+   */
+  async acceptInvite({ token, password }) {
+    if (isMockEnabled('auth')) {
+      return {
+        status: 'active',
+        message: 'Account activated successfully. You can now sign in.'
+      };
+    }
+    return apiClient.post('/api/v1/auth/accept-invite', {
+      token,
+      password
+    });
+  },
+
+  /**
    * POST /api/v1/auth/ws-ticket
    * Request a signed, one-time WebSocket ticket
    */

@@ -39,14 +39,14 @@ if _is_sqlite:
         echo=settings.DB_ECHO,
     )
 else:
-    # PostgreSQL: full connection pool + connect_timeout guard
+    # PostgreSQL: full connection pool + connect_timeout guard (10s for cloud SSL)
     engine = create_engine(
         _database_url,
         pool_size=settings.DB_POOL_SIZE,
         max_overflow=settings.DB_MAX_OVERFLOW,
         pool_pre_ping=settings.DB_POOL_PRE_PING,
         echo=settings.DB_ECHO,
-        connect_args={"connect_timeout": 2},
+        connect_args={"connect_timeout": 10},
     )
 
 SessionLocal = sessionmaker(

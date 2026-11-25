@@ -1,24 +1,38 @@
 """
 app/services/email_service.py
-SMTP email delivery service for user invitations, registration approval requests,
-and account activation notifications.
+Transactional email delivery service for user invitations, registration approval
+requests, and account activation notifications.
+Supports Resend HTTPS API (recommended for cloud production) and SMTP fallback.
+Never logs invitation tokens or secrets.
 """
 from email.message import EmailMessage
 import logging
 import smtplib
 from typing import Iterable
 
+import httpx
+
 from ..core.config import settings
 
 logger = logging.getLogger(__name__)
 
+_RESEND_API_URL = "https://api.resend.com/emails"
+
 
 class EmailService:
-    """Sends transactional emails via SMTP when configured in settings."""
+    """Sends transactional emails via Resend API or SMTP when configured."""
+
+    @staticmethod
+    def is_resend_configured() -> bool:
+        return bool(settings.RESEND_API_KEY)
+
+    @staticmethod
+    def is_smtp_configured() -> bool:
+        return bool(settings.SMTP_HOST and settings.SMTP_USER and settings.SMTP_PASSWORD)
 
     @staticmethod
     def is_configured() -> bool:
-        return bool(settings.SMTP_HOST and settings.SMTP_USER and settings.SMTP_PASSWORD)
+        return EmailService.is_resend_configured() or EmailService.is_smtp_configured()
 
     @staticmethod
     def send_email(
@@ -31,12 +45,48 @@ class EmailService:
         if not recipients:
             return False
 
-        if not EmailService.is_configured():
+        # 1. Prefer Resend HTTPS API when RESEND_API_KEY is configured
+        if EmailService.is_resend_configured():
+            sender = settings.RESEND_FROM_EMAIL or settings.SMTP_FROM_EMAIL or "onboarding@resend.dev"
+            payload: dict = {
+                "from": f"Operix Platform <{sender}>",
+                "to": recipients,
+                "subject": subject,
+                "text": text_body,
+            }
+            if html_body:
+                payload["html"] = html_body
+            try:
+                resp = httpx.post(
+                    _RESEND_API_URL,
+                    headers={
+                        "Authorization": f"Bearer {settings.RESEND_API_KEY}",
+                        "Content-Type": "application/json",
+                    },
+                    json=payload,
+                    timeout=15.0,
+                )
+                if 200 <= resp.status_code < 300:
+                    logger.info("Email '%s' delivered via Resend to %d recipient(s).", subject, len(recipients))
+                    return True
+                logger.error(
+                    "Resend API returned HTTP %s for '%s': %s",
+                    resp.status_code,
+                    subject,
+                    resp.text[:300],
+                )
+                return False
+            except Exception as exc:
+                logger.error("Failed to send email '%s' via Resend: %s", subject, exc)
+                return False
+
+        # 2. Fallback to SMTP when configured
+        if not EmailService.is_smtp_configured():
             logger.warning(
-                "SMTP is not configured (set SMTP_USER and SMTP_PASSWORD in backend/.env). "
-                "Skipping email '%s' to %s.",
+                "Email provider is not configured (set RESEND_API_KEY or SMTP_USER/SMTP_PASSWORD). "
+                "Skipping email '%s' to %d recipient(s).",
                 subject,
-                ", ".join(recipients),
+                len(recipients),
             )
             return False
 
@@ -55,10 +105,10 @@ class EmailService:
                     server.starttls()
                 server.login(settings.SMTP_USER, settings.SMTP_PASSWORD)
                 server.send_message(msg)
-            logger.info("Email '%s' delivered to %s.", subject, ", ".join(recipients))
+            logger.info("Email '%s' delivered via SMTP to %d recipient(s).", subject, len(recipients))
             return True
         except Exception as exc:
-            logger.error("Failed to send email '%s' to %s: %s", subject, ", ".join(recipients), exc)
+            logger.error("Failed to send email '%s' via SMTP: %s", subject, exc)
             return False
 
     @staticmethod
@@ -68,13 +118,20 @@ class EmailService:
         full_name: str,
         role_name: str,
         factory_name: str,
+        invite_token: str | None = None,
     ) -> bool:
-        login_url = f"{settings.FRONTEND_APP_URL.rstrip('/')}/login"
+        base_url = settings.FRONTEND_APP_URL.rstrip("/")
+        action_url = (
+            f"{base_url}/accept-invite?token={invite_token}"
+            if invite_token
+            else f"{base_url}/login"
+        )
         subject = f"You are invited to {factory_name} on Operix"
         text_body = (
             f"Hello {full_name},\n\n"
             f"You have been invited to join {factory_name} on Operix as {role_name}.\n"
-            f"Sign in or complete your account setup at: {login_url}\n\n"
+            f"Set your password and activate your account at: {action_url}\n"
+            f"This link expires in 7 days and can only be used once.\n\n"
             f"Operix Industrial AI Safety Platform"
         )
         html_body = f"""
@@ -83,11 +140,11 @@ class EmailService:
           <p>Hello <strong>{full_name}</strong>,</p>
           <p>An administrator has invited you to join <strong>{factory_name}</strong> as <strong>{role_name}</strong>.</p>
           <p style="margin: 24px 0;">
-            <a href="{login_url}" style="background: #1e3a5f; color: #fff; padding: 10px 18px; border-radius: 6px; text-decoration: none; font-weight: 600;">
-              Open Operix
+            <a href="{action_url}" style="background: #1e3a5f; color: #fff; padding: 10px 18px; border-radius: 6px; text-decoration: none; font-weight: 600;">
+              Accept Invitation &amp; Set Password
             </a>
           </p>
-          <p style="color: #64748b; font-size: 12px;">If you weren't expecting this invitation, you can ignore this email.</p>
+          <p style="color: #64748b; font-size: 12px;">This single-use link expires in 7 days. If you weren't expecting this invitation, you can ignore this email.</p>
         </div>
         """
         return EmailService.send_email(to_email, subject, text_body, html_body)

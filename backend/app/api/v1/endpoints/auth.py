@@ -32,6 +32,8 @@ from ....core.security import (
 from ....models.enums import FactoryStatus, TokenPurpose, UserStatus
 from ....models.tenant import AuthToken, Factory, FactoryMembership, Role, User
 from ....schemas.auth import (
+    AcceptInviteData,
+    AcceptInviteRequest,
     AuthUserSummary,
     LoginData,
     LoginRequest,
@@ -599,4 +601,61 @@ def register(
             message="Account request submitted. An administrator must approve your account before you can sign in.",
         ),
         meta=APIResponseMeta(factory_id=factory.id),
+    )
+
+
+@router.post(
+    "/accept-invite",
+    response_model=APIResponse[AcceptInviteData],
+    status_code=status.HTTP_200_OK,
+    summary="Accept Invitation & Set Password",
+    description="Validates a single-use activation token, sets password, and activates the invited user account.",
+)
+def accept_invite(
+    body: AcceptInviteRequest,
+    db: Session = Depends(get_db),
+) -> APIResponse[AcceptInviteData]:
+    now = datetime.now(timezone.utc)
+    token_hash = hash_refresh_token(body.token.strip())
+
+    auth_token = db.execute(
+        select(AuthToken).where(
+            AuthToken.token_hash == token_hash,
+            AuthToken.purpose == TokenPurpose.ACTIVATION,
+        )
+    ).scalar_one_or_none()
+
+    if auth_token is None or _as_utc(auth_token.expires_at) <= now:
+        raise AuthenticationException(
+            "Invitation link is invalid or has expired.",
+            error_code="INVALID_INVITE_TOKEN",
+        )
+
+    user = db.get(User, auth_token.user_id)
+    if user is None:
+        raise AuthenticationException("Invited user account no longer exists.", error_code="INVALID_INVITE_TOKEN")
+
+    user.password_hash = hash_password(body.password)
+    user.password_changed_at = now
+    user.status = UserStatus.ACTIVE
+    if user.activated_at is None:
+        user.activated_at = now
+    user.failed_login_count = 0
+    user.locked_until = None
+
+    # Consume token (single-use)
+    db.delete(auth_token)
+    db.flush()
+
+    logger.info("Invitation accepted and account activated: user=%s", user.id)
+    return APIResponse(
+        status="success",
+        data=AcceptInviteData(
+            user_id=user.id,
+            email=user.email,
+            full_name=user.full_name,
+            status=user.status.value,
+            message="Account activated successfully. You can now sign in.",
+        ),
+        meta=APIResponseMeta(),
     )

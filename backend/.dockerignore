@@ -1,0 +1,16 @@
+.env
+.env.*
+!.env.example
+.venv/
+ai-services/.venv/
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+tests/
+ai-services/**/tests/
+*.db
+*.sqlite
+*.sqlite3
+*.log
+.git/
