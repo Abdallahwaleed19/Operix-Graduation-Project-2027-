@@ -61,7 +61,7 @@ export default function ResetPasswordPage() {
     try {
       await authService.resetPassword({
         token: token.trim(),
-        newPassword
+        newPassword: password
       });
       setIsSuccess(true);
     } catch (err) {
