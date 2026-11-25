@@ -33,7 +33,7 @@ export const API_CONFIG = {
     rules: env.VITE_USE_MOCK_RULES !== undefined ? env.VITE_USE_MOCK_RULES !== 'false' : globalUseMock,
     websockets: env.VITE_USE_MOCK_WEBSOCKETS !== undefined ? env.VITE_USE_MOCK_WEBSOCKETS !== 'false' : globalUseMock,
     // Pending Backend Dependency modules (S-1 through S-4): stay in UI-only mock mode unless explicitly overridden
-    auth: env.VITE_USE_MOCK_AUTH !== undefined ? env.VITE_USE_MOCK_AUTH !== 'false' : true,
+    auth: env.VITE_USE_MOCK_AUTH !== undefined ? env.VITE_USE_MOCK_AUTH !== 'false' : globalUseMock,
     incidents: env.VITE_USE_MOCK_INCIDENTS !== undefined ? env.VITE_USE_MOCK_INCIDENTS !== 'false' : true,
     cameras: env.VITE_USE_MOCK_CAMERAS !== undefined ? env.VITE_USE_MOCK_CAMERAS !== 'false' : true,
     sensors: env.VITE_USE_MOCK_SENSORS !== undefined ? env.VITE_USE_MOCK_SENSORS !== 'false' : true,
@@ -169,6 +169,14 @@ async function request(endpoint, options = {}) {
     return payload;
   } catch (error) {
     console.warn(`[Operix API] ${config.method || 'GET'} ${url} failed:`, error.message);
+    if (error instanceof TypeError || /failed to fetch|can't fetch|networkerror/i.test(error.message || '')) {
+      const networkError = new Error(
+        `Cannot reach Operix Backend at ${API_CONFIG.baseURL}. Please ensure the FastAPI server is running and CORS allows this origin.`
+      );
+      networkError.isNetworkError = true;
+      networkError.cause = error;
+      throw networkError;
+    }
     throw error;
   }
 }

@@ -210,6 +210,7 @@ class TestSEC02TenantContextAndMembership:
             password_hash="hash",
             full_name="Inactive Supervisor",
             status=UserStatus.ACTIVE,
+            activated_at=datetime.now(timezone.utc),
         )
         factory = Factory(id=FACTORY_A, name="Factory A", slug="factory-a")
         role = Role(id=uuid4(), code="safety_supervisor", name="Supervisor")

@@ -14,6 +14,8 @@ def test_settings_defaults():
     assert isinstance(settings.DEFAULT_FACTORY_ID, UUID)
     assert str(settings.DEFAULT_FACTORY_ID) == "aaaaaaaa-0001-0001-0001-000000000001"
     assert settings.ALLOWED_ORIGINS == [
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
         "http://localhost:5173",
         "http://127.0.0.1:5173",
     ]

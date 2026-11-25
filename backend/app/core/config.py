@@ -42,6 +42,8 @@ class Settings(BaseSettings):
     PORT: int = 8000
     ALLOWED_ORIGINS: List[str] = Field(
         default_factory=lambda: [
+            "http://localhost:3000",
+            "http://127.0.0.1:3000",
             "http://localhost:5173",
             "http://127.0.0.1:5173",
         ]
@@ -184,7 +186,12 @@ class Settings(BaseSettings):
             return [i.strip() for i in raw.split(",") if i.strip()]
         elif isinstance(v, list):
             return [str(i).strip() for i in v if str(i).strip()]
-        return ["http://localhost:5173", "http://127.0.0.1:5173"]
+        return [
+            "http://localhost:3000",
+            "http://127.0.0.1:3000",
+            "http://localhost:5173",
+            "http://127.0.0.1:5173",
+        ]
 
 
 @lru_cache()

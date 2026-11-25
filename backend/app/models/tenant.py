@@ -36,7 +36,8 @@ class Factory(Base, UUIDPrimaryKeyMixin, TimestampMixin):
     name: Mapped[str] = mapped_column(String(120), nullable=False)
     slug: Mapped[str] = mapped_column(String(60), nullable=False, unique=True)
     status: Mapped[FactoryStatus] = mapped_column(
-        Enum(FactoryStatus, name="factory_status", native_enum=True),
+        Enum(FactoryStatus, name="factory_status", native_enum=True,
+             values_callable=lambda obj: [e.value for e in obj]),
         nullable=False,
         default=FactoryStatus.ACTIVE,
     )
@@ -57,7 +58,8 @@ class User(Base, UUIDPrimaryKeyMixin):
     password_hash: Mapped[str] = mapped_column(Text, nullable=False)
     full_name: Mapped[str] = mapped_column(String(120), nullable=False)
     status: Mapped[UserStatus] = mapped_column(
-        Enum(UserStatus, name="user_status", native_enum=True),
+        Enum(UserStatus, name="user_status", native_enum=True,
+             values_callable=lambda obj: [e.value for e in obj]),
         nullable=False,
         default=UserStatus.INVITED,
     )

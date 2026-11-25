@@ -211,14 +211,13 @@ export const authService = {
       };
     }
 
-    // Live FastAPI Backend: POST /auth/register
-    return apiClient.post('/auth/register', {
-      full_name: fullName,
-      email: normalizedEmail,
-      password,
-      role,
-      factory
-    });
+    // Live FastAPI Backend: self-registration is not implemented (invite-only via POST /api/v1/users/invite).
+    const unsupported = new Error(
+      'Self-registration is not enabled on the Operix Backend. Please contact a factory administrator to invite your account.'
+    );
+    unsupported.status = 501;
+    unsupported.errorCode = 'REGISTRATION_UNSUPPORTED';
+    throw unsupported;
   },
 
   /**
@@ -386,17 +385,58 @@ export const authService = {
       return session;
     }
 
-    // Live FastAPI Backend: POST /auth/token (OAuth2 password flow)
-    const formData = new URLSearchParams();
-    formData.append('username', normalizedEmail);
-    formData.append('password', password);
-
-    const data = await apiClient.post('/auth/token', formData, {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    // Live FastAPI Backend: POST /api/v1/auth/login (JSON body)
+    const data = await apiClient.post('/api/v1/auth/login', {
+      email: normalizedEmail,
+      password
     });
 
+    const roleDisplayMap = {
+      admin: 'Administrator',
+      administrator: 'Administrator',
+      factory_admin: 'Administrator',
+      platform_admin: 'Administrator',
+      manager: 'Factory Manager',
+      factory_manager: 'Factory Manager',
+      supervisor: 'Safety Supervisor',
+      safety_supervisor: 'Safety Supervisor',
+      viewer: 'Viewer'
+    };
+
+    const backendUser = data.user || {};
+    const rawRole = String(backendUser.role || 'viewer');
+    const displayRole = roleDisplayMap[rawRole.toLowerCase()] || rawRole;
+    const expiresInMs = (Number(data.expires_in) || 3600) * 1000;
+
+    const session = {
+      user: {
+        id: backendUser.user_id,
+        user_id: backendUser.user_id,
+        fullName: backendUser.full_name || normalizedEmail,
+        full_name: backendUser.full_name || normalizedEmail,
+        email: backendUser.email || normalizedEmail,
+        role: displayRole,
+        backendRole: rawRole,
+        factory: backendUser.factory_name || 'Operix Factory',
+        factory_name: backendUser.factory_name || 'Operix Factory',
+        factoryId: backendUser.factory_id,
+        factory_id: backendUser.factory_id,
+        isVerified: true
+      },
+      token: data.access_token,
+      refreshToken: data.refresh_token,
+      tokenType: data.token_type || 'bearer',
+      expiresAt: Date.now() + expiresInMs
+    };
+
+    const storage = keepSignedIn ? localStorage : sessionStorage;
+    storage.setItem(SESSION_STORAGE_KEY, JSON.stringify(session));
     localStorage.setItem('operix_token', data.access_token);
-    return data;
+    if (data.refresh_token) {
+      localStorage.setItem('operix_refresh_token', data.refresh_token);
+    }
+
+    return session;
   },
 
   /**
@@ -423,10 +463,44 @@ export const authService = {
    * Log out active user
    */
   logout() {
+    const refreshToken = localStorage.getItem('operix_refresh_token');
+    if (!isMockEnabled('auth') && refreshToken) {
+      apiClient.post('/api/v1/auth/logout', { refresh_token: refreshToken }).catch(() => {});
+    }
     localStorage.removeItem(SESSION_STORAGE_KEY);
     sessionStorage.removeItem(SESSION_STORAGE_KEY);
     localStorage.removeItem('operix_token');
+    localStorage.removeItem('operix_refresh_token');
     return true;
+  },
+
+  /**
+   * GET /api/v1/auth/me
+   * Fetch authenticated user profile from Backend
+   */
+  async getMe() {
+    if (isMockEnabled('auth')) {
+      const session = this.getCurrentSession();
+      return session ? session.user : null;
+    }
+    return apiClient.get('/api/v1/auth/me');
+  },
+
+  /**
+   * POST /api/v1/auth/refresh
+   * Rotate access and refresh tokens
+   */
+  async refreshSession() {
+    const refreshToken = localStorage.getItem('operix_refresh_token');
+    if (!refreshToken) {
+      throw new Error('No refresh token available.');
+    }
+    const data = await apiClient.post('/api/v1/auth/refresh', { refresh_token: refreshToken });
+    localStorage.setItem('operix_token', data.access_token);
+    if (data.refresh_token) {
+      localStorage.setItem('operix_refresh_token', data.refresh_token);
+    }
+    return data;
   },
 
   /**
