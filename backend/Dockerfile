@@ -25,7 +25,8 @@ COPY ai-services/llm_rag_assistant/requirements.txt /app/ai-services/llm_rag_ass
 RUN pip install --upgrade pip && \
     pip install -r /app/requirements.txt && \
     pip install -r /app/ai-services/requirements.txt && \
-    pip install -r /app/ai-services/llm_rag_assistant/requirements.txt
+    pip install -r /app/ai-services/llm_rag_assistant/requirements.txt && \
+    pip install openpyxl reportlab
 
 # Copy backend source and AI services
 COPY app /app/app

@@ -58,6 +58,7 @@ jobs:
           pip install -r requirements.txt
           pip install -r ai-services/requirements.txt
           pip install -r ai-services/llm_rag_assistant/requirements.txt
+          pip install openpyxl reportlab
 
       - name: Python syntax check
         run: python -m compileall -q app
