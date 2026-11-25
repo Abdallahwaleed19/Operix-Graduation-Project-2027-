@@ -14,12 +14,14 @@ export default function RegisterPage() {
   const [selectedRole, setSelectedRole] = useState('Safety Supervisor');
   const [agreed, setAgreed] = useState(true);
   const [errorMsg, setErrorMsg] = useState('');
+  const [successMsg, setSuccessMsg] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleRegister = async (e) => {
     e.preventDefault();
     setErrorMsg('');
+    setSuccessMsg('');
 
     if (password.length < 6) {
       setErrorMsg('Password must be at least 6 characters.');
@@ -46,14 +48,21 @@ export default function RegisterPage() {
         factory
       });
 
-      navigate('/verify-email', {
-        state: {
-          email,
-          testVerificationCode: res.testVerificationCode,
-          role: selectedRole,
-          factory
-        }
-      });
+      if (res.testVerificationCode) {
+        navigate('/verify-email', {
+          state: {
+            email,
+            testVerificationCode: res.testVerificationCode,
+            role: selectedRole,
+            factory
+          }
+        });
+      } else {
+        setSuccessMsg(
+          res.message ||
+            'Account request submitted. An administrator has been notified and must approve your account before you can sign in.'
+        );
+      }
     } catch (err) {
       setErrorMsg(err.message || 'Registration failed. Please try again.');
     } finally {
@@ -97,6 +106,24 @@ export default function RegisterPage() {
             }}>
               <AlertCircle size={16} style={{ flexShrink: 0 }} />
               <span>{errorMsg}</span>
+            </div>
+          )}
+
+          {successMsg && (
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              backgroundColor: 'rgba(16, 185, 129, 0.12)',
+              border: '1px solid rgba(16, 185, 129, 0.35)',
+              borderRadius: '8px',
+              padding: '12px 14px',
+              fontSize: '13px',
+              color: '#10B981',
+              marginBottom: '1.25rem'
+            }}>
+              <CheckCircle2 size={16} style={{ flexShrink: 0 }} />
+              <span>{successMsg}</span>
             </div>
           )}
 
@@ -177,7 +204,7 @@ export default function RegisterPage() {
                   value={factory}
                   onChange={e => setFactory(e.target.value)}
                 >
-                  <option value="Plant 1">Plant 1 · Alexandria Port</option>
+                  <option value="Plant 1">Plant 1 · Menoufia</option>
                   <option value="Plant 2">Plant 2 · 10th of Ramadan</option>
                   <option value="Plant 3">Plant 3 · Helwan Logistics</option>
                 </select>

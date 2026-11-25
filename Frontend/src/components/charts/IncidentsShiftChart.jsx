@@ -1,6 +1,13 @@
 import React from 'react';
 
-export default function IncidentsShiftChart() {
+export default function IncidentsShiftChart({ incidents = [] }) {
+  if (!incidents || incidents.length === 0) {
+    return (
+      <div style={{ width: '100%', height: '220px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)', fontSize: '13px', border: '1px dashed var(--border-subtle)', borderRadius: '8px', marginTop: '0.5rem' }}>
+        No shift incident data recorded in database yet.
+      </div>
+    );
+  }
   // Points along shift: 06:00 (4), 07:00 (6), 08:00 (5), 09:00 (8), 10:00 (12), 11:00 (6), 12:00 (6), 13:00 (10), 14:00 (7)
   return (
     <div style={{ width: '100%', height: '220px', position: 'relative', marginTop: '0.5rem' }}>

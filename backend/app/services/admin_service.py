@@ -11,6 +11,7 @@ from sqlalchemy.orm import Session
 
 from ..core.errors import OperixException, ResourceNotFoundException
 from ..core.security import AuthorizationException, generate_refresh_token, hash_password, hash_refresh_token
+from .email_service import EmailService
 from ..models.enums import TokenPurpose, UserStatus
 from ..models.tenant import (
     AuthToken,
@@ -206,6 +207,14 @@ class AdminService:
         db.flush()
         db.refresh(user)
         db.refresh(membership)
+
+        factory = db.get(Factory, factory_id)
+        EmailService.send_invite_email(
+            to_email=user.email,
+            full_name=user.full_name,
+            role_name=role.name,
+            factory_name=factory.name if factory else "Operix Factory",
+        )
         return AdminService._to_user_response(user, membership, role)
 
     @staticmethod
@@ -232,6 +241,7 @@ class AdminService:
             raise ResourceNotFoundException("User", target_user_id)
 
         user, membership, role = row[0], row[1], row[2]
+        was_invited = user.status == UserStatus.INVITED
         if update_in.full_name is not None:
             user.full_name = update_in.full_name.strip()
         if update_in.status is not None:
@@ -252,7 +262,61 @@ class AdminService:
         db.flush()
         db.refresh(user)
         db.refresh(membership)
+
+        if was_invited and user.status == UserStatus.ACTIVE and membership.is_active:
+            factory = db.get(Factory, factory_id)
+            EmailService.send_account_approved_email(
+                to_email=user.email,
+                full_name=user.full_name,
+                role_name=role.name,
+                factory_name=factory.name if factory else "Operix Factory",
+            )
+
         return AdminService._to_user_response(user, membership, role)
+
+    @staticmethod
+    def delete_factory_user(
+        db: Session,
+        factory_id: uuid.UUID,
+        target_user_id: uuid.UUID,
+        *,
+        actor_user_id: uuid.UUID,
+    ) -> dict:
+        if target_user_id == actor_user_id:
+            raise OperixException(
+                message="You cannot delete your own administrator account.",
+                status_code=400,
+                error_code="CANNOT_DELETE_SELF",
+            )
+
+        membership = db.execute(
+            select(FactoryMembership).where(
+                FactoryMembership.factory_id == factory_id,
+                FactoryMembership.user_id == target_user_id,
+            )
+        ).scalar_one_or_none()
+        if membership is None:
+            raise ResourceNotFoundException("User", target_user_id)
+
+        db.delete(membership)
+        db.flush()
+
+        remaining_memberships = db.execute(
+            select(func.count())
+            .select_from(FactoryMembership)
+            .where(FactoryMembership.user_id == target_user_id)
+        ).scalar_one()
+
+        if remaining_memberships == 0:
+            tokens = db.execute(select(AuthToken).where(AuthToken.user_id == target_user_id)).scalars().all()
+            for tok in tokens:
+                db.delete(tok)
+            user = db.get(User, target_user_id)
+            if user is not None:
+                db.delete(user)
+
+        db.flush()
+        return {"deleted": True, "user_id": str(target_user_id)}
 
     # ── Roles & Permissions ───────────────────────────────────────────────────
 

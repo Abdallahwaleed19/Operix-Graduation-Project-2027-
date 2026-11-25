@@ -8,8 +8,16 @@ import { Link, useNavigate } from 'react-router-dom';
 import { ArrowRight, Download } from 'lucide-react';
 
 export default function FactoryOverviewPage() {
-  const { factory, metrics } = useData();
+  const { factory, metrics, incidents, cameras, sensors } = useData();
   const navigate = useNavigate();
+
+  const totalSources = (cameras?.length || 0) + (sensors?.length || 0);
+  const onlineSources =
+    (cameras?.filter(c => c.status === 'Online' || c.status === 'available')?.length || 0) +
+    (sensors?.filter(s => s.status === 'Online' || s.status === 'available')?.length || 0);
+
+  const recentIncidents = (incidents || []).slice(0, 4);
+  const featuredCameras = (cameras || []).slice(0, 3);
 
   const handleExport = () => {
     navigate('/reports');
@@ -19,12 +27,12 @@ export default function FactoryOverviewPage() {
     <>
       <Navbar
         title="Factory Overview"
-        subtitle={`${factory.name} · ${factory.shift}`}
+        subtitle={`${factory.name || 'Plant 1 · Menoufia'} · ${factory.shift || 'Day Shift'}`}
         rightActions={
           <>
             <span className="header-pill-info">
               <span className="badge-dot" />
-              All 24 sources online
+              {totalSources > 0 ? `${onlineSources} of ${totalSources} sources online` : '0 sources configured'}
             </span>
             <button className="btn btn-primary" onClick={handleExport}>
               <Download size={15} />
@@ -78,7 +86,7 @@ export default function FactoryOverviewPage() {
               </div>
             </div>
 
-            <IncidentsShiftChart />
+            <IncidentsShiftChart incidents={incidents} />
           </div>
 
           {/* Latest Alerts */}
@@ -101,49 +109,29 @@ export default function FactoryOverviewPage() {
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '0.5rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
-                  <span className="badge-dot" style={{ backgroundColor: '#EF4444', marginTop: '6px' }} />
-                  <div>
-                    <div style={{ fontWeight: 700, fontSize: '13.5px' }}>Missing helmet</div>
-                    <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Zone B · Press Line · 09:42</div>
-                  </div>
+              {recentIncidents.length === 0 ? (
+                <div style={{ padding: '1.5rem 0', textAlign: 'center', color: 'var(--text-muted)', fontSize: '13px' }}>
+                  No incidents recorded in database yet.
                 </div>
-                <span className="badge-dot" style={{ backgroundColor: '#EF4444' }} />
-              </div>
-
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
-                  <span className="badge-dot" style={{ backgroundColor: '#EF4444', marginTop: '6px' }} />
-                  <div>
-                    <div style={{ fontWeight: 700, fontSize: '13.5px' }}>Restricted-zone entry</div>
-                    <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Zone D · Furnace · 09:18</div>
-                  </div>
-                </div>
-                <span className="badge-dot" style={{ backgroundColor: '#EF4444' }} />
-              </div>
-
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
-                  <span className="badge-dot" style={{ backgroundColor: '#F59E0B', marginTop: '6px' }} />
-                  <div>
-                    <div style={{ fontWeight: 700, fontSize: '13.5px' }}>Fatigue signs</div>
-                    <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Zone A · Assembly · 08:55</div>
-                  </div>
-                </div>
-                <span className="badge-dot" style={{ backgroundColor: '#F59E0B' }} />
-              </div>
-
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
-                  <span className="badge-dot" style={{ backgroundColor: '#EF4444', marginTop: '6px' }} />
-                  <div>
-                    <div style={{ fontWeight: 700, fontSize: '13.5px' }}>Abnormal temperature</div>
-                    <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Zone F · Boiler · 08:31</div>
-                  </div>
-                </div>
-                <span className="badge-dot" style={{ backgroundColor: '#EF4444' }} />
-              </div>
+              ) : (
+                recentIncidents.map((inc) => {
+                  const color = inc.severity === 'High' || inc.severity === 'critical' ? '#EF4444' : '#F59E0B';
+                  return (
+                    <div key={inc.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+                        <span className="badge-dot" style={{ backgroundColor: color, marginTop: '6px' }} />
+                        <div>
+                          <div style={{ fontWeight: 700, fontSize: '13.5px' }}>{inc.title || inc.event_type}</div>
+                          <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
+                            {inc.zone || 'Factory Floor'} · {inc.timestamp || inc.created_at || ''}
+                          </div>
+                        </div>
+                      </div>
+                      <span className="badge-dot" style={{ backgroundColor: color }} />
+                    </div>
+                  );
+                })
+              )}
             </div>
           </div>
         </div>
@@ -155,45 +143,28 @@ export default function FactoryOverviewPage() {
               Live Operations
             </span>
             <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
-              3 featured sources · AI detection enabled
+              {featuredCameras.length} featured sources
             </span>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.25rem' }}>
-            {/* Feed 1: CAM-04 */}
-            <CameraFeedCard
-              camId="CAM-04"
-              title="Press Line"
-              isLive={true}
-              timestamp="09:42:03 / PLANT 1"
-              detections={[
-                { label: 'Worker #14 · No helmet', type: 'danger', left: '16%', top: '24%', width: '90px', height: '110px' },
-                { label: 'Worker #22 · PPE OK', type: 'success', left: '60%', top: '28%', width: '85px', height: '105px' }
-              ]}
-            />
-
-            {/* Feed 2: CAM-02 */}
-            <CameraFeedCard
-              camId="CAM-02"
-              title="Assembly"
-              isLive={true}
-              timestamp="09:42:03 / PLANT 1"
-              detections={[
-                { label: 'Worker #07 · Fatigue', type: 'warning', left: '35%', top: '26%', width: '100px', height: '115px' }
-              ]}
-            />
-
-            {/* Feed 3: THM-01 */}
-            <CameraFeedCard
-              camId="THM-01"
-              title="Boiler"
-              isLive={true}
-              isThermal={true}
-              temperature="92°C"
-              minTemp="24°C"
-              maxTemp="92°C"
-            />
-          </div>
+          {featuredCameras.length === 0 ? (
+            <div className="operix-card" style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)', fontSize: '13px' }}>
+              No cameras configured in database yet. Add cameras from Settings &rarr; Cameras.
+            </div>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.25rem' }}>
+              {featuredCameras.map((cam) => (
+                <CameraFeedCard
+                  key={cam.id}
+                  camId={cam.code || cam.id}
+                  title={cam.name || cam.zone || 'Camera'}
+                  isLive={cam.status === 'Online' || cam.status === 'available'}
+                  timestamp={`${cam.zone || 'Plant 1 · Menoufia'}`}
+                  detections={[]}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </>

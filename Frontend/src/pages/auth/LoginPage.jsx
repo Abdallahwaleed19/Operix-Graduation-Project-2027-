@@ -11,9 +11,9 @@ export default function LoginPage() {
   const navigate = useNavigate();
   const { login } = useAuth();
 
-  const passedEmail = location.state?.email || 'karim.adel@operix.io';
+  const passedEmail = location.state?.email || '';
   const [email, setEmail] = useState(passedEmail);
-  const [password, setPassword] = useState('password123');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [keepSignedIn, setKeepSignedIn] = useState(true);
 

@@ -20,37 +20,52 @@ import {
   reportService,
   analyticsService
 } from '../services';
+import { API_CONFIG } from '../services/apiClient';
 
 const DataContext = createContext();
 
+const EMPTY_FACTORY = {
+  name: 'Plant 1 · Menoufia',
+  shift: 'Day Shift',
+  timezone: 'Africa/Cairo',
+};
+
+const EMPTY_METRICS = {
+  activeIncidents: 0,
+  activeIncidentsDelta: '',
+  ppeCompliance: '0%',
+  ppeComplianceDelta: '',
+  workersOnFloor: 0,
+  workersScheduled: 0,
+  avgResponse: '—',
+  avgResponseDelta: '',
+};
+
+const unwrapList = (val) => (Array.isArray(val) ? val : (val?.items || []));
+
 export function DataProvider({ children }) {
-  const [factory, setFactory] = useState(initialFactory);
-  const [metrics, setMetrics] = useState(initialMetrics);
-  const [incidents, setIncidents] = useState(initialIncidents);
-  const [cameras, setCameras] = useState(initialCameras);
-  const [sensors, setSensors] = useState(initialSensors);
-  const [rules, setRules] = useState(initialRules);
-  const [users, setUsers] = useState(initialUsers);
-  const [notificationTargets, setNotificationTargets] = useState(initialNotificationTargets);
-  const [reports, setReports] = useState(initialReports);
+  const useMock = API_CONFIG.useMock;
+  const [factory, setFactory] = useState(useMock ? initialFactory : EMPTY_FACTORY);
+  const [metrics, setMetrics] = useState(useMock ? initialMetrics : EMPTY_METRICS);
+  const [incidents, setIncidents] = useState(useMock ? initialIncidents : []);
+  const [cameras, setCameras] = useState(useMock ? initialCameras : []);
+  const [sensors, setSensors] = useState(useMock ? initialSensors : []);
+  const [rules, setRules] = useState(useMock ? initialRules : []);
+  const [users, setUsers] = useState(useMock ? initialUsers : []);
+  const [notificationTargets, setNotificationTargets] = useState(useMock ? initialNotificationTargets : []);
+  const [reports, setReports] = useState(useMock ? initialReports : []);
   const [isLoading, setIsLoading] = useState(false);
 
   // Synchronize data via the centralized service layer on mount
   useEffect(() => {
     let isMounted = true;
     async function syncServices() {
+      const token = typeof localStorage !== 'undefined' ? localStorage.getItem('operix_token') : null;
+      if (!useMock && !token) {
+        return;
+      }
       try {
-        const [
-          factData,
-          metData,
-          incData,
-          camData,
-          senData,
-          rulData,
-          usrData,
-          notData,
-          repData
-        ] = await Promise.all([
+        const results = await Promise.allSettled([
           factoryService.getFactorySettings(),
           analyticsService.getOverviewMetrics(),
           incidentService.getIncidents(),
@@ -62,17 +77,17 @@ export function DataProvider({ children }) {
           reportService.getReports()
         ]);
 
-        if (isMounted) {
-          if (factData) setFactory(factData);
-          if (metData) setMetrics(metData);
-          if (incData) setIncidents(incData);
-          if (camData) setCameras(camData);
-          if (senData) setSensors(senData);
-          if (rulData) setRules(rulData);
-          if (usrData) setUsers(usrData);
-          if (notData) setNotificationTargets(notData);
-          if (repData) setReports(repData);
-        }
+        if (!isMounted) return;
+        const [factRes, metRes, incRes, camRes, senRes, rulRes, usrRes, notRes, repRes] = results;
+        if (factRes.status === 'fulfilled' && factRes.value) setFactory(factRes.value);
+        if (metRes.status === 'fulfilled' && metRes.value) setMetrics(metRes.value);
+        if (incRes.status === 'fulfilled' && incRes.value) setIncidents(unwrapList(incRes.value));
+        if (camRes.status === 'fulfilled' && camRes.value) setCameras(unwrapList(camRes.value));
+        if (senRes.status === 'fulfilled' && senRes.value) setSensors(unwrapList(senRes.value));
+        if (rulRes.status === 'fulfilled' && rulRes.value) setRules(unwrapList(rulRes.value));
+        if (usrRes.status === 'fulfilled' && usrRes.value) setUsers(unwrapList(usrRes.value));
+        if (notRes.status === 'fulfilled' && notRes.value) setNotificationTargets(unwrapList(notRes.value));
+        if (repRes.status === 'fulfilled' && repRes.value) setReports(unwrapList(repRes.value));
       } catch (err) {
         console.warn('Data sync via services warning:', err);
       }
@@ -80,7 +95,7 @@ export function DataProvider({ children }) {
 
     syncServices();
     return () => { isMounted = false; };
-  }, []);
+  }, [useMock]);
 
   // Incident methods
   const resolveIncident = async (id) => {
@@ -185,15 +200,17 @@ export function DataProvider({ children }) {
 
   // User methods
   const toggleUserAccess = async (id) => {
-    await userService.toggleUserAccess(id);
+    const current = users.find(u => u.id === id);
+    const updated = await userService.toggleUserAccess(id, current);
     setUsers(prev =>
       prev.map(u => {
         if (u.id === id) {
+          if (updated && updated.id) return updated;
           const isActive = u.access === 'Active';
           return {
             ...u,
             access: isActive ? 'Inactive' : 'Active',
-            status: isActive ? 'Inactive' : 'Active'
+            status: isActive ? 'Disabled' : 'Active'
           };
         }
         return u;
@@ -203,17 +220,20 @@ export function DataProvider({ children }) {
 
   const inviteUser = async (user) => {
     const res = await userService.inviteUser(user);
-    setUsers(prev => [
-      ...prev,
-      res
-    ]);
+    setUsers(prev => [res, ...prev]);
+    return res;
   };
 
   const updateUserRole = async (id, newRole) => {
-    await userService.updateUserRole(id, newRole);
+    const updated = await userService.updateUserRole(id, newRole);
     setUsers(prev =>
-      prev.map(u => (u.id === id ? { ...u, role: newRole } : u))
+      prev.map(u => (u.id === id ? (updated?.id ? updated : { ...u, role: newRole }) : u))
     );
+  };
+
+  const deleteUser = async (id) => {
+    await userService.deleteUser(id);
+    setUsers(prev => prev.filter(u => u.id !== id));
   };
 
   // Notification target methods
@@ -265,6 +285,7 @@ export function DataProvider({ children }) {
         toggleUserAccess,
         inviteUser,
         updateUserRole,
+        deleteUser,
         notificationTargets,
         toggleNotificationTarget,
         removeNotificationTarget,

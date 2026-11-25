@@ -110,18 +110,37 @@ export const analyticsService = {
 
   async getOverviewMetrics() {
     if (isMockEnabled('analytics')) return initialMetrics;
+    const emptyMetrics = {
+      activeIncidents: 0,
+      activeIncidentsDelta: '',
+      ppeCompliance: '0%',
+      ppeComplianceDelta: '',
+      workersOnFloor: 0,
+      workersScheduled: 0,
+      avgResponse: '—',
+      avgResponseDelta: '',
+      workforce: { totalWorkers: 0, activeWorkers: 0, safetyCompliance: 0 }
+    };
     try {
       const summary = await this.getSummary();
+      const activeInc = (summary.incidents_count ?? 0) - (summary.resolved_incidents ?? 0);
       return {
-        ...initialMetrics,
+        activeIncidents: Math.max(0, activeInc),
+        activeIncidentsDelta: '',
+        ppeCompliance: summary.camera_coverage_pct != null ? `${summary.camera_coverage_pct}%` : '0%',
+        ppeComplianceDelta: '',
+        workersOnFloor: summary.active_workers ?? 0,
+        workersScheduled: summary.total_workers ?? 0,
+        avgResponse: summary.average_resolution_minutes != null ? `${summary.average_resolution_minutes}m` : '—',
+        avgResponseDelta: '',
         workforce: {
-          totalWorkers: summary.total_workers || 24,
-          activeWorkers: summary.active_workers || 22,
-          safetyCompliance: summary.camera_coverage_pct || 94.2
+          totalWorkers: summary.total_workers ?? 0,
+          activeWorkers: summary.active_workers ?? 0,
+          safetyCompliance: summary.camera_coverage_pct ?? 0
         }
       };
     } catch {
-      return initialMetrics;
+      return emptyMetrics;
     }
   },
 
@@ -130,7 +149,7 @@ export const analyticsService = {
     try {
       return await this.getIncidents();
     } catch {
-      return initialWorkforceMetrics;
+      return [];
     }
   },
 
@@ -139,7 +158,7 @@ export const analyticsService = {
     try {
       return await this.getAttendance();
     } catch {
-      return initialWorkforceDepartments;
+      return [];
     }
   },
 
@@ -148,12 +167,13 @@ export const analyticsService = {
     try {
       return await this.getProductivity();
     } catch {
-      return initialIdleTimeZones;
+      return [];
     }
   },
 
   async getTrackedWorkers(timeRange = 'Last 4 hours') {
-    return initialTrackedWorkers;
+    if (isMockEnabled('analytics')) return initialTrackedWorkers;
+    return [];
   }
 };
 

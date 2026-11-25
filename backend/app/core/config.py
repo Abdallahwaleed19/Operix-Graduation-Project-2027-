@@ -83,6 +83,15 @@ class Settings(BaseSettings):
             "MUST be separate from SECRET_KEY. Never log this value."
         ),
     )
+
+    # SMTP Email Configuration (for invitations & registration approval notifications)
+    SMTP_HOST: str = "smtp.gmail.com"
+    SMTP_PORT: int = 587
+    SMTP_USER: Optional[str] = None
+    SMTP_PASSWORD: Optional[str] = None
+    SMTP_FROM_EMAIL: Optional[str] = None
+    SMTP_USE_TLS: bool = True
+    FRONTEND_APP_URL: str = "http://localhost:3000"
     WS_TICKET_TTL_SECONDS: int = Field(
         default=30,
         ge=1,

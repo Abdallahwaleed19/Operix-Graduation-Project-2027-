@@ -32,13 +32,13 @@ export const API_CONFIG = {
     evidence: env.VITE_USE_MOCK_EVIDENCE !== undefined ? env.VITE_USE_MOCK_EVIDENCE !== 'false' : globalUseMock,
     rules: env.VITE_USE_MOCK_RULES !== undefined ? env.VITE_USE_MOCK_RULES !== 'false' : globalUseMock,
     websockets: env.VITE_USE_MOCK_WEBSOCKETS !== undefined ? env.VITE_USE_MOCK_WEBSOCKETS !== 'false' : globalUseMock,
-    // Pending Backend Dependency modules (S-1 through S-4): stay in UI-only mock mode unless explicitly overridden
+    // Core Backend modules: follow VITE_USE_MOCK_DATA (false in live mode)
     auth: env.VITE_USE_MOCK_AUTH !== undefined ? env.VITE_USE_MOCK_AUTH !== 'false' : globalUseMock,
-    incidents: env.VITE_USE_MOCK_INCIDENTS !== undefined ? env.VITE_USE_MOCK_INCIDENTS !== 'false' : true,
-    cameras: env.VITE_USE_MOCK_CAMERAS !== undefined ? env.VITE_USE_MOCK_CAMERAS !== 'false' : true,
-    sensors: env.VITE_USE_MOCK_SENSORS !== undefined ? env.VITE_USE_MOCK_SENSORS !== 'false' : true,
-    users: env.VITE_USE_MOCK_USERS !== undefined ? env.VITE_USE_MOCK_USERS !== 'false' : true,
-    factory: env.VITE_USE_MOCK_FACTORY !== undefined ? env.VITE_USE_MOCK_FACTORY !== 'false' : true,
+    incidents: env.VITE_USE_MOCK_INCIDENTS !== undefined ? env.VITE_USE_MOCK_INCIDENTS !== 'false' : globalUseMock,
+    cameras: env.VITE_USE_MOCK_CAMERAS !== undefined ? env.VITE_USE_MOCK_CAMERAS !== 'false' : globalUseMock,
+    sensors: env.VITE_USE_MOCK_SENSORS !== undefined ? env.VITE_USE_MOCK_SENSORS !== 'false' : globalUseMock,
+    users: env.VITE_USE_MOCK_USERS !== undefined ? env.VITE_USE_MOCK_USERS !== 'false' : globalUseMock,
+    factory: env.VITE_USE_MOCK_FACTORY !== undefined ? env.VITE_USE_MOCK_FACTORY !== 'false' : globalUseMock,
   },
   timeout: 15000,
   headers: {

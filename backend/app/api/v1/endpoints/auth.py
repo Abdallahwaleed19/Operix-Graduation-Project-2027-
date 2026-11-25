@@ -25,6 +25,7 @@ from ....core.security import (
     decode_access_token,
     generate_refresh_token,
     get_ws_ticket_redis_key,
+    hash_password,
     hash_refresh_token,
     verify_password,
 )
@@ -38,8 +39,11 @@ from ....schemas.auth import (
     LogoutRequest,
     MeData,
     RefreshRequest,
+    RegisterData,
+    RegisterRequest,
 )
 from ....schemas.common import APIResponse, APIResponseMeta
+from ....services.email_service import EmailService
 from ...deps import AuthenticatedUser, get_current_user_context
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
@@ -489,4 +493,110 @@ async def issue_ws_ticket(
             factory_id=str(factory_id),
         ),
         meta=APIResponseMeta(factory_id=factory_id),
+    )
+
+
+_SELF_REGISTER_ROLES = frozenset({"safety_supervisor", "factory_manager", "viewer", "operator"})
+
+
+@router.post(
+    "/register",
+    response_model=APIResponse[RegisterData],
+    status_code=status.HTTP_201_CREATED,
+    summary="Request Account Registration (Requires Admin Approval)",
+    description=(
+        "Creates a pending user account (status=invited, membership inactive) and emails "
+        "active factory administrators for approval."
+    ),
+)
+def register(
+    body: RegisterRequest,
+    db: Session = Depends(get_db),
+) -> APIResponse[RegisterData]:
+    normalized_email = body.email.strip().lower()
+    requested_role = body.role_code.strip().lower()
+    if requested_role not in _SELF_REGISTER_ROLES:
+        requested_role = "safety_supervisor"
+
+    existing = db.execute(
+        select(User).where(func.lower(User.email) == normalized_email)
+    ).scalar_one_or_none()
+    if existing is not None:
+        raise OperixException(
+            message=f"An account with email '{normalized_email}' already exists.",
+            status_code=409,
+            error_code="USER_ALREADY_EXISTS",
+        )
+
+    factory_id = body.factory_id or settings.DEFAULT_FACTORY_ID
+    factory = db.get(Factory, factory_id)
+    if factory is None or factory.status != FactoryStatus.ACTIVE:
+        raise OperixException(
+            message="Target factory is not available.",
+            status_code=404,
+            error_code="FACTORY_NOT_FOUND",
+        )
+
+    role = db.execute(select(Role).where(Role.code == requested_role)).scalar_one_or_none()
+    if role is None:
+        role = db.execute(select(Role).where(Role.code == "safety_supervisor")).scalar_one_or_none()
+    if role is None:
+        raise OperixException(
+            message="Requested role is not configured.",
+            status_code=400,
+            error_code="ROLE_NOT_FOUND",
+        )
+
+    user = User(
+        email=normalized_email,
+        password_hash=hash_password(body.password),
+        full_name=body.full_name.strip(),
+        status=UserStatus.INVITED,
+    )
+    db.add(user)
+    db.flush()
+
+    membership = FactoryMembership(
+        factory_id=factory.id,
+        user_id=user.id,
+        role_id=role.id,
+        is_active=False,
+    )
+    db.add(membership)
+    db.flush()
+
+    admin_rows = db.execute(
+        select(User.email)
+        .join(FactoryMembership, FactoryMembership.user_id == User.id)
+        .join(Role, Role.id == FactoryMembership.role_id)
+        .where(
+            FactoryMembership.factory_id == factory.id,
+            FactoryMembership.is_active.is_(True),
+            User.status == UserStatus.ACTIVE,
+            Role.code.in_(("factory_admin", "platform_admin")),
+        )
+    ).scalars().all()
+    admin_emails = list(dict.fromkeys(admin_rows))
+
+    admin_notified = EmailService.send_registration_request_to_admins(
+        admin_emails=admin_emails,
+        applicant_name=user.full_name,
+        applicant_email=user.email,
+        role_name=role.name,
+        factory_name=factory.name,
+    )
+
+    return APIResponse(
+        status="success",
+        data=RegisterData(
+            user_id=user.id,
+            email=user.email,
+            full_name=user.full_name,
+            role=role.code,
+            factory_name=factory.name,
+            status=user.status.value,
+            admin_notified=admin_notified,
+            message="Account request submitted. An administrator must approve your account before you can sign in.",
+        ),
+        meta=APIResponseMeta(factory_id=factory.id),
     )

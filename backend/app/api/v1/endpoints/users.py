@@ -127,3 +127,28 @@ def update_user(
         data=updated,
         meta=APIResponseMeta(factory_id=user.factory_id),
     )
+
+
+@router.delete(
+    "/{user_id}",
+    response_model=APIResponse[dict],
+    status_code=status.HTTP_200_OK,
+    summary="Delete User from Current Factory",
+)
+def delete_user(
+    user_id: uuid.UUID,
+    user: AuthenticatedUser = Depends(get_current_user_context),
+    db: Session = Depends(_get_scoped_db),
+) -> APIResponse[dict]:
+    _require_role(user, _USER_ADMIN_ROLES, "delete users")
+    result = AdminService.delete_factory_user(
+        db,
+        user.factory_id,
+        user_id,
+        actor_user_id=user.user_id,
+    )
+    return APIResponse(
+        status="success",
+        data=result,
+        meta=APIResponseMeta(factory_id=user.factory_id),
+    )

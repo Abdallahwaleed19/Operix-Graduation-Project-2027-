@@ -56,3 +56,22 @@ class MeData(BaseModel):
 
 class LogoutData(BaseModel):
     revoked: bool
+
+
+class RegisterRequest(BaseModel):
+    full_name: str = Field(..., min_length=2, max_length=120)
+    email: str = Field(..., min_length=3, max_length=254)
+    password: str = Field(..., min_length=6, max_length=72)
+    role_code: str = Field(default="safety_supervisor", max_length=40)
+    factory_id: Optional[uuid.UUID] = Field(default=None)
+
+
+class RegisterData(BaseModel):
+    user_id: uuid.UUID
+    email: str
+    full_name: str
+    role: str
+    factory_name: str
+    status: str
+    admin_notified: bool
+    message: str

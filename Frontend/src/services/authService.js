@@ -211,13 +211,21 @@ export const authService = {
       };
     }
 
-    // Live FastAPI Backend: self-registration is not implemented (invite-only via POST /api/v1/users/invite).
-    const unsupported = new Error(
-      'Self-registration is not enabled on the Operix Backend. Please contact a factory administrator to invite your account.'
-    );
-    unsupported.status = 501;
-    unsupported.errorCode = 'REGISTRATION_UNSUPPORTED';
-    throw unsupported;
+    // Live FastAPI Backend: submit registration request for admin approval
+    const roleMap = {
+      'Safety Supervisor': 'safety_supervisor',
+      'Factory Manager': 'factory_manager',
+      Viewer: 'viewer',
+      Operator: 'operator',
+    };
+    const roleCode = roleMap[role] || role.toLowerCase().replace(/\s+/g, '_');
+
+    return apiClient.post('/api/v1/auth/register', {
+      full_name: fullName.trim(),
+      email: normalizedEmail,
+      password,
+      role_code: roleCode,
+    });
   },
 
   /**

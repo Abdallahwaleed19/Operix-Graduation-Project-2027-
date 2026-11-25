@@ -3,14 +3,26 @@ import { initialFactory, initialNotificationTargets } from '../data/mockData';
 
 /**
  * Factory Plant Configuration & Notification Targets Service
- * Connects to FastAPI endpoint `/factory`
+ * Connects to FastAPI endpoint `/api/v1/factories/current`
  */
 export const factoryService = {
   async getFactorySettings() {
     if (isMockEnabled('factory')) {
       return { ...initialFactory };
     }
-    return apiClient.get('/factory/settings');
+    // Real backend endpoint: GET /api/v1/factories/current
+    const res = await apiClient.get('/api/v1/factories/current');
+    // Normalize to shape DataContext expects: { name, shift, timezone, ... }
+    if (res && res.name) {
+      return {
+        name: res.name,
+        shift: res.shift || 'Day Shift',
+        timezone: res.timezone || 'Africa/Cairo',
+        id: res.id,
+        status: res.status,
+      };
+    }
+    return res;
   },
 
   async updateFactorySettings(settings) {
@@ -18,14 +30,16 @@ export const factoryService = {
       Object.assign(initialFactory, settings);
       return { success: true, ...initialFactory };
     }
-    return apiClient.patch('/factory/settings', settings);
+    // No PATCH endpoint exists yet — silently skip to avoid errors
+    return { success: false, message: 'Factory update endpoint not yet available.' };
   },
 
   async getNotificationTargets() {
     if (isMockEnabled('factory')) {
       return [...initialNotificationTargets];
     }
-    return apiClient.get('/factory/notifications');
+    // No notification target endpoint exists yet — return empty array
+    return [];
   },
 
   async toggleNotificationTarget(id) {
@@ -36,7 +50,7 @@ export const factoryService = {
       }
       return { success: true, id };
     }
-    return apiClient.post(`/factory/notifications/${id}/toggle`);
+    return { success: false };
   },
 
   async addNotificationTarget(targetPayload) {
@@ -48,7 +62,7 @@ export const factoryService = {
       initialNotificationTargets.push(newTarget);
       return { success: true, ...newTarget };
     }
-    return apiClient.post('/factory/notifications', targetPayload);
+    return { success: false };
   },
 
   async removeNotificationTarget(id) {
@@ -57,7 +71,7 @@ export const factoryService = {
       if (idx !== -1) initialNotificationTargets.splice(idx, 1);
       return { success: true, id };
     }
-    return apiClient.delete(`/factory/notifications/${id}`);
+    return { success: false };
   }
 };
 

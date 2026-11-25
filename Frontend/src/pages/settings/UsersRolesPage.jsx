@@ -2,15 +2,17 @@ import React, { useState } from 'react';
 import Navbar from '../../components/common/Navbar';
 import PendingBackendBadge from '../../components/common/PendingBackendBadge';
 import { useData } from '../../context/DataContext';
-import { Plus, UserPlus } from 'lucide-react';
+import { isMockEnabled } from '../../services/apiClient';
+import { Plus, UserPlus, Trash2, Check } from 'lucide-react';
 
 export default function UsersRolesPage() {
-  const { users, toggleUserAccess, inviteUser, updateUserRole } = useData();
+  const { users, toggleUserAccess, inviteUser, updateUserRole, deleteUser } = useData();
 
   const [inviteEmail, setInviteEmail] = useState('');
   const [inviteRole, setInviteRole] = useState('Safety Supervisor');
   const [inviteFactory, setInviteFactory] = useState('Plant 1');
   const [selectedRolePreview, setSelectedRolePreview] = useState('Safety Supervisor');
+  const [actionError, setActionError] = useState('');
 
   // Role permissions template for display
   const permissionsMap = {
@@ -44,18 +46,31 @@ export default function UsersRolesPage() {
     }
   };
 
-  const handleSendInvite = (e) => {
+  const handleSendInvite = async (e) => {
     e.preventDefault();
     if (!inviteEmail) return;
+    setActionError('');
+    try {
+      await inviteUser({
+        name: inviteEmail.split('@')[0],
+        email: inviteEmail,
+        role: inviteRole
+      });
+      setInviteEmail('');
+      alert(`Invitation created & email dispatched to ${inviteEmail} for role ${inviteRole}`);
+    } catch (err) {
+      setActionError(err.message || 'Failed to invite user.');
+    }
+  };
 
-    inviteUser({
-      name: inviteEmail.split('@')[0],
-      email: inviteEmail,
-      role: inviteRole
-    });
-
-    setInviteEmail('');
-    alert(`Invitation sent to ${inviteEmail} for role ${inviteRole}`);
+  const handleDeleteUser = async (u) => {
+    if (!window.confirm(`Delete ${u.name} (${u.email}) permanently from operix_db?`)) return;
+    setActionError('');
+    try {
+      await deleteUser(u.id);
+    } catch (err) {
+      setActionError(err.message || 'Failed to delete user.');
+    }
   };
 
   return (
@@ -67,7 +82,9 @@ export default function UsersRolesPage() {
         backLabel="Back to Settings"
         rightActions={
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <PendingBackendBadge moduleCode="S-4" dependency="Users & Roles API" />
+            {isMockEnabled('users') && (
+              <PendingBackendBadge moduleCode="S-4" dependency="Users & Roles API" />
+            )}
             <button
               className="btn btn-primary"
               onClick={() => document.getElementById('invite-email-input')?.focus()}
@@ -80,6 +97,20 @@ export default function UsersRolesPage() {
       />
 
       <div className="page-container">
+        {actionError && (
+          <div style={{
+            marginBottom: '1rem',
+            padding: '10px 14px',
+            borderRadius: '8px',
+            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+            border: '1px solid rgba(239, 68, 68, 0.3)',
+            color: '#EF4444',
+            fontSize: '13px',
+            fontWeight: 600
+          }}>
+            {actionError}
+          </div>
+        )}
         <div className="grid-2col-settings">
           {/* Members Table */}
           <div className="operix-table-card">
@@ -141,12 +172,28 @@ export default function UsersRolesPage() {
                           </span>
                         </td>
                         <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
-                          <button
-                            className={isActive ? 'btn btn-danger-outline btn-sm' : 'btn btn-secondary btn-sm'}
-                            onClick={() => toggleUserAccess(u.id)}
-                          >
-                            {isActive ? 'Deactivate' : 'Activate'}
-                          </button>
+                          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                            <button
+                              className={isActive ? 'btn btn-danger-outline btn-sm' : 'btn btn-secondary btn-sm'}
+                              onClick={() => toggleUserAccess(u.id).catch(err => setActionError(err.message || 'Action failed'))}
+                            >
+                              {u.status === 'Invited' && !isActive ? (
+                                <>
+                                  <Check size={13} />
+                                  Approve
+                                </>
+                              ) : isActive ? 'Deactivate' : 'Activate'}
+                            </button>
+                            <button
+                              type="button"
+                              className="btn btn-danger-outline btn-sm"
+                              title="Delete user"
+                              onClick={() => handleDeleteUser(u)}
+                              style={{ padding: '0.35rem 0.55rem' }}
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     );
@@ -203,7 +250,7 @@ export default function UsersRolesPage() {
                     value={inviteFactory}
                     onChange={e => setInviteFactory(e.target.value)}
                   >
-                    <option value="Plant 1">Plant 1</option>
+                    <option value="Plant 1">Plant 1 · Menoufia</option>
                     <option value="Plant 2">Plant 2</option>
                     <option value="Plant 3">Plant 3</option>
                   </select>
