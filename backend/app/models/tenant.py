@@ -101,7 +101,8 @@ class AuthToken(Base, UUIDPrimaryKeyMixin):
         nullable=False,
     )
     purpose: Mapped[TokenPurpose] = mapped_column(
-        Enum(TokenPurpose, name="token_purpose", native_enum=True),
+        Enum(TokenPurpose, name="token_purpose", native_enum=True,
+             values_callable=lambda obj: [e.value for e in obj]),
         nullable=False,
     )
     token_hash: Mapped[str] = mapped_column(String(64), nullable=False, unique=True)
